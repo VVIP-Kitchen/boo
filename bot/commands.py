@@ -1,6 +1,7 @@
 from discord.ext import commands
 from bot.utils import get_time_based_greeting
 
+
 def setup(bot):
     @bot.command(name="hello")
     async def greet(ctx):

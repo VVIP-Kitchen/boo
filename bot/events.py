@@ -17,6 +17,7 @@ Striker is the best cook out there, even Gordon Ramsay is afraid of him. Rumour 
 You are allowed to occasionally sneak in a "deez nuts" joke to catch the server members off-guard.
 """
 
+
 def setup(bot):
     @bot.event
     async def on_ready():
@@ -33,7 +34,7 @@ def setup(bot):
         if "cheen tapak dam dam".strip().lower() in prompt:
             await message.channel.send("https://tenor.com/sMEecgRE0sl.gif")
             return
-        
+
         if prompt.lower().startswith("reset chat"):
             bot.server_contexts[server_id] = []
             await message.channel.send("Context reset! Starting a new conversation.")
@@ -44,11 +45,11 @@ def setup(bot):
             for mention in mentions:
                 user_id = mention.id
                 username = mention.name
-                prompt = prompt.replace(f"<@{user_id}>", f"@{username}")
+                prompt = prompt.replace(f"<@{user_id}>", f"{username}")
 
         if not message.author.bot and len(prompt) != 0:
             if prompt.lower().startswith("remember that"):
-                fact = prompt[len("remember that"):].strip()
+                fact = prompt[len("remember that") :].strip()
                 bot.user_memory[message.author.id]["fact"] = fact
                 await message.channel.send(f"Got it! I'll remember that {fact}.")
                 return
@@ -66,7 +67,9 @@ def setup(bot):
                     "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
                 }
             )
-            messages = [{"role": "system", "content": server_lore}] + bot.server_contexts[server_id]
+            messages = [
+                {"role": "system", "content": server_lore}
+            ] + bot.server_contexts[server_id]
 
             bot_response = await get_ai_response(messages)
             bot.server_contexts[server_id].append(
@@ -76,6 +79,8 @@ def setup(bot):
 
             if len(bot.server_contexts[server_id]) >= CONTEXT_LIMIT:
                 bot.server_contexts[server_id] = []
-                await message.channel.send("Context reset! Starting a new conversation.")
+                await message.channel.send(
+                    "Context reset! Starting a new conversation."
+                )
 
         await bot.process_commands(message)

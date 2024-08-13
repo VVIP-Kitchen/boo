@@ -1,8 +1,9 @@
 import datetime
 import pytz
 
+
 def get_time_based_greeting():
-    ist = pytz.timezone('Asia/Kolkata')
+    ist = pytz.timezone("Asia/Kolkata")
     now = datetime.datetime.now(ist)
     if 5 <= now.hour < 12:
         return "Good morning"

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import collections
 
+
 def create_bot():
     intents = discord.Intents.default()
     intents.members = True

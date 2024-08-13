@@ -1,6 +1,7 @@
 import requests
 from config import CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_WORKERS_AI_API_KEY
 
+
 async def get_ai_response(messages):
     try:
         response = requests.post(
