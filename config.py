@@ -25,6 +25,7 @@ for var_name in [
         print(f"Error: {var_name} environment variable is not set.")
         sys.exit(1)
 
+
 def get_time_based_greeting():
     ist = pytz.timezone("Asia/Kolkata")
     now = datetime.datetime.now(ist)
@@ -36,6 +37,7 @@ def get_time_based_greeting():
         return "Good evening"
     else:
         return "Hello"
+
 
 server_lore = f"""
 You are "Boo", a Discord user between the age of 20 and 30 created by enderboi.
