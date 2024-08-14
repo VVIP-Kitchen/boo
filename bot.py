@@ -1,8 +1,5 @@
-import io
-import aiohttp
 import discord
 import requests
-from PIL import Image, ImageOps
 from discord.ext import commands
 from config import (
     CONTEXT_LIMIT,
@@ -20,14 +17,6 @@ intents.members = True
 bot = commands.Bot(command_prefix="", intents=intents)
 
 
-### Reference: https://github.com/craigsdennis/image-model-streamlit-workers-ai/blob/main/pages/3_%F0%9F%91%81%EF%B8%8F_Seeing.py
-def image_to_int_array(image, format="PNG"):
-    """Current Workers AI REST API consumes an array of unsigned 8 bit integers"""
-    bytes = io.BytesIO()
-    image.save(bytes, format=format)
-    return list(bytes.getvalue())
-
-
 @bot.event
 async def on_ready():
     print(f"{bot.user} has connected to Discord!")
@@ -40,38 +29,6 @@ async def on_message(message):
 
     server_id = message.guild.id
     prompt = str(message.content).strip()
-
-    img = None
-    if len(message.attachments) >= 0:
-        img_url = message.attachments[0].url
-
-        async with aiohttp.ClientSession() as session:
-            async with session.get(img_url) as res:
-                blob = await res.read()
-                img = Image.open(blob)
-                img = ImageOps.contain(img, (600, 600))
-
-                if img is not None:
-                    try:
-                        response = requests.post(
-                            f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/llava-hf/llava-1.5-7b-hf",
-                            headers={
-                                "Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"
-                            },
-                            json={"prompt": messages, "image": image_to_int_array(img)},
-                        )
-                        response.raise_for_status()
-                        result = response.json()
-                        bot_response = str(result["result"]["response"])
-                        print(bot_response)
-                        await message.channel.send(bot_response)
-                        return
-                    except requests.RequestException as e:
-                        print(f"API request failed: {e}")
-                        bot_response = "Sorry, I'm having trouble thinking right now. Can you try again later?"
-                    except KeyError:
-                        print("Unexpected API response format")
-                        bot_response = "I'm a bit confused. Can you rephrase that?"
 
     if "cheen tapak dam dam".strip().lower() in prompt:
         await message.channel.send("https://tenor.com/sMEecgRE0sl.gif")
