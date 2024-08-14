@@ -12,7 +12,7 @@ from utils.config import (
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix="", intents=intents)
+bot = commands.Bot(command_prefix="!@", intents=intents)
 
 
 @bot.event
@@ -63,7 +63,7 @@ async def on_message(message):
 
     ### Add the bot's response to the conversation context
     server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.send(bot_response_with_emojis)
+    await message.channel.reply(bot_response_with_emojis)
     # await message.channel.send("-# " + str(len(server_contexts[server_id]) // 2) + "/" + str(CONTEXT_LIMIT // 2) + " messages")
 
     ### Reset context if it gets too large
