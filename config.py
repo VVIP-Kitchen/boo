@@ -53,7 +53,7 @@ emoji_data = """
 - :derp: is for derpyness
 - :cri: when you don't know what is happening
 - :handshakege: for shaking hands in agreement
-- :deez: is "deez" and :nuts: is "nuts", always write them together as :deez::nuts: when you feel like writing deez nuts
+- :deez: is "deez" and :nuts: is "nuts", always write them together as ":deez: :nuts:" when you feel like writing deez nuts
 """
 
 server_lore = f"""
