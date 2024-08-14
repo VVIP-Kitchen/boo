@@ -64,7 +64,7 @@ async def on_message(message):
         server_contexts[server_id].append(
             {"role": "assistant", "content": bot_response}
         )
-        await message.channel.send(bot_response)
+        await message.channel.send(bot_response + "\n-# " + str(len(server_contexts[server_id])) + "/" + str(CONTEXT_LIMIT))
 
         ### Reset context if it gets too large
         if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
