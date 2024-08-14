@@ -81,7 +81,7 @@ async def on_message(message):
             {"role": "assistant", "content": bot_response}
         )
         await message.channel.send(bot_response_with_emojis)
-        await message.channel.send("-# " + str(len(server_contexts[server_id]) // 2) + "/" + str(CONTEXT_LIMIT // 2) + " messages")
+        # await message.channel.send("-# " + str(len(server_contexts[server_id]) // 2) + "/" + str(CONTEXT_LIMIT // 2) + " messages")
 
         ### Reset context if it gets too large
         if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
