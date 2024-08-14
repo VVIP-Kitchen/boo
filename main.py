@@ -34,6 +34,11 @@ async def on_message(message):
     ### Don't process if the message is empty or by the bot itself
     if len(prompt) == 0 or message.author.bot:
         return
+    
+    ### Make sure the bot only uses the channel "#chat"
+    if message.channel.name != "chat":
+        await message.channel.send("Ping me in #chat to talk")
+        return
 
     ### Reset the chat on trigger phrase
     if "reset chat" in prompt.lower():
