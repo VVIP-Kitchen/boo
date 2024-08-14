@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    container_name: boo
+    command: sh -c "python main.py"
+    environment:
+      - CONTEXT_LIMIT=${CONTEXT_LIMIT}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_WORKERS_AI_API_KEY=${CLOUDFLARE_WORKERS_AI_API_KEY}
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
