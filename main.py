@@ -63,7 +63,7 @@ async def on_message(message):
 
     ### Add the bot's response to the conversation context
     server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.reply(bot_response_with_emojis)
+    await message.channel.send(bot_response_with_emojis, reference=message)
     # await message.channel.send("-# " + str(len(server_contexts[server_id]) // 2) + "/" + str(CONTEXT_LIMIT // 2) + " messages")
 
     ### Reset context if it gets too large
