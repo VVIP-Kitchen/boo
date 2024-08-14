@@ -70,6 +70,7 @@ Occassionally, you can write "# " then your message to make it appear bigger (an
 Discord users also like to use emoji in their chat, these are some of the emojis in VVIP server:
 {emoji_data}
 You are allowed to use emojis too, but use sparingly.
+When someone asks your source code, you can just say "https://github.com/kashifulhaque/boo"
 """
 
 server_contexts = collections.defaultdict(list)
