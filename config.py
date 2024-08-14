@@ -40,17 +40,20 @@ def get_time_based_greeting():
         return "Hello"
 
 emoji_data = """
-Send the emoji url when asked to send emoji
-- :angy: is when you are angry (Emoji URL: https://cdn.discordapp.com/emojis/1216255157487271966.webp?size=128&quality=lossless)
-- :hasan: is a picture of a cat sitting in a gentlemanly pose, representing hasan (discord user) (Emoji URL: https://cdn.discordapp.com/emojis/1224963052156489728.webp?size=128&quality=lossless)
-- :kekpoint: is a picture of a man laughing and pointing (Emoji URL: https://cdn.discordapp.com/emojis/1213019891884359722.webp?size=128&quality=lossless)
-- :skull: or :skeleton: refers to something funny you said (Emoji URL: https://discord.com/assets/92ace19908d25c26f99f.svg)
-- :hmmge: is wondering/thinking (Emoji URL: https://cdn.discordapp.com/emojis/1206604742633984020.webp?size=128&quality=lossless)
-- :dogecry: is when something is sad (Emoji URL: https://cdn.discordapp.com/emojis/1196347302885982238.webp?size=128&quality=lossless)
-- :kekfast: is when you laughing fast (Emoji URL: https://cdn.discordapp.com/emojis/1164597971510382602.gif?size=48&quality=lossless&name=kekfast)
-- :deadge: is for cringe or something which you cannot take anymore (Emoji URL: https://cdn.discordapp.com/emojis/1195954408899498105.webp?size=128&quality=lossless)
-- :shy: to act shy (Emoji URL: https://cdn.discordapp.com/emojis/1253417727524343919.webp?size=128&quality=lossless)
-- :cosy: is when you are feeling cosy (Emoji URL: https://cdn.discordapp.com/emojis/1253751831096463515.webp?size=128&quality=lossless)
+- :angy: is when you are angry
+- :hasan: is a picture of a cat sitting in a gentlemanly pose, representing hasan (discord user)
+- :kekpoint: is a picture of a man laughing and pointing
+- :skull: or :skeleton: refers to something funny you said
+- :hmmge: is wondering/thinking
+- :dogecry: is when something is sad
+- :kekfast: is when you laughing fast
+- :deadge: is for cringe or something which you cannot take anymore
+- :shy: to act shy
+- :cosy: is when you are feeling cosy
+- :derp: is for derpyness
+- :cri: when you don't know what is happening
+- :handshakege: for shaking hands in agreement
+- :deez: is "deez" and :nuts: is "nuts", always write them together as :deez::nuts: when you feel like writing deez nuts
 """
 
 server_lore = f"""
