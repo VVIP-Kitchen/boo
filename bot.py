@@ -28,6 +28,7 @@ async def on_message(message):
     if message.author.bot:
         return
     
+    print(message.attachments)
     if len(message.attachments) >= 0:
         img_url = message.attachments[0].url
         print(img_url)
