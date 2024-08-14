@@ -39,6 +39,7 @@ def get_time_based_greeting():
     else:
         return "Hello"
 
+
 emoji_data = """
 - :angy: is when you are angry
 - :hasan: is a picture of a cat sitting in a gentlemanly pose, representing hasan (discord user)
