@@ -36,7 +36,6 @@ async def on_message(message):
         async with aiohttp.ClientSession() as session:
             async with session.get(img_url) as res:
                 blob = await res.read()
-                print(blob)
 
     server_id = message.guild.id
     prompt = str(message.content).strip()
