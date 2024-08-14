@@ -1,15 +1,13 @@
 import discord
 import requests
 from discord.ext import commands
+from api import call_model
 from config import (
     CONTEXT_LIMIT,
-    CLOUDFLARE_ACCOUNT_ID,
-    CLOUDFLARE_WORKERS_AI_API_KEY,
     DISCORD_TOKEN,
     get_time_based_greeting,
     server_lore,
     server_contexts,
-    user_memory,
 )
 
 intents = discord.Intents.default()
@@ -30,10 +28,6 @@ async def on_message(message):
     server_id = message.guild.id
     prompt = str(message.content).strip()
 
-    if "cheen tapak dam dam".strip().lower() in prompt:
-        await message.channel.send("https://tenor.com/sMEecgRE0sl.gif")
-        return
-
     if prompt.lower().startswith("reset chat"):
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
@@ -48,21 +42,6 @@ async def on_message(message):
             prompt = prompt.replace(f"<@{user_id}>", f"{username}")
 
     if not message.author.bot and len(prompt) != 0:
-        ### Check if the user wants to share some information
-        if prompt.lower().startswith("remember that"):
-            fact = prompt[len("remember that") :].strip()
-            user_memory[message.author.id]["fact"] = fact
-            await message.channel.send(f"Got it! I'll remember that {fact}.")
-            return
-
-        ### Check if the user wants to recall something
-        if prompt.lower().startswith("what do you remember about me"):
-            fact = user_memory.get(message.author.id, {}).get(
-                "fact", "I don't remember anything specific about you yet."
-            )
-            await message.channel.send(f"Here's what I remember: {fact}")
-            return
-
         ### Build the context for the conversation
         server_contexts[server_id].append(
             {
@@ -79,23 +58,7 @@ async def on_message(message):
             server_id
         ]
 
-        try:
-            response = requests.post(
-                f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/meta/llama-3-8b-instruct-awq",
-                headers={"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"},
-                json={"messages": messages},
-            )
-            response.raise_for_status()
-            result = response.json()
-            bot_response = str(result["result"]["response"])
-        except requests.RequestException as e:
-            print(f"API request failed: {e}")
-            bot_response = (
-                "Sorry, I'm having trouble thinking right now. Can you try again later?"
-            )
-        except KeyError:
-            print("Unexpected API response format")
-            bot_response = "I'm a bit confused. Can you rephrase that?"
+        bot_response = call_model(messages)
 
         ### Add the bot's response to the conversation context
         server_contexts[server_id].append(

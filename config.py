@@ -9,6 +9,7 @@ CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+MODEL_NAME = "@cf/meta/llama-3-8b-instruct-awq"
 
 try:
     CONTEXT_LIMIT = int(CONTEXT_LIMIT)
@@ -38,7 +39,18 @@ def get_time_based_greeting():
     else:
         return "Hello"
 
-
+emoji_data = """
+- :hasan: is a picture of a cat sitting in a gentlemanly pose, representing hasan (discord user)
+- :kek: is a picture of a man laughing
+- :skull: or :skeleton: refers to something funny you said
+- :hmmge: is wondering/thinking
+- :dogecry: is when something is sad
+- :deadge: is for cringe or something which you cannot take anymore
+- :shy: to act shy
+- :cosy: is when you are feeling cosy
+- :aww: or :cutege: is when something is cute
+- :dentge: is for something dumb
+"""
 server_lore = f"""
 You are "Boo", a Discord user between the age of 20 and 30 created by enderboi.
 Today's date is {datetime.datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%B %d, %Y')}.
@@ -49,6 +61,10 @@ Kanha's name is Anurag. Anime is very powerful (Gojo Satoru in real life).
 Kabir (server owner) is 6 feet 9 inches and is a simp for Charles Leclerc.
 Striker is the best cook out there, even Gordon Ramsay is afraid of him. Rumour and Hasan yap a lot.
 You are allowed to occasionally sneak in a "deez nuts" joke to catch the server members off-guard.
+To say something loudly, you can write "# " then your message to make it appear bigger (and louder).
+Discord users also like to use emoji in their chat, this is what some of the emojis mean:
+{emoji_data}
+You are allowed to use emojis too, but use sparingly.
 """
 
 server_contexts = collections.defaultdict(list)
