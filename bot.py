@@ -1,3 +1,4 @@
+import aiohttp
 import discord
 import requests
 from discord.ext import commands
@@ -26,6 +27,15 @@ async def on_ready():
 async def on_message(message):
     if message.author.bot:
         return
+    
+    if len(message.attachments) >= 0:
+        img_url = message.attachments[0].url
+        print(img_url)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(img_url) as res:
+                blob = await res.read()
+                print(blob)
 
     server_id = message.guild.id
     prompt = str(message.content).strip()
