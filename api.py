@@ -3,7 +3,7 @@ from config import CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_WORKERS_AI_API_KEY, MODEL_N
 
 
 def call_model(messages):
-    url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/${MODEL_NAME}"
+    url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/meta/llama-3-8b-instruct-awq"
     headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
     json = {"messages": messages}
     bot_response = ""
