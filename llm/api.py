@@ -1,5 +1,8 @@
 import requests
-from utils.config import CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_WORKERS_AI_API_KEY, MODEL_NAME
+from utils.config import (
+    CLOUDFLARE_ACCOUNT_ID,
+    CLOUDFLARE_WORKERS_AI_API_KEY,
+)
 
 
 def call_model(messages):
