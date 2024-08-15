@@ -12,6 +12,7 @@ from utils.config import (
 
 intents = discord.Intents.default()
 intents.members = True
+intents.message_content = True
 prefix = "!@"
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
