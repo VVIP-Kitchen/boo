@@ -5,11 +5,19 @@ import datetime
 import collections
 
 ### Read the environment variables and validate their existence. If not found, exit the program
+ADMIN_LIST=os.getenv("ADMIN_LIST")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 MODEL_NAME = "@cf/meta/llama-3-8b-instruct-awq"
+
+
+try:
+    ADMIN_LIST=[int(item) for item in ADMIN_LIST.split(',')]
+except ValueError:
+    print(f"Error: ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
+    sys.exit(1)
 
 try:
     CONTEXT_LIMIT = int(CONTEXT_LIMIT)
