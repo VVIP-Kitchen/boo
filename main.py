@@ -30,14 +30,25 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    server_id = message.guild.id
+    if message.author.bot:
+        return
+
     prompt = str(message.content).strip()
-
-    if len(prompt) == 0 or message.author.bot:
+    if len(prompt) == 0:
         return
 
-    if message.channel.name != "chat":
-        return
+    if message.guild is None:
+        server_id = f"DM_{message.author.id}"  ### This is a DM
+    else:
+        server_id = message.guild.id
+        is_direct_reply = (
+            message.reference
+            and message.reference.resolved
+            and message.reference.resolved.author == bot.user
+        )
+        is_mention = bot.user in message.mentions
+        if not (is_direct_reply or is_mention) or message.channel.name != "chat":
+            return
 
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
@@ -45,6 +56,7 @@ async def on_message(message):
         return
 
     if message.content.startswith(prefix):
+        print("Before process_commands()", prefix)
         await bot.process_commands(message)
         return
 
@@ -82,6 +94,7 @@ async def greet(ctx):
 async def sync(message):
     if message.author.id not in ADMIN_LIST:
         message.author.send("You do not have permission to use this command")
+        return
     await bot.tree.sync()
     await message.reply("Command Tree is synced, slash commands are updated")
 
