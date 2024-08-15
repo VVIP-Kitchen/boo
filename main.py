@@ -11,7 +11,8 @@ from utils.config import (
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix="!@", intents=intents)
+prefix="!@"
+bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
 @bot.event
@@ -34,14 +35,17 @@ async def on_message(message):
         return
 
     if message.channel.name != "chat":
-        await message.channel.send("Ping me in #chat to talk")
+        await message.author.send("Ping me in #chat to talk")
         return
-
+    
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
         return
-
+    if message.content.startswith(prefix):
+        await bot.process_commands(msg)
+        return
+    
     prompt = handle_user_mentions(prompt, message)
     server_contexts[server_id].append(
         {
@@ -66,7 +70,16 @@ async def on_message(message):
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
 
-    await bot.process_commands(message)
 
+@bot.hybrid_command(name="greet", description="Greets the user")
+async def greet(ctx):
+    await ctx.send(f"{ctx.author} How can I assist you today?")
+
+@bot.command()
+async def sync(msg):
+    if msg.author.id not in ADMIN_LIST:
+        msg.author.send("You do not have permission to use this command")
+    await bot.tree.sync()
+    await msg.reply("Command Tree is synced, slash commands are updated")
 
 bot.run(DISCORD_TOKEN)
