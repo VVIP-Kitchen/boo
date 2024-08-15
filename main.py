@@ -56,7 +56,6 @@ async def on_message(message):
         return
 
     if message.content.startswith(prefix):
-        print("Before process_commands()", prefix)
         await bot.process_commands(message)
         return
 
