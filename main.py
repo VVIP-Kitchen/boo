@@ -37,7 +37,7 @@ async def on_message(message):
         return
 
     if message.channel.name != "chat":
-        await message.author.send("Ping me in #chat to talk")
+        await message.channel.send("Ping me in #chat to talk")
         return
 
     if "reset chat" in prompt.lower():
