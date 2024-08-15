@@ -37,13 +37,13 @@ async def on_message(message):
         return
 
     if message.channel.name != "chat":
-        await message.channel.send("Ping me in #chat to talk")
         return
 
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
         return
+
     if message.content.startswith(prefix):
         await bot.process_commands(message)
         return
