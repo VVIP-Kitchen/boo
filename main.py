@@ -35,7 +35,10 @@ async def on_message(message):
 
     if len(prompt) == 0 or message.author.bot:
         return
-
+    
+    if not bot.user in message.mentions:
+        return
+    
     if message.channel.name != "chat":
         return
 
