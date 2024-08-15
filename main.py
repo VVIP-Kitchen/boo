@@ -5,13 +5,14 @@ from utils.utils import handle_user_mentions, replace_emojis
 from utils.config import (
     CONTEXT_LIMIT,
     DISCORD_TOKEN,
+    ADMIN_LIST,
     server_lore,
     server_contexts,
 )
 
 intents = discord.Intents.default()
 intents.members = True
-prefix="!@"
+prefix = "!@"
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
@@ -37,15 +38,15 @@ async def on_message(message):
     if message.channel.name != "chat":
         await message.author.send("Ping me in #chat to talk")
         return
-    
+
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
         return
     if message.content.startswith(prefix):
-        await bot.process_commands(msg)
+        await bot.process_commands(message)
         return
-    
+
     prompt = handle_user_mentions(prompt, message)
     server_contexts[server_id].append(
         {
@@ -75,11 +76,13 @@ async def on_message(message):
 async def greet(ctx):
     await ctx.send(f"{ctx.author} How can I assist you today?")
 
+
 @bot.command()
-async def sync(msg):
-    if msg.author.id not in ADMIN_LIST:
-        msg.author.send("You do not have permission to use this command")
+async def sync(message):
+    if message.author.id not in ADMIN_LIST:
+        message.author.send("You do not have permission to use this command")
     await bot.tree.sync()
-    await msg.reply("Command Tree is synced, slash commands are updated")
+    await message.reply("Command Tree is synced, slash commands are updated")
+
 
 bot.run(DISCORD_TOKEN)
