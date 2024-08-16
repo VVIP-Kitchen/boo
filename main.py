@@ -1,6 +1,8 @@
 import discord
+
 from discord.ext import commands
-from llm.api import call_model, fetch_models
+
+from llm.api import call_model
 from utils.utils import handle_user_mentions, replace_emojis
 from utils.config import (
     CONTEXT_LIMIT,
@@ -27,7 +29,6 @@ async def on_ready():
             bot.custom_emojis[emoji.name] = emoji
 
     print(f"Loaded {len(bot.custom_emojis)} custom emojis.")
-
 
 @bot.event
 async def on_message(message):
@@ -90,7 +91,7 @@ async def greet(ctx):
     await ctx.send(f"{ctx.author} How can I assist you today?")
 
 
-@bot.command()
+bot.command()
 async def sync(message):
     if message.author.id not in ADMIN_LIST:
         message.author.send("You do not have permission to use this command")

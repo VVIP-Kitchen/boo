@@ -1,11 +1,8 @@
 import os
 import sys
 import pytz
-import pprint
 import datetime
 import collections
-
-from llm.api import fetch_models
 
 ### Read the environment variables and validate their existence. If not found, exit the program
 ADMIN_LIST = os.getenv("ADMIN_LIST")
@@ -19,13 +16,13 @@ CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 try:
     ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
 except ValueError:
-    print(f"Error: ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
+    print(f"[ERROR] ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
     sys.exit(1)
 
 try:
     CONTEXT_LIMIT = int(CONTEXT_LIMIT)
 except ValueError:
-    print(f"Error: CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
+    print(f"[ERROR] CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
     sys.exit(1)
 
 for var_name in [
@@ -34,25 +31,8 @@ for var_name in [
     "DISCORD_TOKEN",
 ]:
     if not globals()[var_name]:
-        print(f"Error: {var_name} environment variable is not set.")
+        print(f"[ERROR] {var_name} environment variable is not set.")
         sys.exit(1)
-
-
-try:
-    MODEL_NAME = str(MODEL_NAME)
-except ValueError:
-    print(f"[ERROR] MODEL_NAME must be a string, got: {MODEL_NAME}")
-    sys.exit(1)
-
-### Validate if the model name provided is actually supported by Cloudflare Workers AI
-### Full list of supported models here: https://developers.cloudflare.com/workers-ai/models/
-models = fetch_models()
-if MODEL_NAME not in models:
-    print(
-        f"[ERROR] Unsupported model name {MODEL_NAME}. Please use one of the following models:"
-    )
-    pprint.pprint(models)
-    sys.exit(1)
 
 
 def get_time_based_greeting():

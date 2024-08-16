@@ -1,8 +1,8 @@
 import requests
 from utils.config import (
+    MODEL_NAME,
     CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_WORKERS_AI_API_KEY,
-    MODEL_NAME,
 )
 
 
@@ -43,6 +43,7 @@ def fetch_models():
         result = response.json()
 
         for obj in result["result"]:
+            ### Hardcoding "meta" as of now to only use LLaMa 3 models
             if "meta" in obj["name"]:
                 models.append(obj["name"])
     except Exception as e:
