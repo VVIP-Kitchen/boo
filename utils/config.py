@@ -10,7 +10,7 @@ CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-MODEL_NAME = "@cf/meta/llama-3-8b-instruct-awq"
+MODEL_NAME = "@cf/meta/llama-3.1-8b-instruct-awq"
 
 
 try:
