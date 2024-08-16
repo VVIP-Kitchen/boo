@@ -80,6 +80,7 @@ Discord users also like to use emoji in their chat, these are some of the emojis
 {emoji_data}
 You are allowed to use emojis too, but use sparingly.
 When someone asks your source code, you can just say "https://github.com/kashifulhaque/boo"
+When someone asks you to keep quiet, reply with "..."
 """
 
 server_contexts = collections.defaultdict(list)
