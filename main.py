@@ -21,14 +21,14 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user} has connected to Discord!")
+    print(f"[INFO] {bot.user} has connected to Discord!")
 
     bot.custom_emojis = {}
     for guild in bot.guilds:
         for emoji in guild.emojis:
             bot.custom_emojis[emoji.name] = emoji
 
-    print(f"Loaded {len(bot.custom_emojis)} custom emojis.")
+    print(f"[INFO] Loaded {len(bot.custom_emojis)} custom emojis.")
 
 @bot.event
 async def on_message(message):
@@ -58,7 +58,7 @@ async def on_message(message):
 
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
-        await message.channel.send("Context reset! Starting a new conversation.")
+        await message.channel.send("Context reset! 🥸 Starting a new conversation. 👋")
         return
 
     prompt = handle_user_mentions(prompt, message)
@@ -75,9 +75,12 @@ async def on_message(message):
     )
     messages = [{"role": "system", "content": server_lore}] + server_contexts[server_id]
 
-    bot_response = call_model(messages)
-    bot_response_with_emojis = replace_emojis(bot_response, bot.custom_emojis)
-    server_contexts[server_id].append({"role": "assistant", "content": bot_response})
+    ### Start the typing indicator
+    async with message.channel.typing():
+        bot_response = call_model(messages)
+        bot_response_with_emojis = replace_emojis(bot_response, bot.custom_emojis)
+        server_contexts[server_id].append({"role": "assistant", "content": bot_response})
+
     await message.channel.send(bot_response_with_emojis, reference=message)
 
     ### Reset context if it gets too large
@@ -88,16 +91,16 @@ async def on_message(message):
 
 @bot.hybrid_command(name="greet", description="Greets the user")
 async def greet(ctx):
-    await ctx.send(f"{ctx.author} How can I assist you today?")
+    await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
 
 bot.command()
 async def sync(message):
     if message.author.id not in ADMIN_LIST:
-        message.author.send("You do not have permission to use this command")
+        message.author.send("You do not have permission to use this command ❌")
         return
     await bot.tree.sync()
-    await message.reply("Command Tree is synced, slash commands are updated")
+    await message.reply("Command Tree is synced, slash commands are updated ✔️")
 
 
 bot.run(DISCORD_TOKEN)

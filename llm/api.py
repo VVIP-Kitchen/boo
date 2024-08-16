@@ -19,16 +19,16 @@ def call_model(messages):
         bot_response = (
             bot_response
             if len(bot_response) != 0
-            else "Cloudflare Workers AI returned empty string. Change model maybe!"
+            else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
         )
     except requests.RequestException as e:
         print(f"API request failed: {e}")
         bot_response = (
-            "Sorry, I'm having trouble thinking right now. Can you try again later?"
+            "😔 Sorry, I'm having trouble thinking right now. Can you try again later?"
         )
     except KeyError:
         print("Unexpected API response format")
-        bot_response = "I'm a bit confused. Can you rephrase that?"
+        bot_response = "🤔 I'm a bit confused. Can you rephrase that?"
 
     return bot_response
 
