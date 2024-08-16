@@ -1,16 +1,19 @@
 import os
 import sys
 import pytz
+import pprint
 import datetime
 import collections
 
+from llm.api import fetch_models
+
 ### Read the environment variables and validate their existence. If not found, exit the program
 ADMIN_LIST = os.getenv("ADMIN_LIST")
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
+MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3-8b-instruct-awq")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-MODEL_NAME = "@cf/meta/llama-3-8b-instruct-awq"
 
 
 try:
@@ -33,6 +36,23 @@ for var_name in [
     if not globals()[var_name]:
         print(f"Error: {var_name} environment variable is not set.")
         sys.exit(1)
+
+
+try:
+    MODEL_NAME = str(MODEL_NAME)
+except ValueError:
+    print(f"[ERROR] MODEL_NAME must be a string, got: {MODEL_NAME}")
+    sys.exit(1)
+
+### Validate if the model name provided is actually supported by Cloudflare Workers AI
+### Full list of supported models here: https://developers.cloudflare.com/workers-ai/models/
+models = fetch_models()
+if MODEL_NAME not in models:
+    print(
+        f"[ERROR] Unsupported model name {MODEL_NAME}. Please use one of the following models:"
+    )
+    pprint.pprint(models)
+    sys.exit(1)
 
 
 def get_time_based_greeting():

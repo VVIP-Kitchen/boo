@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from llm.api import call_model
+from llm.api import call_model, fetch_models
 from utils.utils import handle_user_mentions, replace_emojis
 from utils.config import (
     CONTEXT_LIMIT,
@@ -20,6 +20,7 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 @bot.event
 async def on_ready():
     print(f"{bot.user} has connected to Discord!")
+
     bot.custom_emojis = {}
     for guild in bot.guilds:
         for emoji in guild.emojis:
