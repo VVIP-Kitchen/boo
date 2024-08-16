@@ -37,6 +37,10 @@ async def on_message(message):
     if len(prompt) == 0:
         return
 
+    if message.content.startswith(prefix):
+        await bot.process_commands(message)
+        return
+
     if message.guild is None:
         server_id = f"DM_{message.author.id}"  ### This is a DM
     else:
@@ -53,10 +57,6 @@ async def on_message(message):
     if "reset chat" in prompt.lower():
         server_contexts[server_id] = []
         await message.channel.send("Context reset! Starting a new conversation.")
-        return
-
-    if message.content.startswith(prefix):
-        await bot.process_commands(message)
         return
 
     prompt = handle_user_mentions(prompt, message)
