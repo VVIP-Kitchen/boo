@@ -30,6 +30,7 @@ async def on_ready():
 
     print(f"[INFO] Loaded {len(bot.custom_emojis)} custom emojis.")
 
+
 @bot.event
 async def on_message(message):
     if message.author.bot:
@@ -79,7 +80,9 @@ async def on_message(message):
     async with message.channel.typing():
         bot_response = call_model(messages)
         bot_response_with_emojis = replace_emojis(bot_response, bot.custom_emojis)
-        server_contexts[server_id].append({"role": "assistant", "content": bot_response})
+        server_contexts[server_id].append(
+            {"role": "assistant", "content": bot_response}
+        )
 
     await message.channel.send(bot_response_with_emojis, reference=message)
 
@@ -95,6 +98,8 @@ async def greet(ctx):
 
 
 bot.command()
+
+
 async def sync(message):
     if message.author.id not in ADMIN_LIST:
         message.author.send("You do not have permission to use this command ❌")
