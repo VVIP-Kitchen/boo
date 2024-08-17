@@ -1,9 +1,11 @@
+from services.llm_service import LLMService
 from discord.ext import commands
 from discord import File
 
 class GeneralCommands(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    self.llm_service = LLMService()
 
   @commands.hybrid_command(name="greet", description="Greets the user")
   async def greet(self, ctx):
