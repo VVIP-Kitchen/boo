@@ -1,6 +1,7 @@
-from services.llm_service import LLMService
-from discord.ext import commands
+import io
 from discord import File
+from discord.ext import commands
+from services.llm_service import LLMService
 
 
 class GeneralCommands(commands.Cog):
@@ -15,8 +16,19 @@ class GeneralCommands(commands.Cog):
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
   )
-  async def imagine(self, ctx, prompt):
-    await ctx.send(file=File(self.llm_service.generate_image(prompt), "output.png"))
+  async def imagine(self, ctx, *, prompt: str):
+    if ctx.interaction:
+      await ctx.defer()
+    else:
+      await ctx.typing()
+
+    result = self.llm_service.generate_image(prompt)
+
+    if isinstance(result, io.BytesIO):
+      file = File(result, "output.png")
+      await ctx.send(file=file)
+    else:
+      await ctx.send(result)
 
 
 async def setup(bot):
