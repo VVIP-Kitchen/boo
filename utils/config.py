@@ -13,7 +13,7 @@ CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3-8b-instruct-awq")
 IMAGE_MODEL_NAME = os.getenv(
-  "IMAGE_MODEL_NAME", "@cf/bytedance/stable-diffusion-xl-lightning"
+  "IMAGE_MODEL_NAME", "@cf/stabilityai/stable-diffusion-xl-base-1.0"
 )
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 PREFIX = "!@"
