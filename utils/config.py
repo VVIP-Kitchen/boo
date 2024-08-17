@@ -6,53 +6,52 @@ import collections
 
 ist = pytz.timezone("Asia/Kolkata")
 
-### Read the environment variables and validate their existence. If not found, exit the program
 ADMIN_LIST = os.getenv("ADMIN_LIST")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3-8b-instruct-awq")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
-
-
-try:
-    ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
-except ValueError:
-    print(f"[ERROR] ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
-    sys.exit(1)
+PREFIX = "!@"
 
 try:
-    CONTEXT_LIMIT = int(CONTEXT_LIMIT)
+  ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
 except ValueError:
-    print(f"[ERROR] CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
-    sys.exit(1)
+  print(f"[ERROR] ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
+  sys.exit(1)
+
+try:
+  CONTEXT_LIMIT = int(CONTEXT_LIMIT)
+except ValueError:
+  print(f"[ERROR] CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
+  sys.exit(1)
 
 for var_name in [
-    "CLOUDFLARE_ACCOUNT_ID",
-    "CLOUDFLARE_WORKERS_AI_API_KEY",
-    "DISCORD_TOKEN",
+  "CLOUDFLARE_ACCOUNT_ID",
+  "CLOUDFLARE_WORKERS_AI_API_KEY",
+  "DISCORD_TOKEN",
 ]:
-    if not globals()[var_name]:
-        print(f"[ERROR] {var_name} environment variable is not set.")
-        sys.exit(1)
+  if not globals()[var_name]:
+    print(f"[ERROR] {var_name} environment variable is not set.")
+    sys.exit(1)
 
 
 def get_time_based_greeting():
-    now = datetime.datetime.now(ist)
-    if 5 <= now.hour < 12:
-        return "Good morning"
-    elif 12 <= now.hour < 18:
-        return "Good afternoon"
-    elif 18 <= now.hour < 22:
-        return "Good evening"
-    else:
-        return "Hello"
+  now = datetime.datetime.now(ist)
+  if 5 <= now.hour < 12:
+    return "Good morning"
+  elif 12 <= now.hour < 18:
+    return "Good afternoon"
+  elif 18 <= now.hour < 22:
+    return "Good evening"
+  else:
+    return "Hello"
 
 
 server_lore = ""
-server_lore_file = "llm/prompts/system.txt"
+server_lore_file = "data/prompts/system.txt"
 with open(server_lore_file, "r") as file:
-    server_lore = file.read()
+  server_lore = file.read()
 
 now = datetime.datetime.now(ist)
 current_time = now.strftime("%H:%M:%S")
