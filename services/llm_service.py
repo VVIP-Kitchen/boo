@@ -40,7 +40,7 @@ class LLMService:
 
     return bot_response
 
-  def generate_image(payload):
+  def generate_image(self, payload):
     url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning"
     headers = {
       "Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}",
