@@ -53,11 +53,6 @@ class LLMService:
       response = requests.post(url, headers=headers, json=json)
       raw_bytes = response.content
       bot_response = io.BytesIO(raw_bytes)
-      bot_response = (
-        bot_response
-        if len(bot_response) != 0
-        else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
-      )
     except requests.RequestException as e:
       print(f"API request failed: {e}")
       bot_response = (
