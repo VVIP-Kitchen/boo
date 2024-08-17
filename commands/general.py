@@ -11,7 +11,7 @@ class GeneralCommands(commands.Cog):
 
   @commands.hybrid_command(name="imagine", description="Generates an image from a prompt")
   async def imagine(self, ctx, prompt):
-    await ctx.send(file=File(self.llm_service.generate_image(prompt)))
+    await ctx.send(file=File(self.llm_service.generate_image(prompt), 'output.png'))
 
 async def setup(bot):
   await bot.add_cog(GeneralCommands(bot))
