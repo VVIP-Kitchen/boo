@@ -1,4 +1,5 @@
 import requests
+from utils.logger import logger
 from utils.config import (
   MODEL_NAME,
   CLOUDFLARE_ACCOUNT_ID,
@@ -28,12 +29,12 @@ class LLMService:
         else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
       )
     except requests.RequestException as e:
-      print(f"API request failed: {e}")
+      logger.error(f"API request failed: {e}")
       bot_response = (
         "😔 Sorry, I'm having trouble thinking right now. Can you try again later?"
       )
     except KeyError:
-      print("Unexpected API response format")
+      logger.error("Unexpected API response format")
       bot_response = "🤔 I'm a bit confused. Can you rephrase that?"
 
     return bot_response
@@ -49,6 +50,6 @@ class LLMService:
         if "meta" in obj["name"]:
           models.append(obj["name"])
     except Exception as e:
-      print(str(e))
+      logger.error(str(e))
 
     return models
