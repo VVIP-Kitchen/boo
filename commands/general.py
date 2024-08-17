@@ -6,18 +6,43 @@ from utils.config import server_contexts, user_memory
 
 
 class GeneralCommands(commands.Cog):
-  def __init__(self, bot):
+  """
+  Cog for general-purpose commands.
+  """
+
+  def __init__(self, bot: commands.Bot) -> None:
+    """
+    Initialize the GeneralCommands cog.
+
+    Args:
+      bot (commands.Bot): The Discord bot instance.
+    """
+
     self.bot = bot
     self.llm_service = LLMService()
 
   @commands.hybrid_command(name="greet", description="Greets the user")
-  async def greet(self, ctx):
+  async def greet(self, ctx: commands.Context) -> None:
+    """
+    Greet the user who invoked the command.
+
+    Args:
+      ctx (commands.Context): The invocation context.
+    """
     await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
   )
-  async def imagine(self, ctx, *, prompt: str):
+  async def imagine(self, ctx: commands.Context, *, prompt: str) -> None:
+    """
+    Generate an image based on the given prompt.
+
+    Args:
+      ctx (commands.Context): The invocation context.
+      prompt (str): The prompt for image generation.
+    """
+
     if ctx.interaction:
       await ctx.defer()
     else:
@@ -74,5 +99,12 @@ class GeneralCommands(commands.Cog):
       )
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot) -> None:
+  """
+  Setup function to add the GeneralCommands cog to the bot.
+
+  Args:
+    bot (commands.Bot): The Discord bot instance.
+  """
+
   await bot.add_cog(GeneralCommands(bot))

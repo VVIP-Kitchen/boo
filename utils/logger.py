@@ -1,7 +1,18 @@
 import logging
+from typing import Any
 
 
-def setup_logger():
+def setup_logger() -> logging.Logger:
+  """
+  Set up and configure a logger for the Discord bot.
+
+  This function creates a logger with the name "discord_bot", sets its
+  level to INFO, and adds a StreamHandler with a specific format.
+
+  Returns:
+      logging.Logger: A configured logger instance.
+  """
+
   logger = logging.getLogger("discord_bot")
   logger.setLevel(logging.INFO)
   handler = logging.StreamHandler()
@@ -11,4 +22,5 @@ def setup_logger():
   return logger
 
 
-logger = setup_logger()
+### Create a global logger instance
+logger: Any = setup_logger()
