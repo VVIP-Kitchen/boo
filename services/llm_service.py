@@ -40,33 +40,35 @@ class LLMService:
 
     return bot_response
 
-    def generate_image(payload):
-      url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning"
-      headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}",
-                 "Content-Type": "application/json"}
-      json = {"payload": payload}
-      bot_response = ""
+  def generate_image(payload):
+    url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning"
+    headers = {
+      "Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}",
+      "Content-Type": "application/json",
+    }
+    json = {"payload": payload}
+    bot_response = ""
 
-      try:
-          response = requests.post(url, headers=headers, json=json)
-          raw_bytes = response.content
-          bot_response = io.BytesIO(raw_bytes)
-          bot_response = (
-              bot_response
-              if len(bot_response) != 0
-              else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
-          )
-      except requests.RequestException as e:
-          print(f"API request failed: {e}")
-          bot_response = (
-              "😔 Sorry, I'm having trouble thinking right now. Can you try again later?"
-          )
-      except KeyError:
-          print("Unexpected API response format")
-          bot_response = "🤔 I'm a bit confused. Can you rephrase that?"
-  
-      return bot_response
-  
+    try:
+      response = requests.post(url, headers=headers, json=json)
+      raw_bytes = response.content
+      bot_response = io.BytesIO(raw_bytes)
+      bot_response = (
+        bot_response
+        if len(bot_response) != 0
+        else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
+      )
+    except requests.RequestException as e:
+      print(f"API request failed: {e}")
+      bot_response = (
+        "😔 Sorry, I'm having trouble thinking right now. Can you try again later?"
+      )
+    except KeyError:
+      print("Unexpected API response format")
+      bot_response = "🤔 I'm a bit confused. Can you rephrase that?"
+
+    return bot_response
+
   def fetch_models(self):
     models = []
 
