@@ -3,11 +3,30 @@ from utils.config import ADMIN_LIST
 
 
 class AdminCommands(commands.Cog):
-  def __init__(self, bot):
+  """
+  Cog for administrative commands.
+  """
+
+  def __init__(self, bot: commands.Bot) -> None:
+    """
+    Initialize the AdminCommands cog.
+
+    Args:
+      bot (commands.Bot): The Discord bot instance.
+    """
     self.bot = bot
 
   @commands.command()
-  async def sync(self, ctx):
+  async def sync(self, ctx: commands.Context) -> None:
+    """
+    Synchronize the command tree for slash commands.
+
+    This command can only be used by users in the ADMIN_LIST.
+
+    Args:
+      ctx (commands.Context): The invocation context.
+    """
+
     if ctx.author.id not in ADMIN_LIST:
       await ctx.author.send("You do not have permission to use this command ❌")
       return
@@ -15,5 +34,11 @@ class AdminCommands(commands.Cog):
     await ctx.reply("Command Tree is synced, slash commands are updated ✔️")
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot) -> None:
+  """
+  Setup function to add the AdminCommands cog to the bot.
+
+  Args:
+    bot (commands.Bot): The Discord bot instance.
+  """
   await bot.add_cog(AdminCommands(bot))
