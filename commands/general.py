@@ -1,5 +1,5 @@
 from discord.ext import commands
-
+from discord import File
 
 class GeneralCommands(commands.Cog):
   def __init__(self, bot):
@@ -9,6 +9,9 @@ class GeneralCommands(commands.Cog):
   async def greet(self, ctx):
     await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
+  @commands.hybrid_command(name="imagine", description="Generates an image from a prompt")
+  async def imagine(self, ctx, prompt):
+    await ctx.send(file=File(self.llm_service.generate_image(prompt)))
 
 async def setup(bot):
   await bot.add_cog(GeneralCommands(bot))
