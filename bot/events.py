@@ -5,8 +5,8 @@ from utils.logger import logger
 from discord.ext import commands
 from services.llm_service import LLMService
 from utils.emoji_utils import replace_emojis
-from utils.message_utils import handle_user_mentions, is_direct_reply
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
+from utils.message_utils import handle_user_mentions, is_direct_reply, build_context
 
 
 class BotEvents(commands.Cog):
@@ -23,10 +23,9 @@ class BotEvents(commands.Cog):
     """
 
     self.bot = bot
+    self.channel_name = "chat"
     self.llm_service = LLMService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
-    self.channel_name = "chat"
-    self.guilds = []
 
   @commands.Cog.listener()
   async def on_ready(self) -> None:
@@ -37,9 +36,6 @@ class BotEvents(commands.Cog):
     self.bot.custom_emojis = {
       emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
     }
-    self.guilds = [{guild.id: guild.emojis} for guild in self.bot.guilds]
-    print(self.guilds)
-
     logger.info(f"Loaded {len(self.bot.custom_emojis)} custom emojis.")
 
   @commands.Cog.listener()
@@ -60,6 +56,11 @@ class BotEvents(commands.Cog):
       await self.bot.process_commands(message)
       return
 
+    if "reset chat" in prompt.lower():
+      server_contexts[server_id] = []
+      await message.channel.send(self.context_reset_message)
+      return
+
     ### Either get the server ID or get the author ID (in case of a DM)
     server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
 
@@ -76,11 +77,6 @@ class BotEvents(commands.Cog):
           "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
         )
         return
-
-    if "reset chat" in prompt.lower():
-      server_contexts[server_id] = []
-      await message.channel.send(self.context_reset_message)
-      return
 
     ### Build the context
     prompt = handle_user_mentions(prompt, message)
@@ -106,7 +102,6 @@ class BotEvents(commands.Cog):
 
   @commands.Cog.listener()
   async def on_raw_message_delete(self, payload):
-    print(payload)
     # PREPROCESSING TO CHECK IF THE DELETED MESSAGE IS SAME AS THE ONE SENT BY NQN
     test_id = payload.channel_id
     test_content = payload.cached_message.content

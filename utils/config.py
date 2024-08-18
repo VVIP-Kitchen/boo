@@ -23,9 +23,7 @@ PREFIX = "!@"
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
 except ValueError:
-  logger.error(
-    f"ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}"
-  )
+  logger.error(f"ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}")
   sys.exit(1)
 
 try:
