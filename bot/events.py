@@ -6,7 +6,7 @@ from discord.ext import commands
 from services.llm_service import LLMService
 from utils.emoji_utils import replace_emojis
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
-from utils.message_utils import handle_user_mentions, is_direct_reply, build_context
+from utils.message_utils import handle_user_mentions, is_direct_reply
 
 
 class BotEvents(commands.Cog):
