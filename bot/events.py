@@ -33,10 +33,10 @@ class BotEvents(commands.Cog):
     Event listener for when the bot is ready and connected.
     """
     logger.info(f"{self.bot.user} has connected to Discord!")
-    self.bot.custom_emojis = {
+    self.custom_emojis = {
       emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
     }
-    logger.info(f"Loaded {len(self.bot.custom_emojis)} custom emojis.")
+    logger.info(f"Loaded {len(self.custom_emojis)} custom emojis.")
 
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
@@ -91,7 +91,7 @@ class BotEvents(commands.Cog):
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
-      bot_response_with_emojis = replace_emojis(bot_response, self.bot.custom_emojis)
+      bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
     await message.channel.send(bot_response_with_emojis, reference=message)
 
@@ -158,7 +158,7 @@ class BotEvents(commands.Cog):
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
-      bot_response_with_emojis = replace_emojis(bot_response, self.bot.custom_emojis)
+      bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
     await message.channel.send(bot_response_with_emojis, reference=message)
 
