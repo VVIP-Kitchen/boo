@@ -104,7 +104,7 @@ class BotEvents(commands.Cog):
       await message.channel.send(self.context_reset_message)
 
   @commands.Cog.listener()
-  async def on_raw_message_delete(payload):
+  async def on_raw_message_delete(self,payload):
       # PREPROCESSING TO CHECK IF THE DELETED MESSAGE IS SAME AS THE ONE SENT BY NQN
       test_id =  payload.channel_id
       test_content = payload.cached_message.content
