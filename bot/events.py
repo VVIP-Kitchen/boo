@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+import re
 from utils.logger import logger
 from services.llm_service import LLMService
 from utils.emoji_utils import replace_emojis
