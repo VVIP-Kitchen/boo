@@ -10,7 +10,7 @@ A quirky chatter bot for Discord servers (currently serving VVIP Kitchen)
 6. Install dependencies and run
 
 ```sh
-git clone git@github.com:kashifulhaque/boo.git;
+git clone git@github.com:VVIP-Kitchen/boo.git;
 cd boo;
 python3 -m venv .venv; source .venv/bin/activate; # OPTIONAL, but recommended
 python -m pip install -r requirements.txt;
@@ -20,7 +20,7 @@ python main.py;
 ## **Deploy**
 > **Make sure you have docker installed and env vars setup as described in setting up dev environment section above**
 ```sh
-git clone https://github.com/kashifulhaque/boo.git;
+git clone https://github.com/VVIP-Kitchen/boo.git;
 cd boo;
 docker compose up --build -d;
 ```
