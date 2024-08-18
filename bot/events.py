@@ -114,6 +114,7 @@ class BotEvents(commands.Cog):
       messages = [message async for message in channel.history(limit=1) if message.author.bot]
       message=messages[0]
       message.content=re.sub(r"<[A-Za-z_0-9]*\:[A-Za-z_0-9]*\:[0-9]*>",match_object,message.content)
+      message.author.bot=False
       if not message.content==test_content:
         return
     
