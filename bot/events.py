@@ -114,6 +114,8 @@ class BotEvents(commands.Cog):
       messages = [message async for message in channel.history(limit=1) if message.author.bot]
       message=messages[0]
       message.content=re.sub(r"<[A-Za-z_0-9]*\:[A-Za-z_0-9]*\:[0-9]*>",match_object,message.content)
+      if not message.content==test_content:
+        return
     
       prompt = message.content.strip()
       server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
