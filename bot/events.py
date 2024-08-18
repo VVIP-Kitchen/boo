@@ -108,7 +108,7 @@ class BotEvents(commands.Cog):
       # PREPROCESSING TO CHECK IF THE DELETED MESSAGE IS SAME AS THE ONE SENT BY NQN
       test_id =  payload.channel_id
       test_content = payload.cached_message.content
-      channel = bot.get_channel(test_id)
+      channel = self.bot.get_channel(test_id)
       def match_object(matchobj):
           return re.search(r"\:.*\:",matchobj.group(0)).group(0)
       messages = [message async for message in channel.history(limit=1) if message.author.bot]
