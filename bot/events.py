@@ -26,6 +26,7 @@ class BotEvents(commands.Cog):
     self.llm_service = LLMService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
     self.channel_name = "chat"
+    self.guilds = []
 
   @commands.Cog.listener()
   async def on_ready(self) -> None:
@@ -36,6 +37,9 @@ class BotEvents(commands.Cog):
     self.bot.custom_emojis = {
       emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
     }
+    self.guilds = [{guild.id: guild.emojis} for guild in self.bot.guilds]
+    print(self.guilds)
+
     logger.info(f"Loaded {len(self.bot.custom_emojis)} custom emojis.")
 
   @commands.Cog.listener()
