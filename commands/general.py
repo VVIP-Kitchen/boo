@@ -42,7 +42,6 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
       prompt (str): The prompt for image generation.
     """
-    prompt = str(prompt)
     if ctx.interaction:
       await ctx.defer()
     else:
