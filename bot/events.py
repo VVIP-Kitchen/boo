@@ -66,13 +66,15 @@ class BotEvents(commands.Cog):
       )
       is_mention = self.bot.user in message.mentions
       if (
-        not (is_direct_reply or is_mention) or message.channel.name != self.channel_name
+        not (is_direct_reply or is_mention)
       ):
-        ctx = await self.bot.get_context(message)
-        await ctx.send(
+        return
+        if message.channel.name != self.channel_name:
+          ctx = await self.bot.get_context(message)
+          await ctx.send(
           "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
         )
-        return
+          return
 
     if "reset chat" in prompt.lower():
       server_contexts[server_id] = []
