@@ -1,5 +1,6 @@
 from typing import List
 from discord import Message, Member
+from discord.ext import commands
 
 
 def handle_user_mentions(prompt: str, message: Message) -> str:
@@ -27,3 +28,11 @@ def handle_user_mentions(prompt: str, message: Message) -> str:
       prompt = prompt.replace(f"<@{user_id}>", f"{username}")
 
   return prompt
+
+
+def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
+  return (
+    message.reference
+    and message.reference.resolved
+    and message.reference.resolved.author == bot.user
+  )

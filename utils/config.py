@@ -24,14 +24,14 @@ try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
 except ValueError:
   logger.error(
-    f"[ERROR] ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}"
+    f"ADMIN_LIST must contain only integers and comma. Got: {ADMIN_LIST}"
   )
   sys.exit(1)
 
 try:
   CONTEXT_LIMIT = int(CONTEXT_LIMIT)
 except ValueError:
-  logger.error(f"[ERROR] CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
+  logger.error(f"CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
   sys.exit(1)
 
 for var_name in [
@@ -40,7 +40,7 @@ for var_name in [
   "DISCORD_TOKEN",
 ]:
   if not globals()[var_name]:
-    logger.error(f"[ERROR] {var_name} environment variable is not set.")
+    logger.error(f"{var_name} environment variable is not set.")
     sys.exit(1)
 
 
