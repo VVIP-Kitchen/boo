@@ -28,3 +28,13 @@ def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
       if emoji_name in custom_emojis:
         words[i] = str(custom_emojis[emoji_name])
   return " ".join(words)
+def replace_sticker(text:str):
+  words = text.split()
+  sticker_list=[]
+  for i,word in enumerate(words):
+    if word.startswith("&") and word.endswith("&"):
+      sticker_name = word.split(';')[1]
+      sticker_list.append(sticker_name)
+
+      words[i] = ""
+  return " ".join(words), sticker_list
