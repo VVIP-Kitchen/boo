@@ -50,14 +50,16 @@ class BotEvents(commands.Cog):
     ### Don't process the message if it's authored by a bot or is empty
     prompt = message.content.strip()
     
-    for sticker in message.stickers:
-      prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
+    
       
     if message.author.bot or len(prompt) == 0:
       if not message.author.bot and message.stickers:
         message.channel.reply(stickers=message.stickers)
       return
-
+      
+    for sticker in message.stickers:
+      prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
+      
     if message.content.startswith(PREFIX):
       await self.bot.process_commands(message)
       return
