@@ -28,7 +28,7 @@ def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
       if emoji_name in custom_emojis:
         words[i] = str(custom_emojis[emoji_name])
   return " ".join(words)
-def replace_sticker(text:str):
+def replace_stickers(text:str):
   words = text.split()
   sticker_list=[]
   for i,word in enumerate(words):
