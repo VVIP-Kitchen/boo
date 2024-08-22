@@ -54,7 +54,7 @@ class BotEvents(commands.Cog):
       prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
       
     if message.author.bot or len(prompt) == 0:
-      if message.stickers:
+      if message.author.bot and message.stickers:
         message.channel.reply(stickers=message.stickers)
       return
 
