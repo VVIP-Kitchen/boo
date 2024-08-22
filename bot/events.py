@@ -54,7 +54,7 @@ class BotEvents(commands.Cog):
       
     if message.author.bot or len(prompt) == 0:
       if not message.author.bot and message.stickers:
-        message.channel.reply(stickers=message.stickers)
+        message.channel.send(stickers=message.stickers, reference=message)
       return
       
     for sticker in message.stickers:
