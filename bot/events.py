@@ -96,9 +96,9 @@ class BotEvents(commands.Cog):
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
-      bot_response_with_stickers, stickerlist = replace_stickers(bot_response_with_emojis)
-      stickerlist = [await self.bot.fetch_sticker(int(sticker)) for sticker in stickerlist]
-      if not stickerlist:
+      bot_response_with_stickers, sticker_list = replace_stickers(bot_response_with_emojis)
+      sticker_list = [await self.bot.fetch_sticker(int(sticker)) for sticker in sticker_list]
+      if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
     await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
