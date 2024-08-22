@@ -49,6 +49,10 @@ class BotEvents(commands.Cog):
 
     ### Don't process the message if it's authored by a bot or is empty
     prompt = message.content.strip()
+    
+    for sticker in message.stickers:
+      prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
+      
     if message.author.bot or len(prompt) == 0:
       return
 
