@@ -53,6 +53,19 @@ class BotEvents(commands.Cog):
     
       
     if message.author.bot or len(prompt) == 0:
+      if message.guild is not None:
+      is_reply = is_direct_reply(message, self.bot)
+      is_mention = self.bot.user in message.mentions
+
+      if not (is_reply or is_mention):
+        return
+
+      if message.channel.name != self.channel_name:
+        ctx = await self.bot.get_context(message)
+        await ctx.send(
+          "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+        )
+        return
       if not message.author.bot and message.stickers:
         await message.channel.send(stickers=message.stickers, reference=message)
       return
