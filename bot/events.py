@@ -4,7 +4,7 @@ import discord
 from utils.logger import logger
 from discord.ext import commands
 from services.llm_service import LLMService
-from utils.emoji_utils import replace_emojis
+from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
 from utils.message_utils import handle_user_mentions, is_direct_reply
 
@@ -96,8 +96,11 @@ class BotEvents(commands.Cog):
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
+      bot_response_with_stickers, stickerlist = replace_stickers(bot_response_with_emojis)
+      if not stickerlist:
+        sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.send(bot_response_with_emojis, reference=message)
+    await message.channel.send(bot_response_with_stickers, reference=message,sticker=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
