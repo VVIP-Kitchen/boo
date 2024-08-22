@@ -33,8 +33,8 @@ def replace_stickers(text:str):
   sticker_list=[]
   for i,word in enumerate(words):
     if word.startswith("&") and word.endswith("&"):
-      sticker_name = word.split(';')[1]
-      sticker_list.append(sticker_name)
+      sticker_id = word.split(';')[1]
+      sticker_list.append(sticker_id)
 
       words[i] = ""
   return " ".join(words), sticker_list
