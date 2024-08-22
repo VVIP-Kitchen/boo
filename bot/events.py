@@ -100,7 +100,7 @@ class BotEvents(commands.Cog):
       if not stickerlist:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.send(bot_response_with_stickers, reference=message,sticker=sticker_list)
+    await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
