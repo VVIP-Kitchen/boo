@@ -80,6 +80,16 @@ class BotEvents(commands.Cog):
     ### Either get the server ID or get the author ID (in case of a DM)
     server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
 
+    server_lore[server_id] = ""
+    server_lore_file = f"data/prompts/{server_id}.txt"
+    with open(server_lore_file, "r") as file:
+      server_lore[server_id] = file.read()
+    
+    now = datetime.datetime.now(ist)
+    current_time = now.strftime("%H:%M:%S")
+    current_day = now.strftime("%A")
+    server_lore[server_id] += f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+
     if "reset chat" in prompt.lower():
       server_contexts[server_id] = []
       await message.channel.send(self.context_reset_message)
@@ -107,7 +117,7 @@ class BotEvents(commands.Cog):
         "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
       }
     )
-    messages = [{"role": "system", "content": server_lore}] + server_contexts[server_id]
+    messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
@@ -178,7 +188,7 @@ class BotEvents(commands.Cog):
         "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
       }
     )
-    messages = [{"role": "system", "content": server_lore}] + server_contexts[server_id]
+    messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
