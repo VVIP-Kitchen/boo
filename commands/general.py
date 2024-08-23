@@ -29,7 +29,10 @@ class GeneralCommands(commands.Cog):
     Args:
       ctx (commands.Context): The invocation context.
     """
-    await ctx.send(f"{ctx.author} How can I assist you today? 👀")
+    if ctx.channel.name == "chat":
+      await ctx.send(f"{ctx.author} How can I assist you today? 👀")
+    else:
+      await ctx.send(f"{ctx.author} How can I assist you today? 👀", ephemeral=True)
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
@@ -47,6 +50,10 @@ class GeneralCommands(commands.Cog):
     else:
       await ctx.typing()
 
+    if ctx.channel.name != "chat":
+      await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
+      return
+    
     result = self.llm_service.generate_image(prompt)
     server_id = f"DM_{ctx.author.id}" if ctx.guild is None else ctx.guild.id
     user_id = str(ctx.author.id)
