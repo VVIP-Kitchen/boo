@@ -7,7 +7,7 @@ from discord.ext import commands
 from services.llm_service import LLMService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
-from utils.message_utils import handle_user_mentions, is_direct_reply
+from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
 
 ist = pytz.timezone("Asia/Kolkata")
 
@@ -130,7 +130,10 @@ class BotEvents(commands.Cog):
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
+    if len(bot_response) > 2000:
+      await message.channel.send(file=text_to_file(bot_response))
+    else:
+      await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
