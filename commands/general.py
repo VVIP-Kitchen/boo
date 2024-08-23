@@ -32,7 +32,7 @@ class GeneralCommands(commands.Cog):
     if ctx.channel.name == "chat":
       await ctx.send(f"{ctx.author} How can I assist you today? 👀")
     else:
-      await ctx.send(f"{ctx.author} How can I assist you today? 👀", ephemeral=True)
+      await ctx.send(f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk", ephemeral=True)
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
