@@ -1,4 +1,3 @@
-import io
 from typing import List
 from discord import Message, Member, File
 from discord.ext import commands
@@ -39,4 +38,4 @@ def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
   )
 
 def text_to_file(bot_response):
-  return File(io.StringIO(bot_response),"output.txt")
+  return File(bytes(bot_response,"utf-8"),"output.txt")
