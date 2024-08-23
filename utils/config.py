@@ -54,15 +54,6 @@ def get_time_based_greeting():
     return "Hello"
 
 
-server_lore = ""
-server_lore_file = "data/prompts/system.txt"
-with open(server_lore_file, "r") as file:
-  server_lore = file.read()
-
-now = datetime.datetime.now(ist)
-current_time = now.strftime("%H:%M:%S")
-current_day = now.strftime("%A")
-server_lore += f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
-
+server_lore = collections.defaultdict(str)
 server_contexts = collections.defaultdict(list)
 user_memory = collections.defaultdict(dict)
