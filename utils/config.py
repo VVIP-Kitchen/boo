@@ -54,6 +54,6 @@ def get_time_based_greeting():
     return "Hello"
 
 
-server_lore = collections.defaultdict(list)
+server_lore = collections.defaultdict(str)
 server_contexts = collections.defaultdict(list)
 user_memory = collections.defaultdict(dict)
