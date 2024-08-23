@@ -38,4 +38,4 @@ def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
   )
 
 def text_to_file(bot_response):
-  return File(bytes(bot_response,"utf-8"),"output.txt")
+  return File(bytes(bot_response,"utf-8"),filename="output.txt")
