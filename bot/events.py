@@ -1,4 +1,5 @@
 import re
+import pytz
 import discord
 import datetime
 from utils.logger import logger
@@ -8,6 +9,7 @@ from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
 from utils.message_utils import handle_user_mentions, is_direct_reply
 
+ist = pytz.timezone("Asia/Kolkata")
 
 class BotEvents(commands.Cog):
   """
