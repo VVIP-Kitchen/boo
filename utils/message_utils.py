@@ -1,5 +1,6 @@
+import io
 from typing import List
-from discord import Message, Member
+from discord import Message, Member, File
 from discord.ext import commands
 
 
@@ -36,3 +37,6 @@ def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
     and message.reference.resolved
     and message.reference.resolved.author == bot.user
   )
+
+def text_to_file(bot_response):
+  return File(io.BytesIO(bot_response),"output.txt")
