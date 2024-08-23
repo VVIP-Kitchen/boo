@@ -45,11 +45,12 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
       prompt (str): The prompt for image generation.
     """
+    if ctx.channel.name != "chat":
+      await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
+      return
+      
     if ctx.interaction:
       await ctx.defer()
-      if ctx.channel.name != "chat":
-        await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
-        return
     else:
       await ctx.typing()
 
