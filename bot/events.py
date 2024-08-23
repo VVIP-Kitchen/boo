@@ -84,8 +84,12 @@ class BotEvents(commands.Cog):
 
     server_lore[server_id] = ""
     server_lore_file = f"data/prompts/{server_id}.txt"
-    with open(server_lore_file, "r") as file:
-      server_lore[server_id] = file.read()
+    try:
+      with open(server_lore_file, "r") as file:
+        server_lore[server_id] = file.read()
+    except:
+      with open("data/prompts/default_prompt.txt","r") as file:
+        server_lore[server_id] = file.read()
     
     now = datetime.datetime.now(ist)
     current_time = now.strftime("%H:%M:%S")
