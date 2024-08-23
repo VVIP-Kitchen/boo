@@ -47,6 +47,9 @@ class GeneralCommands(commands.Cog):
     """
     if ctx.interaction:
       await ctx.defer()
+      if ctx.channel.name != "chat":
+        await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
+        return
     else:
       await ctx.typing()
 
