@@ -68,10 +68,14 @@ class BotEvents(commands.Cog):
             await ctx.send(
               "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
             )
+          except:
+            logger.info(f"Error occured while sending message")
           return
       if not message.author.bot and message.stickers:
         try:
           await message.channel.send(stickers=message.stickers, reference=message)
+        except:
+            logger.info(f"Error occured while sending message")
       return
       
     for sticker in message.stickers:
@@ -116,6 +120,8 @@ class BotEvents(commands.Cog):
           await ctx.send(
             "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
           )
+        except:
+            logger.info(f"Error occured while sending message")
         return
 
     ### Build the context
@@ -138,7 +144,7 @@ class BotEvents(commands.Cog):
         try:
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
         except:
-          pass
+          logger.info(f"Error occured while fetching sticker")
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
@@ -147,6 +153,8 @@ class BotEvents(commands.Cog):
     else:
       try:
         await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
+      except:
+            logger.info(f"Error occured while sending message")
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
@@ -192,10 +200,14 @@ class BotEvents(commands.Cog):
             await ctx.send(
               "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
             )
+          except:
+            logger.info(f"Error occured while sending message")
           return
       if not message.author.bot and message.stickers:
         try:
           await message.channel.send(stickers=message.stickers, reference=message)
+        except:
+            logger.info(f"Error occured while sending message")
       return
       
     for sticker in message.stickers:
@@ -245,6 +257,8 @@ class BotEvents(commands.Cog):
           await ctx.send(
             "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
           )
+        except:
+            logger.info(f"Error occured while sending message")
         return
 
     ### Build the context
@@ -267,7 +281,7 @@ class BotEvents(commands.Cog):
         try:
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
         except:
-          pass
+          logger.info(f"Error occured while fetching stickers")
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
@@ -276,6 +290,8 @@ class BotEvents(commands.Cog):
     else:
       try:
         await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
+      except:
+            logger.info(f"Error occured while sending message")
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
