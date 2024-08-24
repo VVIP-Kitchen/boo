@@ -11,6 +11,7 @@ from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_f
 
 ist = pytz.timezone("Asia/Kolkata")
 
+
 class BotEvents(commands.Cog):
   """
   Cog for handling Discord bot events.
@@ -51,26 +52,22 @@ class BotEvents(commands.Cog):
 
     ### Don't process the message if it's authored by a bot or is empty
     prompt = message.content.strip()
-    
-    
-      
+
     if message.author.bot or len(prompt) == 0:
       if message.guild is not None:
         is_reply = is_direct_reply(message, self.bot)
         is_mention = self.bot.user in message.mentions
-  
+
         if not (is_reply or is_mention):
           return
-  
+
         if message.channel.name != self.channel_name:
           ctx = await self.bot.get_context(message)
-          try:
-            await ctx.send(
-              "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-            )
-          except:
-            logger.info(f"Error occured while sending message")
-            return
+          await ctx.send(
+            "Ping me in <#1272840978277072918> to talk",
+            ephemeral=True,
+            reference=message,
+          )
           return
       if not message.author.bot and message.stickers:
         try:
@@ -79,10 +76,10 @@ class BotEvents(commands.Cog):
           logger.info(f"Error occured while sending message")
           return
       return
-      
+
     for sticker in message.stickers:
       prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
-      
+
     if message.content.startswith(PREFIX):
       await self.bot.process_commands(message)
       return
@@ -96,13 +93,15 @@ class BotEvents(commands.Cog):
       with open(server_lore_file, "r") as file:
         server_lore[server_id] = file.read()
     except:
-      with open("data/prompts/default_prompt.txt","r") as file:
+      with open("data/prompts/default_prompt.txt", "r") as file:
         server_lore[server_id] = file.read()
-    
+
     now = datetime.datetime.now(ist)
     current_time = now.strftime("%H:%M:%S")
     current_day = now.strftime("%A")
-    server_lore[server_id] += f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+    server_lore[server_id] += (
+      f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+    )
 
     if "reset chat" in prompt.lower():
       server_contexts[server_id] = []
@@ -135,14 +134,16 @@ class BotEvents(commands.Cog):
         "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
       }
     )
-    messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
+    messages = [
+      {"role": "system", "content": server_lore[server_id]}
+    ] + server_contexts[server_id]
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
-      sticker_list=[]
+      sticker_list = []
       for sticker in test_list:
         try:
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
@@ -155,11 +156,9 @@ class BotEvents(commands.Cog):
     if len(bot_response_with_stickers) > 1800:
       await message.channel.send(file=text_to_file(bot_response_with_stickers))
     else:
-      try:
-        await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
-      except:
-        logger.info(f"Error occured while sending message")
-        return
+      await message.channel.send(
+        bot_response_with_stickers, reference=message, stickers=sticker_list
+      )
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
@@ -172,6 +171,9 @@ class BotEvents(commands.Cog):
     test_id = payload.channel_id
     test_content = payload.cached_message.content
     channel = self.bot.get_channel(test_id)
+    ctx = await self.bot.get_context(payload.cached_message)
+    await ctx.send("Ha! :eyes:")
+    return
 
     def match_object(matchobj):
       return re.search(r"\:.*\:", matchobj.group(0)).group(0)
@@ -179,7 +181,7 @@ class BotEvents(commands.Cog):
     messages = [
       message async for message in channel.history(limit=5) if message.author.bot
     ]
-    message=messages[-1]
+    message = messages[-1]
     message.content = re.sub(
       r"<[A-Za-z_0-9]*\:[A-Za-z_0-9]*\:[0-9]*>", match_object, message.content
     )
@@ -188,26 +190,22 @@ class BotEvents(commands.Cog):
 
     pmsg = payload.cached_message
     prompt = payload.cached_message.content.strip()
-    
-    
-      
+
     if pmsg.author.bot or len(prompt) == 0:
       if message.guild is not None:
         is_reply = is_direct_reply(message, self.bot)
         is_mention = self.bot.user in message.mentions
-  
+
         if not (is_reply or is_mention):
           return
-  
+
         if message.channel.name != self.channel_name:
           ctx = await self.bot.get_context(message)
-          try:
-            await ctx.send(
-              "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-            )
-          except:
-            logger.info(f"Error occured while sending message")
-            return
+          await ctx.send(
+            "Ping me in <#1272840978277072918> to talk",
+            ephemeral=True,
+            reference=message,
+          )
           return
       if not message.author.bot and message.stickers:
         try:
@@ -215,14 +213,14 @@ class BotEvents(commands.Cog):
         except:
             logger.info(f"Error occured while sending message")
       return
-      
+
     for sticker in message.stickers:
       prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
-      
+
     if message.content.startswith(PREFIX):
       ctx = await bot.get_context(pmsg)
       for check_command in self.bot.commands:
-        test_text=ctx.message.content.split()
+        test_text = ctx.message.content.split()
         if check_command.name in test_text[0]:
           ctx.command = check_command
           await self.bot.invoke(ctx)
@@ -237,13 +235,15 @@ class BotEvents(commands.Cog):
       with open(server_lore_file, "r") as file:
         server_lore[server_id] = file.read()
     except:
-      with open("data/prompts/default_prompt.txt","r") as file:
+      with open("data/prompts/default_prompt.txt", "r") as file:
         server_lore[server_id] = file.read()
-    
+
     now = datetime.datetime.now(ist)
     current_time = now.strftime("%H:%M:%S")
     current_day = now.strftime("%A")
-    server_lore[server_id] += f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+    server_lore[server_id] += (
+      f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+    )
 
     if "reset chat" in prompt.lower():
       server_contexts[server_id] = []
@@ -276,14 +276,16 @@ class BotEvents(commands.Cog):
         "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
       }
     )
-    messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
+    messages = [
+      {"role": "system", "content": server_lore[server_id]}
+    ] + server_contexts[server_id]
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
-      sticker_list=[]
+      sticker_list = []
       for sticker in test_list:
         try:
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
@@ -296,11 +298,9 @@ class BotEvents(commands.Cog):
     if len(bot_response) > 2000:
       await message.channel.send(file=text_to_file(bot_response))
     else:
-      try:
-        await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
-      except:
-        logger.info(f"Error occured while sending message")
-        return
+      await message.channel.send(
+        bot_response_with_stickers, reference=message, stickers=sticker_list
+      )
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:

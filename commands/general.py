@@ -33,7 +33,10 @@ class GeneralCommands(commands.Cog):
       if ctx.channel.name == "chat":
         await ctx.send(f"{ctx.author} How can I assist you today? 👀")
       else:
-        await ctx.send(f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk", ephemeral=True)
+        await ctx.send(
+          f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk",
+          ephemeral=True,
+        )
     else:
       await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
@@ -51,12 +54,12 @@ class GeneralCommands(commands.Cog):
     if ctx.guild is not None and ctx.channel.name != "chat":
       await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
       return
-      
+
     if ctx.interaction:
       await ctx.defer()
     else:
       await ctx.typing()
-    
+
     result = self.llm_service.generate_image(prompt)
     server_id = f"DM_{ctx.author.id}" if ctx.guild is None else ctx.guild.id
     user_id = str(ctx.author.id)

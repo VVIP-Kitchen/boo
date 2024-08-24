@@ -38,5 +38,6 @@ def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
     and message.reference.resolved.author == bot.user
   )
 
+
 def text_to_file(bot_response):
-  return File(io.BytesIO(str.encode(bot_response,"utf-8")),filename="output.txt")
+  return File(io.BytesIO(str.encode(bot_response, "utf-8")), filename="output.txt")
