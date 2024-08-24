@@ -139,8 +139,8 @@ class BotEvents(commands.Cog):
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    if len(bot_response) > 1800:
-      await message.channel.send(file=text_to_file(bot_response))
+    if len(bot_response_with_stickers) > 1800:
+      await message.channel.send(file=text_to_file(bot_response_with_stickers))
     else:
       await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
