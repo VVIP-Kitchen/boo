@@ -169,7 +169,7 @@ class BotEvents(commands.Cog):
     if not message.content == test_content:
       return
 
-    prompt = prompt.cached_message.content.strip()
+    prompt = cached_message.content.strip()
     
     
       
