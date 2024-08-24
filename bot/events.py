@@ -130,7 +130,12 @@ class BotEvents(commands.Cog):
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, sticker_list = replace_stickers(bot_response_with_emojis)
-      sticker_list = [await self.bot.fetch_sticker(int(sticker)) for sticker in sticker_list]
+      sticker_list=[]
+      for sticker in sticker_list:
+        try:
+          sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
+        except:
+          pass
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
