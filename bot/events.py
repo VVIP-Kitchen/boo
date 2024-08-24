@@ -119,7 +119,9 @@ class BotEvents(commands.Cog):
         ctx = await self.bot.get_context(message)
         try:
           await ctx.send(
-            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+            "Ping me in <#1272840978277072918> to talk",
+            ephemeral=True,
+            reference=message,
           )
         except:
           logger.info(f"Error occured while sending message")
@@ -156,9 +158,13 @@ class BotEvents(commands.Cog):
     if len(bot_response_with_stickers) > 1800:
       await message.channel.send(file=text_to_file(bot_response_with_stickers))
     else:
-      await message.channel.send(
-        bot_response_with_stickers, reference=message, stickers=sticker_list
-      )
+      print(message if message is not None else "deleteddddd")
+      if message is not None:
+        await message.channel.send(
+          bot_response_with_stickers, reference=message, stickers=sticker_list
+        )
+      else:
+        await message.channel.send(bot_response_with_stickers, stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
@@ -172,8 +178,6 @@ class BotEvents(commands.Cog):
     test_content = payload.cached_message.content
     channel = self.bot.get_channel(test_id)
     ctx = await self.bot.get_context(payload.cached_message)
-    await ctx.send("Ha! :eyes:")
-    return
 
     def match_object(matchobj):
       return re.search(r"\:.*\:", matchobj.group(0)).group(0)
@@ -211,7 +215,7 @@ class BotEvents(commands.Cog):
         try:
           await message.channel.send(stickers=message.stickers, reference=message)
         except:
-            logger.info(f"Error occured while sending message")
+          logger.info(f"Error occured while sending message")
       return
 
     for sticker in message.stickers:
@@ -261,7 +265,9 @@ class BotEvents(commands.Cog):
         ctx = await self.bot.get_context(message)
         try:
           await ctx.send(
-            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+            "Ping me in <#1272840978277072918> to talk",
+            ephemeral=True,
+            reference=message,
           )
         except:
           logger.info(f"Error occured while sending message")
@@ -296,11 +302,9 @@ class BotEvents(commands.Cog):
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
     if len(bot_response) > 2000:
-      await message.channel.send(file=text_to_file(bot_response))
+      await ctx.send(file=text_to_file(bot_response))
     else:
-      await message.channel.send(
-        bot_response_with_stickers, reference=message, stickers=sticker_list
-      )
+      await ctx.send(bot_response_with_stickers, stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
