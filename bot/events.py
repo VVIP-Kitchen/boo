@@ -168,8 +168,8 @@ class BotEvents(commands.Cog):
     )
     if not message.content == test_content:
       return
-
-    prompt = cached_message.content.strip()
+    message=payload.cached_message
+    prompt = message.content.strip()
     
     
       
