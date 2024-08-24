@@ -64,12 +64,14 @@ class BotEvents(commands.Cog):
   
         if message.channel.name != self.channel_name:
           ctx = await self.bot.get_context(message)
-          await ctx.send(
-            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-          )
+          try:
+            await ctx.send(
+              "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+            )
           return
       if not message.author.bot and message.stickers:
-        await message.channel.send(stickers=message.stickers, reference=message)
+        try:
+          await message.channel.send(stickers=message.stickers, reference=message)
       return
       
     for sticker in message.stickers:
@@ -110,9 +112,10 @@ class BotEvents(commands.Cog):
 
       if message.channel.name != self.channel_name:
         ctx = await self.bot.get_context(message)
-        await ctx.send(
-          "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-        )
+        try:
+          await ctx.send(
+            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+          )
         return
 
     ### Build the context
@@ -142,7 +145,8 @@ class BotEvents(commands.Cog):
     if len(bot_response_with_stickers) > 1800:
       await message.channel.send(file=text_to_file(bot_response_with_stickers))
     else:
-      await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
+      try:
+        await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
@@ -184,12 +188,14 @@ class BotEvents(commands.Cog):
   
         if message.channel.name != self.channel_name:
           ctx = await self.bot.get_context(message)
-          await ctx.send(
-            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-          )
+          try:
+            await ctx.send(
+              "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+            )
           return
       if not message.author.bot and message.stickers:
-        await message.channel.send(stickers=message.stickers, reference=message)
+        try:
+          await message.channel.send(stickers=message.stickers, reference=message)
       return
       
     for sticker in message.stickers:
@@ -235,9 +241,10 @@ class BotEvents(commands.Cog):
 
       if message.channel.name != self.channel_name:
         ctx = await self.bot.get_context(message)
-        await ctx.send(
-          "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
-        )
+        try:
+          await ctx.send(
+            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+          )
         return
 
     ### Build the context
@@ -267,7 +274,8 @@ class BotEvents(commands.Cog):
     if len(bot_response) > 2000:
       await message.channel.send(file=text_to_file(bot_response))
     else:
-      await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
+      try:
+        await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
