@@ -160,20 +160,21 @@ class BotEvents(commands.Cog):
       return re.search(r"\:.*\:", matchobj.group(0)).group(0)
 
     messages = [
-      message async for message in channel.history(limit=1) if message.author.bot
+      message async for message in channel.history(limit=5) if message.author.bot
     ]
-    message = messages[0]
+    message=messages[-1]
     message.content = re.sub(
       r"<[A-Za-z_0-9]*\:[A-Za-z_0-9]*\:[0-9]*>", match_object, message.content
     )
     if not message.content == test_content:
       return
-    message=payload.cached_message
-    prompt = message.content.strip()
+
+    pmsg = payload.cached_message
+    prompt = payload.cached_message.content.strip()
     
     
       
-    if message.author.bot or len(prompt) == 0:
+    if pmsg.author.bot or len(prompt) == 0:
       if message.guild is not None:
         is_reply = is_direct_reply(message, self.bot)
         is_mention = self.bot.user in message.mentions
