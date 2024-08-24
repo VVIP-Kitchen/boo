@@ -148,6 +148,7 @@ class BotEvents(commands.Cog):
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
         except:
           logger.info(f"Error occured while fetching sticker")
+          return
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
@@ -157,7 +158,8 @@ class BotEvents(commands.Cog):
       try:
         await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
       except:
-            logger.info(f"Error occured while sending message")
+        logger.info(f"Error occured while sending message")
+        return
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
@@ -205,6 +207,7 @@ class BotEvents(commands.Cog):
             )
           except:
             logger.info(f"Error occured while sending message")
+            return
           return
       if not message.author.bot and message.stickers:
         try:
@@ -261,7 +264,8 @@ class BotEvents(commands.Cog):
             "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
           )
         except:
-            logger.info(f"Error occured while sending message")
+          logger.info(f"Error occured while sending message")
+          return
         return
 
     ### Build the context
@@ -285,6 +289,7 @@ class BotEvents(commands.Cog):
           sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
         except:
           logger.info(f"Error occured while fetching stickers")
+          return
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
@@ -294,7 +299,8 @@ class BotEvents(commands.Cog):
       try:
         await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
       except:
-            logger.info(f"Error occured while sending message")
+        logger.info(f"Error occured while sending message")
+        return
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
