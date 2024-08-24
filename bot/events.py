@@ -139,7 +139,7 @@ class BotEvents(commands.Cog):
       if not sticker_list:
         sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    if len(bot_response) > 2000:
+    if len(bot_response) > 1800:
       await message.channel.send(file=text_to_file(bot_response))
     else:
       await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
@@ -196,7 +196,7 @@ class BotEvents(commands.Cog):
       prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
       
     if message.content.startswith(PREFIX):
-      ctx = await bot.get_context(payload.cached_message)
+      ctx = await bot.get_context(pmsg)
       for check_command in self.bot.commands:
         test_text=ctx.message.content.split()
         if check_command.name in test_text[0]:
