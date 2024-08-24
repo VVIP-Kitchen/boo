@@ -70,12 +70,14 @@ class BotEvents(commands.Cog):
             )
           except:
             logger.info(f"Error occured while sending message")
+            return
           return
       if not message.author.bot and message.stickers:
         try:
           await message.channel.send(stickers=message.stickers, reference=message)
         except:
-            logger.info(f"Error occured while sending message")
+          logger.info(f"Error occured while sending message")
+          return
       return
       
     for sticker in message.stickers:
@@ -121,7 +123,8 @@ class BotEvents(commands.Cog):
             "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
           )
         except:
-            logger.info(f"Error occured while sending message")
+          logger.info(f"Error occured while sending message")
+          return
         return
 
     ### Build the context
