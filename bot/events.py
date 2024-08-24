@@ -166,33 +166,78 @@ class BotEvents(commands.Cog):
     message.content = re.sub(
       r"<[A-Za-z_0-9]*\:[A-Za-z_0-9]*\:[0-9]*>", match_object, message.content
     )
-    message.author.bot = False
     if not message.content == test_content:
       return
 
-    prompt = message.content.strip()
+    prompt = prompt.cached_message.content.strip()
+    
+    
+      
+    if message.author.bot or len(prompt) == 0:
+      if message.guild is not None:
+        is_reply = is_direct_reply(message, self.bot)
+        is_mention = self.bot.user in message.mentions
+  
+        if not (is_reply or is_mention):
+          return
+  
+        if message.channel.name != self.channel_name:
+          ctx = await self.bot.get_context(message)
+          await ctx.send(
+            "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
+          )
+          return
+      if not message.author.bot and message.stickers:
+        await message.channel.send(stickers=message.stickers, reference=message)
+      return
+      
+    for sticker in message.stickers:
+      prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
+      
+    if message.content.startswith(PREFIX):
+      ctx = await bot.get_context(payload.cached_message)
+      for check_command in self.bot.commands:
+        test_text=ctx.message.content.split()
+        if check_command.name in test_text[0]:
+          ctx.command = check_command
+          await self.bot.invoke(ctx)
+      return
+
+    ### Either get the server ID or get the author ID (in case of a DM)
     server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
 
+    server_lore[server_id] = ""
+    server_lore_file = f"data/prompts/{server_id}.txt"
+    try:
+      with open(server_lore_file, "r") as file:
+        server_lore[server_id] = file.read()
+    except:
+      with open("data/prompts/default_prompt.txt","r") as file:
+        server_lore[server_id] = file.read()
+    
+    now = datetime.datetime.now(ist)
+    current_time = now.strftime("%H:%M:%S")
+    current_day = now.strftime("%A")
+    server_lore[server_id] += f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+
+    if "reset chat" in prompt.lower():
+      server_contexts[server_id] = []
+      await message.channel.send(self.context_reset_message)
+      return
+
     if message.guild is not None:
-      is_direct_reply = (
-        message.reference
-        and message.reference.resolved
-        and message.reference.resolved.author == self.bot.user
-      )
+      is_reply = is_direct_reply(message, self.bot)
       is_mention = self.bot.user in message.mentions
-      if not (is_direct_reply or is_mention):
+
+      if not (is_reply or is_mention):
         return
+
       if message.channel.name != self.channel_name:
         ctx = await self.bot.get_context(message)
         await ctx.send(
           "Ping me in <#1272840978277072918> to talk", ephemeral=True, reference=message
         )
         return
-
-    if "reset chat" in prompt.lower():
-      server_contexts[server_id] = []
-      await message.channel.send(self.context_reset_message)
-      return
 
     ### Build the context
     prompt = handle_user_mentions(prompt, message)
@@ -208,8 +253,20 @@ class BotEvents(commands.Cog):
     async with message.channel.typing():
       bot_response = self.llm_service.call_model(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
+      bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
+      sticker_list=[]
+      for sticker in test_list:
+        try:
+          sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
+        except:
+          pass
+      if not sticker_list:
+        sticker_list = None
       server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    await message.channel.send(bot_response_with_emojis, reference=message)
+    if len(bot_response) > 2000:
+      await message.channel.send(file=text_to_file(bot_response))
+    else:
+      await message.channel.send(bot_response_with_stickers, reference=message,stickers=sticker_list)
 
     ### Reset the context if the conversation gets too long
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
