@@ -29,10 +29,13 @@ class GeneralCommands(commands.Cog):
     Args:
       ctx (commands.Context): The invocation context.
     """
-    if ctx.channel.name == "chat":
-      await ctx.send(f"{ctx.author} How can I assist you today? 👀")
+    if ctx.guild is not None:
+      if ctx.channel.name == "chat":
+        await ctx.send(f"{ctx.author} How can I assist you today? 👀")
+      else:
+        await ctx.send(f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk", ephemeral=True)
     else:
-      await ctx.send(f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk", ephemeral=True)
+      await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
