@@ -119,7 +119,7 @@ class GeneralCommands(commands.Cog):
     Args:
       ctx (commands.Context): The invocation context.
     """
-    await ctx.send(f"SKIBIDI 😍\n https://youtu.be/smQ57m7mjSU")
+    await ctx.send(f"SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
     
 
 
