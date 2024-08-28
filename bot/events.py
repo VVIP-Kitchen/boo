@@ -158,7 +158,6 @@ class BotEvents(commands.Cog):
     if len(bot_response_with_stickers) > 1800:
       await message.channel.send(file=text_to_file(bot_response_with_stickers))
     else:
-      print(message if message is not None else "deleteddddd")
       if message is not None:
         await message.channel.send(
           bot_response_with_stickers, reference=message, stickers=sticker_list
