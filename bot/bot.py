@@ -17,13 +17,13 @@ class DiscordBot(commands.Bot):
     intents.members = True
     intents.message_content = True
     super().__init__(command_prefix=PREFIX, intents=intents, owners=set(ADMIN_LIST)) 
-
-   async def is_owner(self, user: discord.User):
-      if user.id in self.owners:
-        return True
+  
+  async def is_owner(self, user: discord.User):
+    if user.id in self.owners:
+      return True
 
       # Else fall back to the original
-      return await super().is_owner(user)
+    return await super().is_owner(user)
 
   async def setup_hook(self) -> None:
     """
