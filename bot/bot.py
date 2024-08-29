@@ -19,7 +19,7 @@ class DiscordBot(commands.Bot):
     super().__init__(command_prefix=PREFIX, intents=intents, owner_ids=set(ADMIN_LIST)) 
   
   async def is_owner(self, user: discord.User):
-    if user.id in self.owners:
+    if user.id in self.owner_ids:
       return True
 
       # Else fall back to the original
