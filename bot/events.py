@@ -80,10 +80,6 @@ class BotEvents(commands.Cog):
     for sticker in message.stickers:
       prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
 
-    if message.content.startswith(PREFIX):
-      await self.bot.process_commands(message)
-      return
-
     ### Either get the server ID or get the author ID (in case of a DM)
     server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
 
