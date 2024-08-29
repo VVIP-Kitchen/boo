@@ -1,5 +1,4 @@
 from discord.ext import commands
-from utils.config import ADMIN_LIST
 
 
 class AdminCommands(commands.Cog):
@@ -27,7 +26,7 @@ class AdminCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
     """
 
-    if ctx.author.id not in ADMIN_LIST:
+    if not is_owner(ctx.author):
       await ctx.author.send("You do not have permission to use this command ❌")
       return
     await self.bot.tree.sync()
