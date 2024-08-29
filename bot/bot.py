@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from utils.config import DISCORD_TOKEN, PREFIX
+from utils.config import DISCORD_TOKEN, PREFIX, ADMIN_LIST
+
 
 
 class DiscordBot(commands.Bot):
@@ -15,7 +16,7 @@ class DiscordBot(commands.Bot):
     intents = discord.Intents.default()
     intents.members = True
     intents.message_content = True
-    super().__init__(command_prefix=PREFIX, intents=intents)
+    super().__init__(command_prefix=PREFIX, intents=intents, owners=set(ADMIN_LIST))
 
   async def setup_hook(self) -> None:
     """
@@ -26,6 +27,7 @@ class DiscordBot(commands.Bot):
     await self.load_extension("bot.events")
     await self.load_extension("commands.general")
     await self.load_extension("commands.admin")
+    await self.load_extension("jishaku")
 
   def run(self) -> None:
     """
