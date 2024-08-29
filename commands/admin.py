@@ -26,7 +26,7 @@ class AdminCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
     """
 
-    if not await is_owner(ctx.author):
+    if not await self.bot.is_owner(ctx.author):
       await ctx.author.send("You do not have permission to use this command ❌")
       return
     await self.bot.tree.sync()
