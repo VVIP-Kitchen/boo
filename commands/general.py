@@ -109,7 +109,7 @@ class GeneralCommands(commands.Cog):
           "content": f"There was an error generating the image for the prompt: '{prompt}'. The error message was: {result}",
         }
       )
-      
+
   @commands.cooldown(10, 60)
   @commands.hybrid_command(name="skibidi", description="You are my skibidi")
   async def skibidi(self, ctx: commands.Context) -> None:
@@ -120,7 +120,6 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
     """
     await ctx.send(f"SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
-    
 
 
 async def setup(bot: commands.Bot) -> None:
