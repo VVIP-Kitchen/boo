@@ -3,7 +3,6 @@ from discord.ext import commands
 from utils.config import DISCORD_TOKEN, PREFIX, ADMIN_LIST
 
 
-
 class DiscordBot(commands.Bot):
   """
   Custom Discord bot class that extends commands.Bot.
@@ -16,8 +15,8 @@ class DiscordBot(commands.Bot):
     intents = discord.Intents.default()
     intents.members = True
     intents.message_content = True
-    super().__init__(command_prefix=PREFIX, intents=intents, owner_ids=set(ADMIN_LIST)) 
-  
+    super().__init__(command_prefix=PREFIX, intents=intents, owner_ids=set(ADMIN_LIST))
+
   async def is_owner(self, user: discord.User):
     if user.id in self.owner_ids:
       return True
