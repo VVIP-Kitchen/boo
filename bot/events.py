@@ -50,6 +50,7 @@ class BotEvents(commands.Cog):
       message (discord.Message): The incoming Discord message.
     """
     prompt = message.content.strip()
+    prompt = handle_user_mentions(prompt, message)
 
     if message.author.bot:
       if message.guild is not None:
@@ -123,6 +124,7 @@ class BotEvents(commands.Cog):
         return
 
     ### Handle image input
+    analysis = ""
     async with message.channel.typing():
       if message.attachments:
         for attachment in message.attachments:
@@ -146,15 +148,18 @@ class BotEvents(commands.Cog):
               {"role": "assistant", "content": f"Image analysis: {analysis}"}
             )
 
-            await message.channel.send(analysis, reference=message)
-            return
+            if len(prompt) == 0:
+              await message.channel.send(analysis, reference=message)
+              return
 
     ### Build the context
-    prompt = handle_user_mentions(prompt, message)
     server_contexts[server_id].append(
       {
         "role": "user",
-        "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}",
+        "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+        + ""
+        if len(analysis) == 0
+        else " for the image: " + analysis,
       }
     )
     messages = [

@@ -137,8 +137,6 @@ class WorkersService:
     Returns:
         str: The analysis result or error message.
     """
-    prompt = prompt if len(prompt) != 0 else "Describe this image"
-
     try:
       ### If image is a URL, fetch it
       if isinstance(image, str):
