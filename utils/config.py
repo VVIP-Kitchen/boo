@@ -13,7 +13,7 @@ ist = pytz.timezone("Asia/Kolkata")
 ### Environment Variables
 ADMIN_LIST = os.getenv("ADMIN_LIST")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
+CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 30)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 
