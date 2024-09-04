@@ -5,6 +5,8 @@ import datetime
 import collections
 from utils.logger import logger
 
+PREFIX = "!@"
+
 ### Timezone config: India Standard Time
 ist = pytz.timezone("Asia/Kolkata")
 
@@ -13,12 +15,15 @@ ADMIN_LIST = os.getenv("ADMIN_LIST")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 50)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
+CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
+
 MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3-8b-instruct-awq")
 IMAGE_MODEL_NAME = os.getenv(
   "IMAGE_MODEL_NAME", "@cf/stabilityai/stable-diffusion-xl-base-1.0"
 )
-CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
-PREFIX = "!@"
+IMAGE_DESCRIPTION_MODEL_NAME = os.getenv(
+  "IMAGE_DESCRIPTION_MODEL_NAME", "@cf/llava-hf/llava-1.5-7b-hf"
+)
 
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]

@@ -1,12 +1,12 @@
-import re
+import io
 import pytz
 import discord
 import datetime
 from utils.logger import logger
 from discord.ext import commands
-from services.llm_service import LLMService
+from services.llm_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
-from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
+from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
 
 ist = pytz.timezone("Asia/Kolkata")
@@ -27,7 +27,7 @@ class BotEvents(commands.Cog):
 
     self.bot = bot
     self.channel_name = "chat"
-    self.llm_service = LLMService()
+    self.llm_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
 
   @commands.Cog.listener()
@@ -49,11 +49,9 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
-
-    ### Don't process the message if it's authored by a bot or is empty
     prompt = message.content.strip()
 
-    if message.author.bot or len(prompt) == 0:
+    if message.author.bot:
       if message.guild is not None:
         is_reply = is_direct_reply(message, self.bot)
         is_mention = self.bot.user in message.mentions
@@ -124,6 +122,33 @@ class BotEvents(commands.Cog):
           return
         return
 
+    ### Handle image input
+    async with message.channel.typing():
+      if message.attachments:
+        for attachment in message.attachments:
+          if attachment.content_type.startswith("image"):
+            image_url = attachment.url
+            image_prompt = (
+              f"Analyze this image. {prompt}"
+              if prompt
+              else "Generate a caption for this image"
+            )
+
+            analysis = self.llm_service.analyze_image(image_url, image_prompt)
+
+            server_contexts[server_id].append(
+              {
+                "role": "user",
+                "content": f"{message.author.name} (aka {message.author.display_name}) sent an image with the message: {prompt}",
+              }
+            )
+            server_contexts[server_id].append(
+              {"role": "assistant", "content": f"Image analysis: {analysis}"}
+            )
+
+            await message.channel.send(analysis, reference=message)
+            return
+
     ### Build the context
     prompt = handle_user_mentions(prompt, message)
     server_contexts[server_id].append(
@@ -138,7 +163,7 @@ class BotEvents(commands.Cog):
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
-      bot_response = self.llm_service.call_model(messages)
+      bot_response = self.llm_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
       sticker_list = []
@@ -165,6 +190,7 @@ class BotEvents(commands.Cog):
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
       server_contexts[server_id] = []
       await message.channel.send(self.context_reset_message)
+
 
 async def setup(bot: commands.Bot) -> None:
   """
