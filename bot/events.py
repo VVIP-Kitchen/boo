@@ -1,3 +1,4 @@
+import io
 import pytz
 import discord
 import datetime
@@ -48,11 +49,9 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
-
-    ### Don't process the message if it's authored by a bot or is empty
     prompt = message.content.strip()
 
-    if message.author.bot or len(prompt) == 0:
+    if message.author.bot:
       if message.guild is not None:
         is_reply = is_direct_reply(message, self.bot)
         is_mention = self.bot.user in message.mentions
@@ -123,6 +122,33 @@ class BotEvents(commands.Cog):
           return
         return
 
+    ### Handle image input
+    async with message.channel.typing():
+      if message.attachments:
+        for attachment in message.attachments:
+          if attachment.content_type.startswith("image"):
+            image_url = attachment.url
+            image_prompt = (
+              f"Analyze this image. {prompt}"
+              if prompt
+              else "Generate a caption for this image"
+            )
+
+            analysis = self.llm_service.analyze_image(image_url, image_prompt)
+
+            server_contexts[server_id].append(
+              {
+                "role": "user",
+                "content": f"{message.author.name} (aka {message.author.display_name}) sent an image with the message: {prompt}",
+              }
+            )
+            server_contexts[server_id].append(
+              {"role": "assistant", "content": f"Image analysis: {analysis}"}
+            )
+
+            await message.channel.send(analysis, reference=message)
+            return
+
     ### Build the context
     prompt = handle_user_mentions(prompt, message)
     server_contexts[server_id].append(
@@ -164,6 +190,7 @@ class BotEvents(commands.Cog):
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
       server_contexts[server_id] = []
       await message.channel.send(self.context_reset_message)
+
 
 async def setup(bot: commands.Bot) -> None:
   """
