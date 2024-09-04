@@ -1,12 +1,11 @@
-import re
 import pytz
 import discord
 import datetime
 from utils.logger import logger
 from discord.ext import commands
-from services.llm_service import LLMService
+from services.llm_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
-from utils.config import CONTEXT_LIMIT, server_contexts, server_lore, PREFIX
+from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
 
 ist = pytz.timezone("Asia/Kolkata")
@@ -27,7 +26,7 @@ class BotEvents(commands.Cog):
 
     self.bot = bot
     self.channel_name = "chat"
-    self.llm_service = LLMService()
+    self.llm_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
 
   @commands.Cog.listener()
@@ -138,7 +137,7 @@ class BotEvents(commands.Cog):
 
     ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
-      bot_response = self.llm_service.call_model(messages)
+      bot_response = self.llm_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
       sticker_list = []

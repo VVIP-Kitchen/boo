@@ -10,7 +10,7 @@ from utils.config import (
 )
 
 
-class LLMService:
+class WorkersService:
   """
   Service for interacting with language and image generation models.
   """
@@ -25,7 +25,7 @@ class LLMService:
     self.model_search_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/models/search"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
 
-  def call_model(self, messages: List[Dict[str, str]]) -> str:
+  def chat_completions(self, messages: List[Dict[str, str]]) -> str:
     """
     Call the language model with given messages.
 

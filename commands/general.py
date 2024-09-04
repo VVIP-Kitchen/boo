@@ -1,7 +1,7 @@
 import io
 from discord import File
 from discord.ext import commands
-from services.llm_service import LLMService
+from services.llm_service import WorkersService
 from utils.config import server_contexts, user_memory
 
 
@@ -19,7 +19,7 @@ class GeneralCommands(commands.Cog):
     """
 
     self.bot = bot
-    self.llm_service = LLMService()
+    self.llm_service = WorkersService()
 
   @commands.hybrid_command(name="greet", description="Greets the user")
   async def greet(self, ctx: commands.Context) -> None:
