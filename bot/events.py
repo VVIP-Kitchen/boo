@@ -1,4 +1,3 @@
-import io
 import pytz
 import discord
 import datetime
@@ -29,17 +28,16 @@ class BotEvents(commands.Cog):
     self.channel_name = "chat"
     self.llm_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
+    self.custom_emojis = {}
 
   @commands.Cog.listener()
   async def on_ready(self) -> None:
     """
     Event listener for when the bot is ready and connected.
     """
+
     logger.info(f"{self.bot.user} has connected to Discord!")
-    self.custom_emojis = {
-      emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
-    }
-    logger.info(f"Loaded {len(self.custom_emojis)} custom emojis.")
+    self._load_custom_emojis()
 
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
@@ -49,149 +47,178 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
-    prompt = message.content.strip()
-    prompt = handle_user_mentions(prompt, message)
+    if self._should_ignore_message(message):
+      return
+    
+    prompt = self._prepare_prompt(message)
+    server_id = self._get_server_id(message)
+    self._load_server_lore(server_id)
 
-    if message.author.bot:
-      if message.guild is not None:
-        is_reply = is_direct_reply(message, self.bot)
-        is_mention = self.bot.user in message.mentions
-
-        if not (is_reply or is_mention):
-          return
-
-        if message.channel.name != self.channel_name:
-          ctx = await self.bot.get_context(message)
-          await ctx.send(
-            "Ping me in <#1272840978277072918> to talk",
-            ephemeral=True,
-            reference=message,
-          )
-          return
-      if not message.author.bot and message.stickers:
-        try:
-          await message.channel.send(stickers=message.stickers, reference=message)
-        except:
-          logger.info(f"Error occured while sending message")
-          return
+    if "reset chat" in prompt.lower():
+      await self._reset_chat(message, server_id)
       return
 
+    if message.guild is not None and not self._is_valid_channel(message):
+      await self._send_channel_redirect(message)
+      return
+    
+    analysis = await self._handle_image_input(message, prompt, server_id)
+    await self._process_message(message, prompt, server_id, analysis)
+
+  def _load_custom_emojis(self) -> None:
+    self.custom_emojis = {
+      emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
+    }
+    logger.info(f"Loaded {len(self.custom_emojis)} custom emojis.")
+
+  def _is_bot_mentioned(self, message: discord.Message) -> bool:
+    if message.guild is None:
+      return True
+    return is_direct_reply(message, self.bot) or self.bot.user in message.mentions
+
+  def _should_ignore_message(self, message: discord.Message) -> bool:
+    if message.author.bot:
+      return True
+    
+    ### Always respond to DMs
+    if message.guild is None:
+      return False
+    
+    is_correct_channel = message.channel.name == self.channel_name
+    is_mentioned = self.bot.user in message.mentions
+    is_reply = is_direct_reply(message, self.bot)
+    return not (is_correct_channel and (is_mentioned or is_reply))
+
+  def _prepare_prompt(self, message: discord.Message) -> str:
+    prompt = handle_user_mentions(message.content.strip(), message)
     for sticker in message.stickers:
-      prompt = prompt + f"&{sticker.name};{sticker.id};{sticker.url}&"
+      prompt += f"&{sticker.name};{sticker.id};{sticker.url}&"
+    return prompt
 
-    ### Either get the server ID or get the author ID (in case of a DM)
-    server_id = f"DM_{message.author.id}" if message.guild is None else message.guild.id
+  def _get_server_id(self, message: discord.Message) -> str:
+    return f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
 
+  def _load_server_lore(self, server_id: str) -> None:
     server_lore[server_id] = ""
     server_lore_file = f"data/prompts/{server_id}.txt"
+
     try:
       with open(server_lore_file, "r") as file:
         server_lore[server_id] = file.read()
-    except:
+    except FileNotFoundError:
       with open("data/prompts/default_prompt.txt", "r") as file:
         server_lore[server_id] = file.read()
 
     now = datetime.datetime.now(ist)
-    current_time = now.strftime("%H:%M:%S")
-    current_day = now.strftime("%A")
     server_lore[server_id] += (
-      f"\n\nCurrent Time: {current_time}\nToday is: {current_day}"
+      f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
     )
 
-    if "reset chat" in prompt.lower():
-      server_contexts[server_id] = []
-      await message.channel.send(self.context_reset_message)
-      return
+  async def _reset_chat(self, message: discord.Message, server_id: str) -> None:
+    server_contexts[server_id] = []
+    await message.channel.send(self.context_reset_message)
 
-    if message.guild is not None:
-      is_reply = is_direct_reply(message, self.bot)
-      is_mention = self.bot.user in message.mentions
+  def _is_valid_channel(self, message: discord.Message) -> bool:
+    return message.channel.name == self.channel_name
 
-      if not (is_reply or is_mention):
-        return
+  async def _send_channel_redirect(self, message: discord.Message) -> None:
+    ctx = await self.bot.get_context(message)
 
-      if message.channel.name != self.channel_name:
-        ctx = await self.bot.get_context(message)
-        try:
-          await ctx.send(
-            "Ping me in <#1272840978277072918> to talk",
-            ephemeral=True,
-            reference=message,
-          )
-        except:
-          logger.info(f"Error occured while sending message")
-          return
-        return
+    try:
+      await ctx.send(
+        "Ping me in <#1272840978277072918> to talk",
+        ephemeral=True,
+        reference=message,
+      )
+    except discord.errors.HTTPException:
+      logger.info("Error occurred while sending message")
 
-    ### Handle image input
+  async def _handle_image_input(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> str:
     analysis = ""
     async with message.channel.typing():
-      if message.attachments:
-        for attachment in message.attachments:
-          if attachment.content_type.startswith("image"):
-            image_url = attachment.url
-            image_prompt = (
-              f"Analyze this image. {prompt}"
-              if prompt
-              else "Generate a caption for this image"
-            )
+      for attachment in message.attachments:
+        if attachment.content_type.startswith("image"):
+          image_url = attachment.url
+          image_prompt = (
+            f"Analyze this image. {prompt}"
+            if prompt
+            else "Generate a caption for this image"
+          )
+          analysis = self.llm_service.analyze_image(image_url, image_prompt)
+          self._add_image_context(message, prompt, analysis, server_id)
+          if not prompt:
+            await message.channel.send(analysis, reference=message)
+            return ""
+    return analysis
 
-            analysis = self.llm_service.analyze_image(image_url, image_prompt)
-
-            server_contexts[server_id].append(
-              {
-                "role": "user",
-                "content": f"{message.author.name} (aka {message.author.display_name}) sent an image with the message: {prompt}",
-              }
-            )
-            server_contexts[server_id].append(
-              {"role": "assistant", "content": f"Image analysis: {analysis}"}
-            )
-
-            if len(prompt) == 0:
-              await message.channel.send(analysis, reference=message)
-              return
-
-    ### Build the context
+  def _add_image_context(
+    self, message: discord.Message, prompt: str, analysis: str, server_id: str
+  ) -> None:
     server_contexts[server_id].append(
       {
         "role": "user",
-        "content": f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
-        + ""
-        if len(analysis) == 0
-        else " for the image: " + analysis,
+        "content": f"{message.author.name} (aka {message.author.display_name}) sent an image with the message: {prompt}",
       }
     )
+    server_contexts[server_id].append(
+      {"role": "assistant", "content": f"Image analysis: {analysis}"}
+    )
+
+  async def _process_message(
+    self, message: discord.Message, prompt: str, server_id: str, analysis: str
+  ) -> None:
+    self._add_user_context(message, prompt, analysis, server_id)
     messages = [
       {"role": "system", "content": server_lore[server_id]}
     ] + server_contexts[server_id]
 
-    ### While the typing ... indicator is showing up, process the user input and generate a response
     async with message.channel.typing():
       bot_response = self.llm_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
-      bot_response_with_stickers, test_list = replace_stickers(bot_response_with_emojis)
-      sticker_list = []
-      for sticker in test_list:
-        try:
-          sticker_list.append(await self.bot.fetch_sticker(int(sticker)))
-        except:
-          logger.info(f"Error occured while fetching sticker")
-          return
-      if not sticker_list:
-        sticker_list = None
-      server_contexts[server_id].append({"role": "assistant", "content": bot_response})
-    if len(bot_response_with_stickers) > 1800:
-      await message.channel.send(file=text_to_file(bot_response_with_stickers))
-    else:
-      if message is not None:
-        await message.channel.send(
-          bot_response_with_stickers, reference=message, stickers=sticker_list
-        )
-      else:
-        await message.channel.send(bot_response_with_stickers, stickers=sticker_list)
+      bot_response_with_stickers, sticker_ids = replace_stickers(
+        bot_response_with_emojis
+      )
+      sticker_list = await self._fetch_stickers(sticker_ids)
 
-    ### Reset the context if the conversation gets too long
+    await self._send_response(message, bot_response_with_stickers, sticker_list)
+    self._add_assistant_context(bot_response, server_id)
+    await self._check_context_limit(message, server_id)
+
+  def _add_user_context(
+    self, message: discord.Message, prompt: str, analysis: str, server_id: str
+  ) -> None:
+    content = (
+      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+    )
+    if analysis:
+      content += f" for the image: {analysis}"
+    server_contexts[server_id].append({"role": "user", "content": content})
+
+  async def _fetch_stickers(self, sticker_ids: list) -> list:
+    sticker_list = []
+    for sticker_id in sticker_ids:
+      try:
+        sticker_list.append(await self.bot.fetch_sticker(int(sticker_id)))
+      except discord.errors.NotFound:
+        logger.info(f"Sticker with ID {sticker_id} not found")
+    return sticker_list if sticker_list else None
+
+  async def _send_response(
+    self, message: discord.Message, response: str, stickers: list
+  ) -> None:
+    if len(response) > 1800:
+      await message.channel.send(file=text_to_file(response))
+    else:
+      await message.channel.send(response, reference=message, stickers=stickers)
+
+  def _add_assistant_context(self, response: str, server_id: str) -> None:
+    server_contexts[server_id].append({"role": "assistant", "content": response})
+
+  async def _check_context_limit(
+    self, message: discord.Message, server_id: str
+  ) -> None:
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
       server_contexts[server_id] = []
       await message.channel.send(self.context_reset_message)
