@@ -138,17 +138,18 @@ class BotEvents(commands.Cog):
     self, message: discord.Message, prompt: str, server_id: str
   ) -> str:
     analysis = ""
-    for attachment in message.attachments:
-      if attachment.content_type.startswith("image"):
-        image_url = attachment.url
-        image_prompt = (
-          f"Analyze this image. Additional context: {prompt}"
-          if prompt
-          else "Generate a caption for this image"
-        )
-        analysis = self.llm_service.analyze_image(image_url, image_prompt)
-        break  ### Only analyze the first image
-    return analysis
+    async with message.channel.typing():
+      for attachment in message.attachments:
+        if attachment.content_type.startswith("image"):
+          image_url = attachment.url
+          image_prompt = (
+            f"Analyze this image. Additional context: {prompt}"
+            if prompt
+            else "Generate a caption for this image"
+          )
+          analysis = self.llm_service.analyze_image(image_url, image_prompt)
+          break  ### Only analyze the first image
+    return analysis.strip()
 
   async def _process_message(
     self, message: discord.Message, prompt: str, server_id: str
@@ -170,9 +171,13 @@ class BotEvents(commands.Cog):
     self._add_assistant_context(bot_response, server_id)
     await self._check_context_limit(message, server_id)
 
-  def _add_user_context(self, message: discord.Message, prompt: str, server_id: str) -> None:
-        content = f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
-        server_contexts[server_id].append({"role": "user", "content": content})
+  def _add_user_context(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> None:
+    content = (
+      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+    )
+    server_contexts[server_id].append({"role": "user", "content": content})
 
   async def _fetch_stickers(self, sticker_ids: list) -> list:
     sticker_list = []
