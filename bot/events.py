@@ -49,7 +49,7 @@ class BotEvents(commands.Cog):
     """
     if self._should_ignore_message(message):
       return
-    
+
     prompt = self._prepare_prompt(message)
     server_id = self._get_server_id(message)
     self._load_server_lore(server_id)
@@ -61,9 +61,10 @@ class BotEvents(commands.Cog):
     if message.guild is not None and not self._is_valid_channel(message):
       await self._send_channel_redirect(message)
       return
-    
+
     analysis = await self._handle_image_input(message, prompt, server_id)
-    await self._process_message(message, prompt, server_id, analysis)
+    full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
+    await self._process_message(message, full_prompt, server_id)
 
   def _load_custom_emojis(self) -> None:
     self.custom_emojis = {
@@ -79,11 +80,11 @@ class BotEvents(commands.Cog):
   def _should_ignore_message(self, message: discord.Message) -> bool:
     if message.author.bot:
       return True
-    
+
     ### Always respond to DMs
     if message.guild is None:
       return False
-    
+
     is_correct_channel = message.channel.name == self.channel_name
     is_mentioned = self.bot.user in message.mentions
     is_reply = is_direct_reply(message, self.bot)
@@ -137,39 +138,22 @@ class BotEvents(commands.Cog):
     self, message: discord.Message, prompt: str, server_id: str
   ) -> str:
     analysis = ""
-    async with message.channel.typing():
-      for attachment in message.attachments:
-        if attachment.content_type.startswith("image"):
-          image_url = attachment.url
-          image_prompt = (
-            f"Analyze this image. {prompt}"
-            if prompt
-            else "Generate a caption for this image"
-          )
-          analysis = self.llm_service.analyze_image(image_url, image_prompt)
-          self._add_image_context(message, prompt, analysis, server_id)
-          if not prompt:
-            await message.channel.send(analysis, reference=message)
-            return ""
+    for attachment in message.attachments:
+      if attachment.content_type.startswith("image"):
+        image_url = attachment.url
+        image_prompt = (
+          f"Analyze this image. Additional context: {prompt}"
+          if prompt
+          else "Generate a caption for this image"
+        )
+        analysis = self.llm_service.analyze_image(image_url, image_prompt)
+        break  ### Only analyze the first image
     return analysis
 
-  def _add_image_context(
-    self, message: discord.Message, prompt: str, analysis: str, server_id: str
-  ) -> None:
-    server_contexts[server_id].append(
-      {
-        "role": "user",
-        "content": f"{message.author.name} (aka {message.author.display_name}) sent an image with the message: {prompt}",
-      }
-    )
-    server_contexts[server_id].append(
-      {"role": "assistant", "content": f"Image analysis: {analysis}"}
-    )
-
   async def _process_message(
-    self, message: discord.Message, prompt: str, server_id: str, analysis: str
+    self, message: discord.Message, prompt: str, server_id: str
   ) -> None:
-    self._add_user_context(message, prompt, analysis, server_id)
+    self._add_user_context(message, prompt, server_id)
     messages = [
       {"role": "system", "content": server_lore[server_id]}
     ] + server_contexts[server_id]
