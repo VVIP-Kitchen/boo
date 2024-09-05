@@ -170,15 +170,9 @@ class BotEvents(commands.Cog):
     self._add_assistant_context(bot_response, server_id)
     await self._check_context_limit(message, server_id)
 
-  def _add_user_context(
-    self, message: discord.Message, prompt: str, analysis: str, server_id: str
-  ) -> None:
-    content = (
-      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
-    )
-    if analysis:
-      content += f" for the image: {analysis}"
-    server_contexts[server_id].append({"role": "user", "content": content})
+  def _add_user_context(self, message: discord.Message, prompt: str, server_id: str) -> None:
+        content = f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+        server_contexts[server_id].append({"role": "user", "content": content})
 
   async def _fetch_stickers(self, sticker_ids: list) -> list:
     sticker_list = []
