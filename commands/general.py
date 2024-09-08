@@ -22,7 +22,7 @@ class GeneralCommands(commands.Cog):
     self.llm_service = WorkersService()
   
 
-  @commands.command(name="info", description="Ge    t to know the spooktacular Boo!")
+  @commands.hybrid_command(name="info", description="Ge    t to know the spooktacular Boo!")
   async def respond_with_info(self, ctx):
       bot_avatar = ctx.bot.user.avatar.url if ctx.bot.user.avatar else ctx.bot.user.default_avatar.url
       
