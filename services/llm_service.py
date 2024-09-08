@@ -10,6 +10,7 @@ from utils.config import (
   CLOUDFLARE_ACCOUNT_ID,
   IMAGE_DESCRIPTION_MODEL_NAME,
   CLOUDFLARE_WORKERS_AI_API_KEY,
+  TOMORROW_IO_API_KEY,
 )
 
 
@@ -27,7 +28,7 @@ class WorkersService:
     self.model_inference_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{MODEL_NAME}"
     self.model_imagine_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_MODEL_NAME}"
     self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_DESCRIPTION_MODEL_NAME}"
-
+    self.weather_info_url = f"https://api.tomorrow.io/v4/weather/realtime/{TOMORROW_IO_API_KEY}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
 
   def chat_completions(self, messages: List[Dict[str, str]]) -> str:
@@ -183,3 +184,32 @@ class WorkersService:
     except Exception as e:
       logger.error(f"Unexpected error: {e}")
       return "😵 Oops! Something unexpected happened while analyzing the image."
+
+
+  def weather_info(self, location: str) -> str:
+    """
+    Fetch weather information for a given location.
+
+    Args:
+        location (str): The location for weather information.
+
+    Returns:
+      str: The weather information or error message."""
+
+    try:
+      response = requests.get(
+        self.weather_info_url,
+        params={"location": location, "apikey": TOMORROW_IO_API_KEY},
+      )
+      data = response.json()
+      if "error" in data:
+        return f"Error: {data['error']['message']}"
+      else:
+        weather = data["weather"]["conditions"]["temperature"]["value"]
+        return f"The temperature in {location} is {weather}°C"
+    except requests.RequestException as e:
+      logger.error(f"API request failed: {e}")
+      return "😔 Sorry, I'm having trouble fetching the weather information right now. Can you try again later?"
+    except Exception as e:
+      logger.error(f"Unexpected error: {e}")
+      return "😵 Oops! Something unexpected happened while fetching the weather information."

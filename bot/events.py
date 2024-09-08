@@ -138,16 +138,17 @@ class BotEvents(commands.Cog):
     self, message: discord.Message, prompt: str, server_id: str
   ) -> str:
     analysis = ""
-    for attachment in message.attachments:
-      if attachment.content_type.startswith("image"):
-        image_url = attachment.url
-        image_prompt = (
-          f"Analyze this image. Additional context: {prompt}"
-          if prompt
-          else "Generate a caption for this image"
-        )
-        analysis = self.llm_service.analyze_image(image_url, image_prompt)
-        break  ### Only analyze the first image
+    async with message.channel.typing():
+      for attachment in message.attachments:
+        if attachment.content_type.startswith("image"):
+          image_url = attachment.url
+          image_prompt = (
+            f"Analyze this image. Additional context: {prompt}"
+            if prompt
+            else "Generate a caption for this image"
+          )
+          analysis = self.llm_service.analyze_image(image_url, image_prompt)
+          break  ### Only analyze the first image
     return analysis
 
   async def _process_message(

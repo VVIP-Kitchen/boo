@@ -193,18 +193,9 @@ class GeneralCommands(commands.Cog):
       await ctx.defer()
     else:
       await ctx.typing()
+    result = self.llm_service.weather_info(location)
+    await ctx.send(result)
 
-    response = requests.get(
-      "https://api.tomorrow.io/v4/weather/realtime",
-      params={"location": location, "apikey": "ha29HDAuTNyVmbZBC3G3dXunQLfrYTqi"},
-    )
-    data = response.json()
-
-    if "error" in data:
-      await ctx.send(f"Error: {data['error']['message']}")
-    else:
-      weather = data["weather"]["conditions"]["temperature"]["value"]
-      await ctx.send(f"The temperature in {location} is {weather}°C")
 
 
 async def setup(bot: commands.Bot) -> None:
