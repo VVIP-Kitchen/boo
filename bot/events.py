@@ -66,6 +66,7 @@ class BotEvents(commands.Cog):
     full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
     await self._process_message(message, full_prompt, server_id)
 
+  """Private methods"""
   def _load_custom_emojis(self) -> None:
     self.custom_emojis = {
       emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
