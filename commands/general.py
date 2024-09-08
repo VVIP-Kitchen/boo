@@ -1,7 +1,10 @@
 import io
+import random
+import discord
 from discord import File
 from discord.ext import commands
 from services.llm_service import WorkersService
+from services.tenor_service import TenorService
 from utils.config import server_contexts, user_memory
 
 
@@ -20,6 +23,7 @@ class GeneralCommands(commands.Cog):
 
     self.bot = bot
     self.llm_service = WorkersService()
+
   
 
   @commands.hybrid_command(name="info", description="Ge    t to know the spooktacular Boo!")
@@ -101,6 +105,9 @@ class GeneralCommands(commands.Cog):
         ]
         await reaction.message.channel.send(random.choice(spooky_messages))
 
+    self.tenor_service = TenorService()
+
+
   @commands.hybrid_command(name="greet", description="Greets the user")
   async def greet(self, ctx: commands.Context) -> None:
     """
@@ -120,11 +127,21 @@ class GeneralCommands(commands.Cog):
     else:
       await ctx.send(f"{ctx.author} How can I assist you today? 👀")
 
+
   @commands.hybrid_command(name="ping" , description="Pings the bot")
   async def respond_with_ping(self, ctx):
       ping = self.bot.latency * 1000
       embed = discord.Embed(title="Ping", description=f"The ping of the bot is {ping:.2f}ms", color=0x7615D1)
       await ctx.send(embed=embed)
+
+
+  @commands.hybrid_command(name="bonk", description="Bonks a user")
+  async def bonk(self, ctx: commands.Context, member: discord.Member) -> None:
+    async with ctx.typing():
+      bonk_gif = random.choice(self.tenor_service.search())
+      await ctx.send(
+        content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}"
+      )
 
 
   @commands.hybrid_command(
