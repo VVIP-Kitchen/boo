@@ -1,9 +1,11 @@
 import io
 import csv
 import requests
-from discord import File
+from discord import File, Embed, SelectOption, ButtonStyle
 from discord.ext import commands
+from discord.ui import Select, View, Button
 from services.llm_service import WorkersService
+from services.api_service import ApiService
 from utils.config import server_contexts, user_memory
 
 
@@ -22,6 +24,7 @@ class GeneralCommands(commands.Cog):
 
     self.bot = bot
     self.llm_service = WorkersService()
+    self.api_service = ApiService()
     self.posts = self.load_posts()
 
 
@@ -33,15 +36,8 @@ class GeneralCommands(commands.Cog):
                 posts.append(row)
     return posts
 
-  @commands.hybrid_command(name="Discourse", description="Search for posts from Discourse")
+  @commands.hybrid_command(name="discourse", description="Search for posts from Discourse")
   async def search_posts(self, ctx: commands.Context, keyword: str) -> None:
-        """
-        Search for posts by keyword and provide a list of matching titles.
-
-        Args:
-          ctx (commands.Context): The invocation context.
-          keyword (str): The keyword to search for in post titles.
-        """
         if ctx.guild is not None and ctx.channel.name != "chat":
             await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
             return
@@ -50,30 +46,46 @@ class GeneralCommands(commands.Cog):
             await ctx.defer()
         else:
             await ctx.typing()
+        
         matching_posts = [post for post in self.posts if keyword.lower() in post['Title'].lower()]
 
         if not matching_posts:
             await ctx.send(f"No posts found matching the keyword: {keyword}")
             return
 
-        options = [
-            SelectOption(label=post['Title'][:100], value=str(i))  # Truncate title if too long
-            for i, post in enumerate(matching_posts[:25])  # Limit to 25 options due to Discord's limit
-        ]
+        posts_per_page = 10
+        pages = [matching_posts[i:i + posts_per_page] for i in range(0, len(matching_posts), posts_per_page)]
+        current_page = 0
 
-        select = Select(placeholder="Choose a post to view", options=options)
+        async def update_embed(page):
+            embed = Embed(title="Discourse Posts", description=f"Search results for '{keyword}'\n\n\n")
+            for post in pages[page]:
+                # Use Discord's native linking
+                embed.description+= f"**[{post['Title'][:100]}]({post['Post Link']})**\n Tags: {post['Tags'][:100]}\n\n"
+                
+            embed.set_footer(text=f"Page {page + 1}/{len(pages)} • Total posts: {len(matching_posts)}")
+            return embed
 
-        async def select_callback(interaction):
-            selected_post = matching_posts[int(select.values[0])]
-            embed = Embed(title=selected_post['Title'], url=selected_post['Post Link'])
-            embed.add_field(name="Tags", value=selected_post['Tags'])
-            await interaction.response.send_message(embed=embed)
+        async def button_callback(interaction, change):
+            nonlocal current_page
+            current_page = (current_page + change) % len(pages)
+            await interaction.response.edit_message(embed=await update_embed(current_page), view=create_view())
 
-        select.callback = select_callback
-        view = View()
-        view.add_item(select)
+        def create_view():
+            view = View()
+            prev_button = Button(style=ButtonStyle.gray, label="Previous")
+            next_button = Button(style=ButtonStyle.gray, label="Next")
+            
+            prev_button.callback = lambda i: button_callback(i, -1)
+            next_button.callback = lambda i: button_callback(i, 1)
+            
+            view.add_item(prev_button)
+            view.add_item(next_button)
+            return view
 
-        await ctx.send(f"Found {len(matching_posts)} posts matching '{keyword}'. Please select one:", view=view)
+        initial_embed = await update_embed(current_page)
+        initial_view = create_view()
+        await ctx.send(embed=initial_embed, view=initial_view)
 
 
   @commands.hybrid_command(name="greet", description="Greets the user")
@@ -176,7 +188,7 @@ class GeneralCommands(commands.Cog):
     """
     await ctx.send(f"SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
 
-  @commands.hybrid_command(name="Weather", description="Get the weather")
+  @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
     """
     Get the weather for a location.
@@ -193,7 +205,7 @@ class GeneralCommands(commands.Cog):
       await ctx.defer()
     else:
       await ctx.typing()
-    result = self.llm_service.weather_info(location)
+    result = self.api_service.weather_info(location)
     await ctx.send(result)
 
 
