@@ -4,6 +4,7 @@ import datetime
 from utils.logger import logger
 from discord.ext import commands
 from services.llm_service import WorkersService
+from services.api_service import ApiService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
@@ -151,7 +152,7 @@ class BotEvents(commands.Cog):
           )
           analysis = self.llm_service.analyze_image(image_url, image_prompt)
           break  ### Only analyze the first image
-    return analysis.strip()
+    return analysis
 
   async def _process_message(
     self, message: discord.Message, prompt: str, server_id: str
@@ -173,13 +174,9 @@ class BotEvents(commands.Cog):
     self._add_assistant_context(bot_response, server_id)
     await self._check_context_limit(message, server_id)
 
-  def _add_user_context(
-    self, message: discord.Message, prompt: str, server_id: str
-  ) -> None:
-    content = (
-      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
-    )
-    server_contexts[server_id].append({"role": "user", "content": content})
+  def _add_user_context(self, message: discord.Message, prompt: str, server_id: str) -> None:
+        content = f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+        server_contexts[server_id].append({"role": "user", "content": content})
 
   async def _fetch_stickers(self, sticker_ids: list) -> list:
     sticker_list = []

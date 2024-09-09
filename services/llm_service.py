@@ -27,7 +27,6 @@ class WorkersService:
     self.model_inference_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{MODEL_NAME}"
     self.model_imagine_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_MODEL_NAME}"
     self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_DESCRIPTION_MODEL_NAME}"
-
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
 
   def chat_completions(self, messages: List[Dict[str, str]]) -> str:
@@ -183,3 +182,6 @@ class WorkersService:
     except Exception as e:
       logger.error(f"Unexpected error: {e}")
       return "😵 Oops! Something unexpected happened while analyzing the image."
+
+
+  
