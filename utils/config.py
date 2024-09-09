@@ -13,6 +13,7 @@ ist = pytz.timezone("Asia/Kolkata")
 ### Environment Variables
 ADMIN_LIST = os.getenv("ADMIN_LIST")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+TENOR_API_KEY = os.getenv("TENOR_API_KEY")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 30)
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
@@ -39,9 +40,10 @@ except ValueError:
   sys.exit(1)
 
 for var_name in [
+  "DISCORD_TOKEN",
+  "TENOR_API_KEY",
   "CLOUDFLARE_ACCOUNT_ID",
   "CLOUDFLARE_WORKERS_AI_API_KEY",
-  "DISCORD_TOKEN",
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")
