@@ -4,6 +4,7 @@ import datetime
 from utils.logger import logger
 from discord.ext import commands
 from services.llm_service import WorkersService
+from services.api_service import ApiService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
