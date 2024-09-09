@@ -23,6 +23,7 @@ class GeneralCommands(commands.Cog):
 
     self.bot = bot
     self.llm_service = WorkersService()
+    self.tenor_service = TenorService()
 
   
 
@@ -105,7 +106,7 @@ class GeneralCommands(commands.Cog):
         ]
         await reaction.message.channel.send(random.choice(spooky_messages))
 
-    self.tenor_service = TenorService()
+    
 
 
   @commands.hybrid_command(name="greet", description="Greets the user")
