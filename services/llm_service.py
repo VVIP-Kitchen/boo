@@ -29,7 +29,7 @@ class WorkersService:
     self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_DESCRIPTION_MODEL_NAME}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
 
-  def chat_completions(self, messages: List[Dict[str, str]]) -> str:
+  def chat_completions(self, messages: List[Dict[str, str]], temperature=0.55) -> str:
     """
     Call the language model with given messages.
 
@@ -40,7 +40,7 @@ class WorkersService:
       str: The model's response.
     """
 
-    json = {"messages": messages}
+    json = {"messages": messages, "temperature": temperature}
     bot_response = ""
 
     try:
@@ -52,15 +52,15 @@ class WorkersService:
       bot_response = (
         bot_response
         if len(bot_response) != 0
-        else "⚠️ Cloudflare Workers AI returned empty string. Change model maybe!"
+        else "⚠️ Cloudflare Workers AI returned empty string."
       )
     except requests.RequestException as e:
       logger.error(f"API request failed: {e}")
       bot_response = (
         "😔 Sorry, I'm having trouble thinking right now. Can you try again later?"
       )
-    except KeyError:
-      logger.error("Unexpected API response format")
+    except KeyError as ke:
+      logger.error("Unexpected API response format", ke)
       bot_response = "🤔 I'm a bit confused. Can you rephrase that?"
 
     return bot_response
@@ -118,7 +118,7 @@ class WorkersService:
       result = response.json()
 
       for obj in result["result"]:
-        if "meta" in obj["name"]:
+        if obj["task"]["name"] == "Text Generation":
           models.append(obj["name"])
     except Exception as e:
       logger.error(str(e))
@@ -182,6 +182,3 @@ class WorkersService:
     except Exception as e:
       logger.error(f"Unexpected error: {e}")
       return "😵 Oops! Something unexpected happened while analyzing the image."
-
-
-  
