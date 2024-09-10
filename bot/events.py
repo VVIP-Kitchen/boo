@@ -3,8 +3,7 @@ import discord
 import datetime
 from utils.logger import logger
 from discord.ext import commands
-from services.llm_service import WorkersService
-from services.api_service import ApiService
+from services.workers_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
@@ -30,6 +29,7 @@ class BotEvents(commands.Cog):
     self.llm_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
     self.custom_emojis = {}
+    self.error_message = "I'm sorry, I encountered an error while processing your message. Please try again later."
 
   @commands.Cog.listener()
   async def on_ready(self) -> None:
@@ -51,29 +51,34 @@ class BotEvents(commands.Cog):
     if self._should_ignore_message(message):
       return
 
-    prompt = self._prepare_prompt(message)
-    server_id = self._get_server_id(message)
-    self._load_server_lore(server_id)
+    try:
+      prompt = self._prepare_prompt(message)
+      server_id = self._get_server_id(message)
+      self._load_server_lore(server_id)
 
-    if "reset chat" in prompt.lower():
-      await self._reset_chat(message, server_id)
-      return
+      if "reset chat" in prompt.lower():
+        await self._reset_chat(message, server_id)
+        return
 
-    if message.guild is not None and not self._is_valid_channel(message):
-      await self._send_channel_redirect(message)
-      return
+      if message.guild is not None and not self._is_valid_channel(message):
+        await self._send_channel_redirect(message)
+        return
 
-    analysis = await self._handle_image_input(message, prompt, server_id)
-    full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
-    await self._process_message(message, full_prompt, server_id)
-
-  """Private methods"""
+      analysis = await self._handle_image_input(message, prompt, server_id)
+      full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
+      await self._process_message(message, full_prompt, server_id)
+    except Exception as e:
+      logger.error(f"Error processing message: {str(e)}")
+      await self._send_error_message(message)
 
   def _load_custom_emojis(self) -> None:
-    self.custom_emojis = {
-      emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
-    }
-    logger.info(f"Loaded {len(self.custom_emojis)} custom emojis.")
+    try:
+      self.custom_emojis = {
+        emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
+      }
+      logger.info(f"Loaded {len(self.custom_emojis)} custom emojis.")
+    except Exception as e:
+      logger.error(f"Error loading custom emojis: {str(e)}")
 
   def _is_bot_mentioned(self, message: discord.Message) -> bool:
     if message.guild is None:
@@ -211,6 +216,12 @@ class BotEvents(commands.Cog):
     if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
       server_contexts[server_id] = []
       await message.channel.send(self.context_reset_message)
+
+  async def _send_error_message(self, message: discord.Message) -> None:
+    try:
+      await message.channel.send(self.error_message, reference=message)
+    except discord.errors.HTTPException:
+      logger.error("Failed to send error message")
 
 
 async def setup(bot: commands.Bot) -> None:

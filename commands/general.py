@@ -7,9 +7,9 @@ import discord
 from typing import List
 from discord.ext import commands
 from discord.ui import View, Button
-from services.api_service import ApiService
+from services.weather_service import WeatherService
 from discord import File, Embed, ButtonStyle
-from services.llm_service import WorkersService
+from services.workers_service import WorkersService
 from services.tenor_service import TenorService
 from utils.config import server_contexts, user_memory
 
@@ -67,7 +67,7 @@ class GeneralCommands(commands.Cog):
     self.bot = bot
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
-    self.api_service = ApiService()
+    self.weather_service = WeatherService()
     self.posts = self.load_posts()
 
   def load_posts(self):
@@ -377,11 +377,13 @@ class GeneralCommands(commands.Cog):
       await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
       return
 
+    location = location.strip()
     if ctx.interaction:
       await ctx.defer()
     else:
       await ctx.typing()
-    result = self.api_service.weather_info(location)
+
+    result = self.weather_service.weather_info(location)
     await ctx.send(result)
 
 
