@@ -21,7 +21,7 @@ class DiscordBot(commands.Bot):
     if user.id in self.owner_ids:
       return True
 
-      # Else fall back to the original
+    ### Else fall back to the original
     return await super().is_owner(user)
 
   async def setup_hook(self) -> None:
