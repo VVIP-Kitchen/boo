@@ -19,7 +19,7 @@ CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 
-MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3-8b-instruct-awq")
+MODEL_NAME = os.getenv("MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct")
 IMAGE_MODEL_NAME = os.getenv(
   "IMAGE_MODEL_NAME", "@cf/stabilityai/stable-diffusion-xl-base-1.0"
 )
