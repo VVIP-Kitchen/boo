@@ -20,7 +20,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    build: ./prompt_manager
+    build: ./manager
     container_name: manager
     ports:
       - "8080:8080"
