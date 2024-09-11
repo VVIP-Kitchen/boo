@@ -30,9 +30,12 @@ class DBService:
     endpoint = f"http://{self.base_url}/prompt"
     params = {"guild_id": guild_id}
 
+    print(endpoint)
+
     try:
       response = requests.get(endpoint, params=params, timeout=self.timeout)
       response.raise_for_status()
+      print(response)
       return response.json()
     except requests.Timeout:
       logger.error(f"Timeout occurred while fetching prompt for guild {guild_id}")
