@@ -4,6 +4,7 @@ import datetime
 from pathlib import Path
 from utils.logger import logger
 from discord.ext import commands
+from services.db_service import DBService
 from services.github_service import GithubService
 from services.workers_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
@@ -28,6 +29,7 @@ class BotEvents(commands.Cog):
 
     self.bot = bot
     self.channel_name = "chat"
+    self.db_service = DBService()
     self.github_service = GithubService()
     self.workers_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
@@ -111,19 +113,14 @@ class BotEvents(commands.Cog):
     return f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
 
   def _load_server_lore(self, server_id: str) -> None:
-    server_lore[server_id] = ""
-    project_root = Path(__file__).resolve().parents[2]
-    server_lore_file = project_root / "data" / "prompts" / f"{server_id}.txt"
-    default_lore_file = project_root / "data" / "prompts" / "default_prompt.txt"
+    lore = self.db_service.fetch_prompt(server_id)
+    server_lore[server_id] = (
+      lore["system_prompt"] if lore is not None else "You are a helpful assistant"
+    )
 
-    try:
-      with open(server_lore_file, "r") as file:
-        server_lore[server_id] = file.read()
-    except FileNotFoundError:
-      with open(default_lore_file, "r") as file:
-        server_lore[server_id] = file.read()
-
-    ist = datetime.timezone(datetime.timedelta(hours=5, minutes=30))  # Indian Standard Time
+    ist = datetime.timezone(
+      datetime.timedelta(hours=5, minutes=30)
+    )  # Indian Standard Time
     now = datetime.datetime.now(ist)
     server_lore[server_id] += (
       f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"

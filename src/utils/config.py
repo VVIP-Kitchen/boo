@@ -16,12 +16,15 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TENOR_API_KEY = os.getenv("TENOR_API_KEY")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 30)
+DB_SERVICE_BASE_URL = os.getenv("DB_SERVICE_BASE_URL")
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 
 GH_MODEL_NAME = os.getenv("GH_MODEL_NAME", "meta-llama-3.1-8b-instruct")
-CF_WORKERS_MODEL_NAME = os.getenv("CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct")
+CF_WORKERS_MODEL_NAME = os.getenv(
+  "CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct"
+)
 CF_WORKERS_IMAGE_MODEL_NAME = os.getenv(
   "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/stabilityai/stable-diffusion-xl-base-1.0"
 )
@@ -45,6 +48,7 @@ for var_name in [
   "GITHUB_TOKEN",
   "DISCORD_TOKEN",
   "TENOR_API_KEY",
+  "DB_SERVICE_BASE_URL",
   "CLOUDFLARE_ACCOUNT_ID",
   "CLOUDFLARE_WORKERS_AI_API_KEY",
 ]:
