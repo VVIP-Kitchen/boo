@@ -2,7 +2,7 @@ services:
   app:
     build: .
     container_name: boo
-    command: sh -c "python main.py"
+    command: sh -c "python src/main.py"
     environment:
       - CONTEXT_LIMIT=${CONTEXT_LIMIT}
       - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}

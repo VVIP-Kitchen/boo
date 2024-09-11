@@ -37,7 +37,7 @@ try:
   CONTEXT_LIMIT = int(CONTEXT_LIMIT)
 except ValueError:
   logger.error(f"CONTEXT_LIMIT must be an integer. Got: {CONTEXT_LIMIT}")
-  sys.exit(1)
+  CONTEXT_LIMIT = 30
 
 for var_name in [
   "DISCORD_TOKEN",

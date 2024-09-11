@@ -65,14 +65,14 @@ class GeneralCommands(commands.Cog):
     """
 
     self.bot = bot
+    self.posts = self.load_posts()
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
-    self.posts = self.load_posts()
 
   def load_posts(self):
     posts = []
-    with open("Discourse_Posts_06_09_24.csv", "r", encoding="utf-8") as f:
+    with open("data/Discourse_Posts_06_09_24.csv", "r", encoding="utf-8") as f:
       reader = csv.DictReader(f)
       for row in reader:
         posts.append(row)
