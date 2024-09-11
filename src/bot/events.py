@@ -1,8 +1,10 @@
 import pytz
 import discord
 import datetime
+from pathlib import Path
 from utils.logger import logger
 from discord.ext import commands
+from services.github_service import GithubService
 from services.workers_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
@@ -26,7 +28,8 @@ class BotEvents(commands.Cog):
 
     self.bot = bot
     self.channel_name = "chat"
-    self.llm_service = WorkersService()
+    self.github_service = GithubService()
+    self.workers_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
     self.custom_emojis = {}
     self.error_message = "I'm sorry, I encountered an error while processing your message. Please try again later."
@@ -109,15 +112,18 @@ class BotEvents(commands.Cog):
 
   def _load_server_lore(self, server_id: str) -> None:
     server_lore[server_id] = ""
-    server_lore_file = f"data/prompts/{server_id}.txt"
+    project_root = Path(__file__).resolve().parents[2]
+    server_lore_file = project_root / "data" / "prompts" / f"{server_id}.txt"
+    default_lore_file = project_root / "data" / "prompts" / "default_prompt.txt"
 
     try:
       with open(server_lore_file, "r") as file:
         server_lore[server_id] = file.read()
     except FileNotFoundError:
-      with open("data/prompts/default_prompt.txt", "r") as file:
+      with open(default_lore_file, "r") as file:
         server_lore[server_id] = file.read()
 
+    ist = datetime.timezone(datetime.timedelta(hours=5, minutes=30))  # Indian Standard Time
     now = datetime.datetime.now(ist)
     server_lore[server_id] += (
       f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
@@ -158,7 +164,7 @@ class BotEvents(commands.Cog):
             if prompt
             else "Generate a caption for this image"
           )
-          analysis = self.llm_service.analyze_image(image_url, image_prompt)
+          analysis = self.workers_service.analyze_image(image_url, image_prompt)
           break  ### Only analyze the first image
     return analysis
 
@@ -171,7 +177,7 @@ class BotEvents(commands.Cog):
     ] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response = self.llm_service.chat_completions(messages)
+      bot_response = self.workers_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, sticker_ids = replace_stickers(
         bot_response_with_emojis
