@@ -3,6 +3,12 @@ A discord bot who talks to you! Boo supports natural language input like ChatGPT
 
 Powered by Meta's LLaMa 3.1
 
+## **Tech stack**
+- Python
+- Discord.py
+- Cloudflare
+- Linode
+
 ## **Dev setup**
 1. Clone this repo.
 ```sh
