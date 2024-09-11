@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -26,4 +27,22 @@ func NewConnection() (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func InitializeSchema(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS boo_prompts (
+		guild_id TEXT PRIMARY KEY,
+		system_prompt TEXT NOT NULL
+	);
+	`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Printf("Error creating table: %v", err)
+		return err
+	}
+
+	log.Println("Database schema initialized successfully")
+	return nil
 }

@@ -17,6 +17,11 @@ func main() {
 	}
 	defer db.Close()
 
+	err = database.InitializeSchema(db)
+	if err != nil {
+		log.Fatalf("Failed to initialize database schema: %v", err)
+	}
+
 	promptService := service.NewPromptService(db)
 	promptHandler := handler.NewPromptHandler(promptService)
 
