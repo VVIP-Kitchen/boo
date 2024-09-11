@@ -5,10 +5,10 @@ from PIL import Image
 from utils.logger import logger
 from typing import List, Dict, Union
 from utils.config import (
-  MODEL_NAME,
-  IMAGE_MODEL_NAME,
+  CF_WORKERS_MODEL_NAME,
+  CF_WORKERS_IMAGE_MODEL_NAME,
   CLOUDFLARE_ACCOUNT_ID,
-  IMAGE_DESCRIPTION_MODEL_NAME,
+  CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME,
   CLOUDFLARE_WORKERS_AI_API_KEY,
 )
 
@@ -24,9 +24,9 @@ class WorkersService:
     """
 
     self.model_search_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/models/search"
-    self.model_inference_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{MODEL_NAME}"
-    self.model_imagine_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_MODEL_NAME}"
-    self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{IMAGE_DESCRIPTION_MODEL_NAME}"
+    self.model_inference_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_MODEL_NAME}"
+    self.model_imagine_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_MODEL_NAME}"
+    self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
     self.timeout = 30  ### Timeout of 30s
 
@@ -35,9 +35,6 @@ class WorkersService:
       response = requests.request(method, url, timeout=self.timeout, **kwargs)
       response.raise_for_status()
       return response
-    except Timeout:
-      logger.error(f"Request to {url} timed out after {self.timeout} seconds")
-      raise
     except ConnectionError:
       logger.error(f"Connection error occurred while requesting {url}")
       raise
@@ -86,7 +83,7 @@ class WorkersService:
         if len(bot_response) != 0
         else "⚠️ Cloudflare Workers AI returned empty string."
       )
-    except (Timeout, ConnectionError):
+    except ConnectionError:
       return (
         "😔 Sorry, I'm having trouble connecting right now. Can you try again later?"
       )
