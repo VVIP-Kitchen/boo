@@ -1,5 +1,38 @@
 services:
-  app:
+  postgres:
+    image: postgres:13.16-alpine3.20
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  manager:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build: ./prompt_manager
+    container_name: manager
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+  discord-bot:
+    depends_on:
+      - manager
     build: .
     container_name: boo
     command: sh -c "python src/main.py"
@@ -10,10 +43,13 @@ services:
       - CONTEXT_LIMIT=${CONTEXT_LIMIT}
       - DISCORD_TOKEN=${DISCORD_TOKEN}
       - TENOR_API_KEY=${TENOR_API_KEY}
-      - DB_SERVICE_BASE_URL=${DB_SERVICE_BASE_URL}
+      - DB_SERVICE_BASE_URL=manager
       - TOMORROW_IO_API_KEY=${TOMORROW_IO_API_KEY}
       - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
       - CF_WORKERS_MODEL_NAME=${CF_WORKERS_MODEL_NAME}
       - CF_WORKERS_IMAGE_MODEL_NAME=${CF_WORKERS_IMAGE_MODEL_NAME}
       - CLOUDFLARE_WORKERS_AI_API_KEY=${CLOUDFLARE_WORKERS_AI_API_KEY}
       - CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME=${CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}
+
+volumes:
+  postgres_data:
