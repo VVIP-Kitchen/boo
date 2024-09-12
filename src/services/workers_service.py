@@ -110,8 +110,6 @@ class WorkersService:
           "message", "Unknown error occurred"
         )
         raise ValueError(error_message)
-    except (Timeout, ConnectionError):
-      return "😔 Sorry, I'm having trouble connecting to generate the image. Can you try again later?"
     except ValueError as e:
       logger.error(f"Error processing the response: {e}")
       return "🤔 I encountered an issue while creating your image. Please try a different prompt or try again later."
@@ -128,9 +126,6 @@ class WorkersService:
         for obj in result["result"]
         if obj["task"]["name"] == "Text Generation"
       ]
-    except (Timeout, ConnectionError):
-      logger.error("Connection error while fetching models")
-      return []
     except Exception as e:
       logger.error(f"Unexpected error in fetch_models: {e}")
       return []
@@ -157,8 +152,6 @@ class WorkersService:
         if description
         else "I couldn't analyze the image. Could you try uploading it again?"
       )
-    except (Timeout, ConnectionError):
-      return "😔 Sorry, I'm having trouble connecting to analyze the image. Can you try again later?"
     except Exception as e:
       logger.error(f"Unexpected error in analyze_image: {e}")
       return "😵 Oops! Something unexpected happened while analyzing the image."
