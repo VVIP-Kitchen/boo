@@ -1,0 +1,4320 @@
+--- Chunk starting at line 0 ---
+Sep 2024 Term Grading Document - Draft
+
+Approved by the Class Committee
+
+### Exam Schedule
+
+- **Quiz 1**: Sunday, October 27, 2024, 2pm-6pm
+- **Quiz 2**: Sunday, December 1, 2024, 2pm-6pm
+- **End Term Exam**: Sunday, December 22, 2024, 9am-12pm, 2pm-5pm
+- **OPPE1 - Day 1**: Saturday, November 16, 2024 (Dip-MLP & Deg-C prog)
+- **OPPE1 - Day 2**: Sunday, November 17, 2024 (FL-Python, Dip-Java)
+- **OPPE2 - Day 1**: Saturday, December 7, 2024 (Dip - SC)
+- **OPPE2 - Day 2**: Sunday, December 8, 2024 (Dip - DBMS, PDSA, Java, MLP, Deg-Big Data, C prog)
+- **OPPE2 - Day 3**: Saturday, December 14, 2024 (Dip - SC)
+- **OPPE2 - Day 4**: Sunday, December 15, 2024 (FL - Python, Dip - Exceptions alone (DBMS, Java, PDSA), Deg-Intro to Big Data)
+
+*Note: If required, a morning session for the quiz will be arranged.
+
+### Assignment Deadlines
+
+None of the assignment deadlines will be changed from the schedule given below. The dates have been adjusted to accommodate the quizzes and OPPEs.
+
+- **Week 1**
+  - Content Release: Friday, September 20, 2024
+  - Foundation Deadline: Wednesday, October 2, 2024
+  - Diploma Deadline: Sunday, October 6, 2024
+- **Week 2**
+  - Content Release: Friday, September 27, 2024
+  - Foundation Deadline: Wednesday, October 9, 2024
+  - Diploma Deadline: Monday, October 7, 2024
+- **Week 3**
+  - Content Release: Friday, October 4, 2024
+  - Foundation Deadline: Wednesday, October 16, 2024
+  - Diploma Deadline: Sunday, October 13, 2024
+- **Week 4**
+  - Content Release: Friday, October 11, 2024
+  - Foundation Deadline: Wednesday, October 23, 2024
+  - Diploma Deadline: Sunday, October 20, 2024
+- **Week 5**
+  - Content Release: Friday, October 18, 2024
+  - Foundation Deadline: Wednesday, November 6, 2024*
+  - Diploma Deadline: Sunday, November 3, 2024*
+- **Week 6**
+  - Content Release: Friday, October 25, 2024
+  - Foundation Deadline: Wednesday, November 13, 2024
+  - Diploma Deadline: Sunday, November 10, 2024**
+- **Week 7**
+  - Content Release: Friday, November 1, 2024
+  - Foundation Deadline: Friday, November 15, 2024
+  - Diploma Deadline: Monday, November 11, 2024**
+- **Week 8**
+  - Content Release: Friday, November 8, 2024
+  - Foundation Deadline: Wednesday, November 20, 2024
+  - Diploma Deadline: Sunday, November 17, 2024
+- **Week 9**
+  - Content Release: Friday, November 15, 2024
+  - Foundation Deadline: Wednesday, November 27, 2024
+  - Diploma Deadline: Sunday, November 24, 2024
+- **Week 10**
+  - Content Release: Friday, November 22, 2024
+  - Foundation Deadline: Wednesday, December 4, 2024
+  - Diploma Deadline: Friday, December 6, 2024
+- **Week 11**
+  - Content Release: Friday, November 29, 2024
+  - Foundation Deadline: Wednesday, December 11, 2024
+  - Diploma Deadline: Wednesday, December 11, 2024
+- **Week 12**
+  - Content Release: Friday, November 29, 2024
+  - Foundation Deadline: Wednesday, December 18, 2024
+  - Diploma Deadline: Wednesday, December 18, 2024
+
+*Date changed due to quiz on October 27 and Diwali on October 31.
+
+**For weeks 6 and 7, dates changed to make up for the lag.
+
+Week 9: Eligibility for final exams for most courses depends on the average assignment scores of the best 5 out of the first 9 weeks.
+
+Week 11: GAA score for final grade will be taken and calculated.
+
+### Orientation Sessions
+
+- **Foundation Level Orientation**: Saturday, September 7, 2024, 6pm
+- **Diploma Level Orientation - Java/PDSA/SC/App dev1/Appdev2/DBMS**: Sunday, September 8, 2024, 6pm
+- **Diploma Level Orientation - MLF/MLT/MLP**: Sunday, September 8, 2024, 8pm
+
+--- Chunk starting at line 50 ---
+Sep 2024 Term Grading Document - Draft
+
+Approved by the Class Committee
+
+Quiz and Exam Schedule:
+- Quiz 1: Sunday, October 27, 2024, 2pm-6pm (In centres)
+- Quiz 2: Sunday, December 1, 2024, 2pm-6pm (In centres)
+- End Term Exam: Sunday, December 22, 2024, 9am-12pm, 2pm-5pm (In centres)
+- OPPE1 - Day 1: Saturday, November 16, 2024, Dip-MLP & Deg-C prog (Online remote proctored)
+- OPPE1 - Day 2: Sunday, November 17, 2024, FL-Python, Dip-Java (Online remote proctored)
+- OPPE2 - Day 1: Saturday, December 7, 2024, Dip-SC (Online remote proctored)
+- OPPE2 - Day 2: Sunday, December 8, 2024, Dip-DBMS, PDSA, Java, MLP, Deg-Big Data, C prog (Online remote proctored)
+- OPPE2 - Day 3: Saturday, December 14, 2024, Dip-SC (Online remote proctored)
+- OPPE2 - Day 4: Sunday, December 15, 2024, FL-Python, Dip-Exceptions alone (DBMS, Java, PDSA), Deg-Intro to Big Data (Online remote proctored)
+
+Assignment Deadlines:
+- Week 1: Content Release Date - Friday, September 20, 2024; Assignment Deadlines - Foundation: Wednesday, October 2, 2024; Diploma: Sunday, October 6, 2024
+- Week 2: Content Release Date - Friday, September 27, 2024; Assignment Deadlines - Foundation: Wednesday, October 9, 2024; Diploma: Monday, October 7, 2024
+- Week 3: Content Release Date - Friday, October 4, 2024; Assignment Deadlines - Foundation: Wednesday, October 16, 2024; Diploma: Sunday, October 13, 2024
+- Week 4: Content Release Date - Friday, October 11, 2024; Assignment Deadlines - Foundation: Wednesday, October 23, 2024; Diploma: Sunday, October 20, 2024
+- Week 5: Content Release Date - Friday, October 18, 2024; Assignment Deadlines - Foundation: Wednesday, November 6, 2024; Diploma: Sunday, November 3, 2024
+- Week 6: Content Release Date - Friday, October 25, 2024; Assignment Deadlines - Foundation: Wednesday, November 13, 2024; Diploma: Sunday, November 10, 2024
+- Week 7: Content Release Date - Friday, November 1, 2024; Assignment Deadlines - Foundation: Friday, November 15, 2024; Diploma: Monday, November 11, 2024
+- Week 8: Content Release Date - Friday, November 8, 2024; Assignment Deadlines - Foundation: Wednesday, November 20, 2024; Diploma: Sunday, November 17, 2024
+- Week 9: Content Release Date - Friday, November 15, 2024; Assignment Deadlines - Foundation: Wednesday, November 27, 2024; Diploma: Sunday, November 24, 2024
+- Week 10: Content Release Date - Friday, November 22, 2024; Assignment Deadlines - Foundation: Wednesday, December 4, 2024; Diploma: Friday, December 6, 2024
+- Week 11: Content Release Date - Friday, November 29, 2024; Assignment Deadlines - Foundation: Wednesday, December 11, 2024; Diploma: Wednesday, December 11, 2024
+- Week 12: Content Release Date - Friday, November 29, 2024; Assignment Deadlines - Foundation: Wednesday, December 18, 2024; Diploma: Wednesday, December 18, 2024
+
+Note: Week 9 - Eligibility for final exams depends on the average assignment scores of the best 5 out of the first 9 weeks. Week 11 - GAA score for the final grade will be calculated.
+
+Orientation Sessions:
+- Saturday, Sep 7, 2024, 6pm: Foundation Level Orientation
+- Sunday, Sep 8, 2024, 6pm: Diploma Level Orientation - Java/PDSA/SC/App dev1/Appdev2/DBMS
+- Sunday, Sep 8, 2024, 8pm: Diploma Level Orientation - MLF/MLT/MLP
+- Sunday, Sep 8, 2024, 9pm: Diploma Level Orientation - BDM/BA/TDS
+- Sunday, Sep 8, 2024, 7pm: Degree Level Orientation - Market Research, Financial Forensics, SPG, and DT
+- Monday, Sep 9, 2024, 5pm: Degree Level Orientation - Introduction to NLP, Corporate Finance
+- Monday, Sep 9, 2024, 6pm: Degree Level Orientation - (Sw Engg, Sw Testing, C Programming, Advanced Algorithms, PSOSM, CSD, Statistical Computing)
+- Monday, Sep 9, 2024, 8pm: Degree Level Orientation (AI: SMPS, DL, Big Data, Speech Tech)
+- Tuesday, Sep 10, 2024, 5pm: DL for CV, Deep Learning Practice
+
+Project Orientation Sessions:
+- Sep 23, 7pm: Appdev 1 Project
+- Sep 24, 7pm: Appdev 2 Project
+- Sep 25, 7pm: ML Project
+- Sep 26, 7pm: BDM Project
+
+Eligibility for OPPE 1:
+- Students must complete the OPPE System Compatibility Test (SCT) exam.
+- OPPE1 will not be scheduled for students who fail to complete the OPPE SCT exam.
+
+Eligibility for OPPE 2:
+- Most courses have eligibility criteria to attend the final exam.
+- If a student is not eligible to write the final exam, OPPE2 will not be scheduled, and the student will be awarded WA/WQ grade and must repeat the entire course next time, including all assessment components.
+
+--- Chunk starting at line 100 ---
+Sep 2024 Term Grading Document - Draft
+
+Approved by the Class Committee
+
+### Exam Schedule
+
+- **Quiz 1:** Sunday, October 27, 2024, 2pm-6pm* (In centres)
+- **Quiz 2:** Sunday, December 1, 2024, 2pm-6pm* (In centres)
+- **End Term Exam:** Sunday, December 22, 2024, 9am-12pm, 2pm-5pm (In centres)
+- **OPPE1 - Day 1:** Saturday, November 16, 2024, Dip-MLP & Deg-C prog (Online remote proctored)
+- **OPPE1 - Day 2:** Sunday, November 17, 2024, FL-Python, Dip-Java (Online remote proctored)
+- **OPPE2 - Day 1:** Saturday, December 7, 2024, Dip - SC (Online remote proctored)
+- **OPPE2 - Day 2:** Sunday, December 8, 2024, Dip - DBMS, PDSA, Java, MLP, Deg-Big Data, C prog (Online remote proctored)
+- **OPPE2 - Day 3:** Saturday, December 14, 2024, Dip - SC (Online remote proctored)
+- **OPPE2 - Day 4:** Sunday, December 15, 2024, FL - Python, Dip - Exceptions alone (DBMS, Java, PDSA), Deg-Intro to Big Data (Online remote proctored)
+
+*If required, a morning session for the quiz will be arranged.
+
+### Assignment Deadlines
+
+None of the assignment deadlines will be changed from the schedule given below. The dates have been adjusted to accommodate the quizzes and OPPEs.
+
+- **Week 1:** Content Release Date - Friday, September 20, 2024
+  - Foundation Deadline: Wednesday, October 2, 2024
+  - Diploma Deadline: Sunday, October 6, 2024
+- **Week 2:** Content Release Date - Friday, September 27, 2024
+  - Foundation Deadline: Wednesday, October 9, 2024
+  - Diploma Deadline: Monday, October 7, 2024
+- **Week 3:** Content Release Date - Friday, October 4, 2024
+  - Foundation Deadline: Wednesday, October 16, 2024
+  - Diploma Deadline: Sunday, October 13, 2024
+- **Week 4:** Content Release Date - Friday, October 11, 2024
+  - Foundation Deadline: Wednesday, October 23, 2024
+  - Diploma Deadline: Sunday, October 20, 2024
+- **Week 5:** Content Release Date - Friday, October 18, 2024
+  - Foundation Deadline: Wednesday, November 6, 2024*
+  - Diploma Deadline: Sunday, November 3, 2024*
+- **Week 6:** Content Release Date - Friday, October 25, 2024
+  - Foundation Deadline: Wednesday, November 13, 2024
+  - Diploma Deadline: Sunday, November 10, 2024**
+- **Week 7:** Content Release Date - Friday, November 1, 2024
+  - Foundation Deadline: Friday, November 15, 2024
+  - Diploma Deadline: Monday, November 11, 2024**
+- **Week 8:** Content Release Date - Friday, November 8, 2024
+  - Foundation Deadline: Wednesday, November 20, 2024
+  - Diploma Deadline: Sunday, November 17, 2024
+- **Week 9:** Content Release Date - Friday, November 15, 2024
+  - Foundation Deadline: Wednesday, November 27, 2024
+  - Diploma Deadline: Sunday, November 24, 2024
+- **Week 10:** Content Release Date - Friday, November 22, 2024
+  - Foundation Deadline: Wednesday, December 4, 2024
+  - Diploma Deadline: Friday, December 6, 2024
+- **Week 11:** Content Release Date - Friday, November 29, 2024
+  - Foundation Deadline: Wednesday, December 11, 2024
+  - Diploma Deadline: Wednesday, December 11, 2024
+- **Week 12:** Content Release Date - Friday, November 29, 2024
+  - Foundation Deadline: Wednesday, December 18, 2024
+  - Diploma Deadline: Wednesday, December 18, 2024
+
+*Date changed due to quiz on Oct 27 and Diwali on Oct 31.
+**Weeks 6 and 7 have date changes to make up for the lag.
+
+Week 9: Eligibility for final exams for most courses depends on the average assignment scores of best 5 out of the first 9 weeks.
+
+Week 11: GAA score for final grade will be taken and calculated.
+
+### Orientation Sessions
+
+- **Saturday, Sep 7, 2024, 6pm:** Foundation Level Orientation
+- **Sunday, Sep 8, 2024, 6pm:** Diploma Level Orientation - Java/PDSA/SC/App dev1/Appdev2/DBMS
+- **Sunday, Sep 8, 2024, 8pm:** Diploma Level Orientation - MLF/MLT/MLP
+- **Sunday, Sep 8, 2024, 9pm:** Diploma Level Orientation - BDM/BA/TDS
+- **Sunday, Sep 8, 2024, 7pm:** Degree Level Orientation - Market Research, Financial Forensics, SPG and DT
+- **Monday, Sep 9, 2024, 5pm:** Degree Level Orientation - Introduction to NLP, Corporate Finance
+- **Monday, Sep 9, 2024, 6pm:** Degree Level Orientation - (Sw Engg + Sw Testing + C Programming + Advanced Algorithms + PSOSM + CSD + Statistical Computing)
+- **Monday, Sep 9, 2024, 8pm:** Degree Level Orientation (AI: SMPS + DL + Big Data + Speech Tech)
+- **Tuesday, Sep 9, 2024, 5pm:** DL for CV + Deep Learning Practice
+
+Project Orientation Sessions:
+
+- **Sep 23, 7pm:** Appdev 1 Project
+- **Sep 24, 7pm:** Appdev 2 Project
+- **Sep 25, 7pm:** ML Project
+- **Sep 26, 7pm:** BDM Project
+
+### Eligibility Criteria
+
+**OPPE 1:**
+- Complete the OPPE System Compatibility Test (SCT) exam.
+- SOP for the SCT Exam: [OPPE SCT SOP Document](https://www.google.com/url?q=https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub&sa=D&source=editors&ust=1726257172103306&usg=AOvVaw2CW1ISmz7ix503Nm-f4Lp5)
+
+**OPPE 2:**
+- Most courses have eligibility criteria to attend the final exam.
+- If ineligible for the final exam, OPPE2 will not be scheduled, and you will need to repeat the course.
+
+### Suggested Pathway to Register and Study
+
+**Foundation Level Courses:**
+1. Mathematics for Data Science 1
+2. English 1
+3. Computational Thinking
+4. Statistics for Data Science 1
+5. Mathematics for Data Science 2
+6. English 2
+7. Intro to Python Programming
+8. Statistics for Data Science 2
+
+**Diploma Level Courses:**
+1. Machine Learning Foundations (DS Diploma)
+2. Machine Learning Techniques (Diploma in DS)
+3. Machine Learning Practice (Diploma in DS)
+4. Business Data Management (DS Diploma)
+5. Business Analytics (Diploma in DS)
+6. Tools in Data Science (Diploma in DS)
+7. Programming Data Structures and Algorithms using Python (PDSA) - Diploma in Programming
+8. Database Management System (DBMS) - Diploma in Programming
+9. Application Development - 1 (Diploma in Programming)
+10. Programming Concepts using Java (Diploma in Programming)
+11. System Commands (Diploma in Programming)
+12. Application Development - 2 (Diploma in Programming)
+
+**Project Courses:**
+- Timelines for Appdev1, Appdev2 & MLP, BDM projects.
+
+**Degree Level Courses:**
+1. Software Testing
+2. Software Engineering
+3. Deep Learning
+4. AI: Search Methods for Problem Solving
+
+--- Chunk starting at line 150 ---
+Sep 2024 Term Grading Document - Draft
+
+Approved by the Class Committee
+
+Quiz and Exam Schedule:
+
+- Quiz 1: Sunday, October 27, 2024, 2pm-6pm (In centres)
+- Quiz 2: Sunday, December 1, 2024, 2pm-6pm (In centres)
+- End Term Exam: Sunday, December 22, 2024, 9am-12pm, 2pm-5pm (In centres)
+
+OPPE1 Schedule:
+- Day 1: Saturday, November 16, 2024, Dip-MLP & Deg-C prog (Online remote proctored)
+- Day 2: Sunday, November 17, 2024, FL-Python, Dip-Java (Online remote proctored)
+
+OPPE2 Schedule:
+- Day 1: Saturday, December 7, 2024, Dip-SC (Online remote proctored)
+- Day 2: Sunday, December 8, 2024, Dip-DBMS, PDSA, Java, MLP, Deg-Big Data, C prog (Online remote proctored)
+- Day 3: Saturday, December 14, 2024, Dip-SC (Online remote proctored)
+- Day 4: Sunday, December 15, 2024, FL-Python, Dip-Exceptions alone (DBMS, Java, PDSA), Deg-Intro to Big Data (Online remote proctored)
+
+Assignment Deadlines:
+
+- Week 1: Content Release Date - Friday, September 20, 2024; Foundation Deadline - Wednesday, October 2, 2024; Diploma Deadline - Sunday, October 6, 2024
+- Week 2: Content Release Date - Friday, September 27, 2024; Foundation Deadline - Wednesday, October 9, 2024; Diploma Deadline - Monday, October 7, 2024
+- Week 3: Content Release Date - Friday, October 4, 2024; Foundation Deadline - Wednesday, October 16, 2024; Diploma Deadline - Sunday, October 13, 2024
+- Week 4: Content Release Date - Friday, October 11, 2024; Foundation Deadline - Wednesday, October 23, 2024; Diploma Deadline - Sunday, October 20, 2024
+- Week 5: Content Release Date - Friday, October 18, 2024; Foundation Deadline - Wednesday, November 6, 2024; Diploma Deadline - Sunday, November 3, 2024
+- Week 6: Content Release Date - Friday, October 25, 2024; Foundation Deadline - Wednesday, November 13, 2024; Diploma Deadline - Sunday, November 10, 2024
+- Week 7: Content Release Date - Friday, November 1, 2024; Foundation Deadline - Friday, November 15, 2024; Diploma Deadline - Monday, November 11, 2024
+- Week 8: Content Release Date - Friday, November 8, 2024; Foundation Deadline - Wednesday, November 20, 2024; Diploma Deadline - Sunday, November 17, 2024
+- Week 9: Content Release Date - Friday, November 15, 2024; Foundation Deadline - Wednesday, November 27, 2024; Diploma Deadline - Sunday, November 24, 2024
+- Week 10: Content Release Date - Friday, November 22, 2024; Foundation Deadline - Wednesday, December 4, 2024; Diploma Deadline - Friday, December 6, 2024
+- Week 11: Content Release Date - Friday, November 29, 2024; Foundation Deadline - Wednesday, December 11, 2024; Diploma Deadline - Wednesday, December 11, 2024
+- Week 12: Content Release Date - Friday, November 29, 2024; Foundation Deadline - Wednesday, December 18, 2024; Diploma Deadline - Wednesday, December 18, 2024
+
+Orientation Sessions:
+
+- Foundation Level Orientation: Saturday, September 7, 2024, 6pm
+- Diploma Level Orientation - Java/PDSA/SC/App dev1/Appdev2/DBMS: Sunday, September 8, 2024, 6pm
+- Diploma Level Orientation - MLF/MLT/MLP: Sunday, September 8, 2024, 8pm
+- Diploma Level Orientation - BDM/BA/TDS: Sunday, September 8, 2024, 9pm
+- Degree Level Orientation - Market Research, Financial Forensics, SPG and DT: Sunday, September 8, 2024, 7pm
+- Degree Level Orientation - Introduction to NLP, Corporate Finance: Monday, September 9, 2024, 5pm
+- Degree Level Orientation - Sw Engg, Sw Testing, C Programming, Advanced Algorithms, PSOSM, CSD, Statistical Computing: Monday, September 9, 2024, 6pm
+- Degree Level Orientation - AI: SMPS, DL, Big Data, Speech Tech: Monday, September 9, 2024, 8pm
+- DL for CV, Deep Learning Practice: Tuesday, September 9, 2024, 5pm
+
+Project Orientation Sessions:
+
+- Appdev 1 Project: September 23, 7pm
+- Appdev 2 Project: September 24, 7pm
+- ML Project: September 25, 7pm
+- BDM Project: September 26, 7pm
+
+Eligibility Criteria:
+
+- OPPE 1: Complete the OPPE System Compatibility Test (SCT) exam. [OPPE SCT SoP Document](https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub)
+- OPPE 2: Eligibility based on course criteria. If not eligible for the final exam, OPPE2 will not be scheduled.
+
+Bonus Marks:
+
+Course Participation Marks are for encouraging and incentivizing students to participate in course activities. These marks will be added only for students who pass the course and will impact the course grade, not the pass criteria.
+
+Criteria for Course Participation Marks:
+- Marks will be based on the availability of mock activities and can range from 0-2.
+- If the average of marks obtained in all mock tests conducted before Quiz 1 & Quiz 2 is ≥ 40/100, students will get 2 marks. Mock tests must be completed within the specified time.
+- Additional activities set up by the course team may be eligible for up to 3 bonus marks.
+
+Participation in the Discourse Forum:
+- Badges will be given based on the number of hours a student spends on Discourse. A minimum of 1 hour per week per course is expected.
+- Read time of up to 4 hours per course in a term: Badge 1
+
+Course List:
+
+- Strategies for Professional Growth
+- Introduction to Big Data
+- Programming in C
+- Advanced Algorithms
+- Game Theory and Strategy
+- Speech Technology
+- Design Thinking for Data-Driven App Development
+- Market Research
+- Privacy & Security in Online Social Media
+- Statistical Computing
+- Computer Systems Design
+- Introduction to Natural Language Processing (i-NLP)
+- Corporate Finance
+
+--- Chunk starting at line 200 ---
+### Orientation Sessions
+
+- **Sunday, Sep 8, 2024**
+  - 7 PM: Degree Level Orientation - Market Research, Financial Forensics, SPG, and DT
+  - 9 PM: Diploma Level Orientation - BDM/BA/TDS
+
+- **Monday, Sep 9, 2024**
+  - 5 PM: Degree Level Orientation - Introduction to NLP, Corporate Finance
+  - 6 PM: Degree Level Orientation - Software Engineering, Software Testing, C Programming, Advanced Algorithms, PSOSM, CSD, Statistical Computing
+  - 8 PM: Degree Level Orientation - AI: SMPS, DL, Big Data, Speech Tech
+
+- **Tuesday, Sep 9, 2024**
+  - 5 PM: DL for CV, Deep Learning Practice
+
+### Project Orientation Sessions
+
+- **Sep 23, 7 PM**: Appdev 1 Project
+- **Sep 24, 7 PM**: Appdev 2 Project
+- **Sep 25, 7 PM**: ML Project
+- **Sep 26, 7 PM**: BDM Project
+
+### Eligibility for OPPE 1
+
+- Complete the OPPE System Compatibility Test (SCT) exam.
+- [SoP for the SCT Exam](https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub)
+
+### Eligibility for OPPE 2
+
+- Most courses have eligibility criteria for the final exam.
+- If not eligible for the final exam, OPPE2 will not be scheduled, and you will need to repeat the course.
+
+### Bonus Marks
+
+- Course Participation Marks encourage students to participate in course activities.
+- Marks are added only for students who pass the course and affect only the course grade.
+- Criteria for course participation marks:
+  - Marks based on mock activities availability, ranging from 0-2.
+  - If average marks in all mock tests before Quiz 1 & Quiz 2 are >= 40/100, students get 2 marks.
+  - Additional activities may provide up to 3 bonus marks.
+
+### Participation in Discourse Forum: Badges
+
+- Badges based on the number of hours spent on Discourse:
+  - Read time of up to 4 hours per course: Badge 1
+  - Read time of up to 8 hours per course: Badge 2
+  - Read time of up to 12 hours per course or more: Badge 3
+
+### Course Grades
+
+- Pass Grades: S, A, B, C, D, E
+- Fail Grade: U
+
+#### I Grade Types
+
+1. **Absent for ET alone**: Grade will be pushed as I.
+   - Register for ET exam alone in the subsequent term.
+
+2. **Failed OPPE but wrote ET**: Grade = I_OP.
+   - Register for OPPE alone.
+
+3. **Failed OPPE and absent for ET**: Grade = I_BOTH.
+   - Register for ET and OPPEs alone.
+
+In all cases, you can choose to repeat the entire course.
+
+### OPPE Schedule (Sep 2024 Term)
+
+- **Saturday, Nov 16, 2024**
+  - OPPE1 (Day 1): 7 PM to 9 PM
+
+- **Sunday, Nov 17, 2024**
+  - OPPE1 (Day 2): 9:30 AM to 11:30 AM, 1:30 PM to 3:30 PM, 4:30 PM to 6:30 PM
+
+- **Saturday, Dec 7, 2024**
+  - OPPE2 (Day 1): 7 PM to 9 PM
+
+- **Sunday, Dec 8, 2024**
+  - OPPE2 (Day 2): 9:30 AM to 11:00 AM, 9:30 AM to 11:30 AM, 1:30 PM to 3:00 PM, 1:30 PM to 3:30 PM, 4:30 PM to 6:30 PM
+
+- **Saturday, Dec 14, 2024**
+  - OPPE2 (Day 3): 7 PM to 9 PM
+
+- **Sunday, Dec 15, 2024**
+  - OPPE2 (Day 4): 9:30 AM to 11:00 AM, 9:30 AM to 11:30 AM
+
+--- Chunk starting at line 250 ---
+Bonus Marks
+
+Course Participation Marks are for encouraging and incentivizing students to participate more in the activities of the course. These marks will be added ONLY for students who pass the course and will only impact the course grade, not the pass criteria. Criteria for course participation marks:
+
+Marks will be applicable based on the availability of mock activities in the course. It can vary from course to course and can range from 0-2.
+
+- If the average of the marks obtained in all the mock tests conducted before Quiz 1 & Quiz 2 is >= 40/100, students will get 2 marks. The mock tests have to be done within the specified time.
+- The course team may set up additional activities in the course which will be eligible for up to 3 bonus marks. If no additional activities are set up, this bonus won’t be applicable.
+
+Participation in the Discourse Forum: Badges
+
+We will be looking at active engagement with Discourse in a term and provide badges for participation. Badges will be given based on the number of hours a student spends on Discourse. A student is expected to spend a minimum of 1 hour per week per course in Discourse reading posts.
+
+Students will get the following badges:
+
+- Read time of up to 4 hours per course in a term: Badge 1
+- Read time of up to 8 hours per course in a term: Badge 2
+- Read time of up to 12 hours per course or more: Badge 3
+
+(Applicable only after you get the BS student roll number)
+
+Information about Course Grades
+
+Grades: S, A, B, C, D, E - Pass grade; U - Fail grade
+
+In I grade, there are 3 types:
+
+1. If you are absent for ET alone with all other assessment components completed (quizzes, OPPEs, project, weekly assignments) - grade will be pushed as I.
+   - Options: You can register to take up the ET exam alone in the subsequent term. OPPE and quizzes will not be scheduled for you. All other marks for the final course score will be taken from the previous run.
+
+2. If you have failed in the OPPE but wrote the ET exam and crossed the cutoff for T as given in the course grading policy, grade = I_OP.
+   - You can register to do the OPPE alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You can attempt the OPPE alone. All other mark components of the final course score will be taken from the previous run. ET and quizzes will not be scheduled for you.
+
+3. If you have failed in the OPPE and were absent for ET, then grade = I_BOTH.
+   - You can register for ET and OPPEs alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You will attempt the ET and OPPEs. Quiz and GAA and other components will be taken from the previous run and not scheduled.
+
+In all the above cases, you can also choose to repeat the entire course and not just do the ET/OPPE alone if you want to reattempt all assessment components.
+
+OPPE Schedule (SEP 2024 Term)
+
+Exam | Timing | Python | DBMS | PDSA | Java | SC | MLP | C | Intro to Big Data
+--- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+Saturday, Nov 16, 2024
+OPPE1 (Day 1) | 07:00 PM to 09:00 PM |  |  |  |  |  | 1A | 1A |  
+Sunday, Nov 17, 2024
+OPPE 1 (Day 2) | 09:30 AM to 11:30 AM | 1A |  |  | 1A |  |  |  |  
+| 01:30 PM to 03:30 PM | 1B |  |  |  |  |  |  |  
+| 04:30 PM to 06:30 PM | 1C |  |  |  |  |  |  |  
+Saturday, Dec 7, 2024
+OPPE 2 (Day 1) | 07:00 PM to 09:00 PM |  |  |  |  | 2A |  |  |  
+Sunday, Dec 8, 2024
+OPPE 2 (Day 2) | 09:30 AM to 11:00 AM |  | 2A |  |  |  |  |  |  
+| 09:30 AM to 11:30 AM |  |  | 2A |  |  |  |  |  
+| 01:30 PM to 03:00 PM |  |  |  | 2A |  |  |  |  
+| 01:30 PM to 03:30 PM |  |  | 2B |  |  |  |  |  
+| 04:30 PM to 06:30 PM |  |  |  |  |  | 2A | 2A |  
+Saturday, Dec 14, 2024
+OPPE 2 (Day 3) | 07:00 PM to 09:00 PM |  |  |  |  | 2B |  |  |  
+Sunday, Dec 15, 2024
+OPPE 2 (Day 4) | 09:30 AM to 11:00 AM |  | 2B |  |  |  |  |  |  
+| 09:30 AM to 11:30 AM | 2A |  |  |  |  |  |  |  
+
+Suggested Pathway to Register and Study Foundation Level Courses
+
+For those entering Foundation Level in May 2024 or after, kindly go through the new rules: 4/6/8 courses to be completed in 4/6/9 terms. Else you will be removed from the program.
+
+Foundation Level Courses
+
+1. Mathematics for Data Science 1
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - Above to be attended in person at designated centers.
+   - Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+   - Eligibility to obtain the final course grade: Attending the end term exam
+   - The calculation of Final Course Score T for eligible students is as follows:
+     - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+     - Qz1 = score in Quiz I (0, if not attempted)
+     - Qz2 = score in Quiz II (0, if not attempted)
+     - F = score in final exam
+     - T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+     - (Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment).
+
+2. English 1
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - Above to be attended in person at designated centers.
+   - Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+   - Eligibility to obtain the final course grade: Attending the end term exam
+   - The calculation of Final Course Score T for eligible students is as follows:
+
+--- Chunk starting at line 300 ---
+Bonus Marks
+
+Course Participation Marks are for encouraging and incentivizing students to participate more in course activities. These marks will be added ONLY for students who pass the course and will only impact the course grade, not the pass criteria. Criteria for course participation marks:
+
+- Marks will be applicable based on the availability of mock activities in the course. It can vary from course to course and can range from 0-2.
+- If the average of the marks obtained in all mock tests conducted before Quiz 1 & Quiz 2 is >= 40/100, students will get 2 marks. The mock tests have to be done within the specified time.
+- The course team may set up additional activities eligible for up to 3 bonus marks. If no additional activities are set up, this bonus won't be applicable.
+
+Participation in the Discourse Forum: Badges
+
+We will be looking at active engagement with Discourse in a term and provide badges for participation. Badges will be given based on the number of hours a student spends on Discourse. A student is expected to spend a minimum of 1 hour per week per course in Discourse reading posts.
+
+- Read time of up to 4 hours per course in a term: Badge 1
+- Read time of up to 8 hours per course in a term: Badge 2
+- Read time of up to 12 hours per course or more: Badge 3
+
+(Applicable only after you get the BS student roll number)
+
+Information about Course Grades
+
+- S, A, B, C, D, E - Pass grade; U- Fail grade
+
+In I grade - there are 3 types:
+
+1. If you are absent for ET alone with all other assessment components completed (quizzes, OPPEs, project, weekly assignments) - grade will be pushed as I.
+   - Options: You can register to take up the ET exam alone in the subsequent term. OPPE and quizzes will not be scheduled for you. All other marks for the final course score will be taken from the previous run.
+
+2. If you have failed in the OPPE but wrote the ET exam and crossed the cutoff for T as given in the course grading policy, grade = I_OP.
+   - You can register to do the OPPE alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You can attempt the OPPE alone. All other mark components of the final course score will be taken from the previous run. ET and quizzes will not be scheduled for you.
+
+3. If you have failed in the OPPE and were absent for ET, then grade = I_BOTH.
+   - You can register for ET and OPPEs alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You will attempt the ET and OPPEs. Quiz and GAA and other components will be taken from the previous run and not scheduled.
+
+In all the above cases, you can also choose to repeat the entire course and not just do the ET/OPPE alone if you want to reattempt all assessment components.
+
+OPPE Schedule (Sep 2024 Term)
+
+- Exam: Timing | Python | DBMS | PDSA | Java | SC | MLP | C | Intro to Big Data
+- Saturday, Nov 16, 2024
+  - OPPE1 (Day 1): 07:00 PM to 09:00 PM | | | | | | 1A | 1A | |
+- Sunday, Nov 17, 2024
+  - OPPE1 (Day 2): 09:30 AM to 11:30 AM | 1A | | | 1A | | | | |
+  - 01:30 PM to 03:30 PM | 1B | | | | | | | |
+  - 04:30 PM to 06:30 PM | 1C | | | | | | | |
+- Saturday, Dec 7, 2024
+  - OPPE2 (Day 1): 07:00 PM to 09:00 PM | | | | | 2A | | | |
+- Sunday, Dec 8, 2024
+  - OPPE2 (Day 2): 09:30 AM to 11:00 AM | | 2A | | | | | | |
+  - 09:30 AM to 11:30 AM | | | 2A | | | | | |
+  - 01:30 PM to 03:00 PM | | | | 2A | | | | |
+  - 01:30 PM to 03:30 PM | | | 2B | | | | | |
+  - 04:30 PM to 06:30 PM | | | | | | 2A | 2A | |
+- Saturday, Dec 14, 2024
+  - OPPE2 (Day 3): 07:00 PM to 09:00 PM | | | | | 2B | | | |
+- Sunday, Dec 15, 2024
+  - OPPE2 (Day 4): 09:30 AM to 11:00 AM | | 2B | | | | | | |
+  - 09:30 AM to 11:30 AM | 2A | | | | | | | |
+  - 01:30 PM to 03:00 PM | | | | 2B | | | | |
+  - 01:30 PM to 03:30 PM | 2B | | 2C | | | | | |
+  - 02:00 PM to 06:00 PM | | | | | | | | 1A |
+  - 04:30 PM to 06:30 PM | 2C | | | | | | | |
+
+Suggested Pathway to Register and Study Foundation Level Courses
+
+For those entering Foundation Level in May 2024 or after, kindly go through the new rules: 4/6/8 courses to be completed in 4/6/9 terms. Else you will be removed from the program.
+
+Foundation Level Courses
+
+Mathematics for Data Science 1
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end-term exam.
+
+The calculation of the final course score T for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of the First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit the W12 assignment).
+
+English 1
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end-term exam.
+
+The calculation of the final course score T for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of the First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit the W12 assignment).
+
+Computational Thinking
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end-term exam.
+
+The calculation of the final course score T for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of the First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit the W12 assignment).
+
+Statistics for Data Science 1
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end-term exam.
+
+The calculation of the final course score T for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of the First 11 weekly graded assignments
+
+--- Chunk starting at line 350 ---
+Read time of up to 8 hours per course in a term: Badge 2
+
+Read time of up to 12 hours per course or more: Badge 3
+
+(Applicable only after you get the BS student roll number)
+
+Information about course grades:
+
+S, A, B, C, D, E - Pass grade; U - Fail grade
+
+In I grade, there are 3 types:
+
+1. If you are absent for ET alone with all other assessment components completed (quizzes, OPPEs, project, weekly assignments), the grade will be pushed as I.
+
+Options: You can register to take up the ET exam alone in the subsequent term. OPPE and quizzes will not be scheduled for you. All other marks for the final course score will be taken from the previous run.
+
+2. If you have failed in the OPPE but wrote the ET exam and crossed the cutoff for T as given in the course grading policy, grade = I_OP.
+
+You can register to do the OPPE alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You can attempt the OPPE alone. All other mark components of the final course score will be taken from the previous run. ET and quizzes will not be scheduled for you.
+
+3. If you have failed in the OPPE and were absent for ET, then grade = I_BOTH.
+
+You can register to ET and OPPEs alone. If the course has one OPPE, that will be scheduled. If the course has 2 OPPEs, both will be scheduled for you. You will attempt the ET and OPPEs. Quiz and GAA and other components will be taken from the previous run and not scheduled.
+
+In all the above cases, you can also choose to repeat the entire course and not just do the ET/OPPE alone if you want to reattempt all assessment components.
+
+OPPE Schedule (SEP 2024 Term):
+
+Exam | Timing | Python | DBMS | PDSA | Java | SC | MLP | C | Intro to Big Data
+--- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+Saturday Nov 16 2024 |
+OPPE1 (Day 1) | 07:00 PM to 09:00 PM |  |  |  |  |  | 1A | 1A |  
+Sunday Nov 17 2024 |
+OPPE 1 (Day 2) | 09:30 AM to 11:30 AM | 1A |  |  | 1A |  |  |  |  
+01:30 PM to 03:30 PM | 1B |  |  |  |  |  |  |  
+04:30 PM to 06:30 PM | 1C |  |  |  |  |  |  |  
+Saturday December 7 2024 |
+OPPE 2 (Day 1) | 07:00 PM to 09:00 PM |  |  |  |  | 2A |  |  |  
+Sunday December 8 2024 |
+OPPE 2 (Day 2) | 09:30 AM to 11:00 AM |  | 2A |  |  |  |  |  |  
+09:30 AM to 11:30 AM |  |  | 2A |  |  |  |  |  
+01:30 PM to 03:00 PM |  |  |  | 2A |  |  |  |  
+01:30 PM to 03:30 PM |  |  | 2B |  |  |  |  |  
+04:30 PM to 06:30 PM |  |  |  |  |  | 2A | 2A |  
+Saturday December 14 2024 |
+OPPE 2 (Day 3) | 07:00 PM to 09:00 PM |  |  |  |  | 2B |  |  |  
+Sunday December 15 2024 |
+OPPE 2 (Day 4) | 09:30 AM to 11:00 AM |  | 2B |  |  |  |  |  |  
+09:30 AM to 11:30 AM | 2A |  |  |  |  |  |  |  
+01:30 PM to 03:00 PM |  |  |  | 2B |  |  |  |  
+01:30 PM to 03:30 PM | 2B |  | 2C |  |  |  |  |  
+02:00 PM to 06:00 PM |  |  |  |  |  |  | 1A |
+04:30 PM to 06:30 PM | 2C |  |  |  |  |  |  |  
+
+Suggested pathway to register and study Foundation level courses:
+
+For those entering Foundation Level in MAY 2024 or after, kindly go through the new rules: 4/6/8 courses to be completed in 4/6/9 terms. Else you will be removed from the program.
+
+Foundation level courses:
+
+1. Mathematics for Data Science 1
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence, please practice and submit W12 assignment).
+
+2. English 1
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence, please practice and submit W12 assignment).
+
+3. Computational Thinking
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence, please practice and submit W12 assignment).
+
+4. Statistics for Data Science 1
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in final exam
+
+Extra activity - will be defined in the course on the portal
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2) + Bonus marks for Extra activity - capped to 5
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence, please practice and submit W12 assignment).
+
+Bonus marks for course-specific activity: 5 marks in total - 3.75 marks for weekly extra activity + 1.25 marks based on the quality of activity (Instructors' and Faculty's discretion)
+
+Extra Activity for Statistics- I Assignment Deadline
+
+Note: If a student does not complete the required number of peer reviews, he/she will be awarded 0 marks for that activity even if he/she submitted the activity.
+
+Extra activity | Release date for extra activity | End date of submission | End date for peer review
+--- | --- | --- | ---
+Extra Activity 1 | Friday, November 1, 2024 | Wednesday, November 13, 2024 | Sunday, November 17, 2024
+Extra Activity 2 | Friday, November 1, 2024 | Wednesday, November 13, 2024 | Sunday, November 17, 2024
+Extra Activity 3 | Friday, November 15, 2024 | Wednesday, November 27, 2024 | Wednesday, December 4, 2024
+Extra Activity 4 | Friday, November 29, 2024 | Wednesday, December 11, 2024 | Sunday, December 15, 2024
+
+5. Mathematics for Data Science 2
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+--- Chunk starting at line 400 ---
+Suggested pathway to register and study Foundation level courses:
+
+For those entering Foundation Level in May 2024 or after, kindly go through the new rules: 4/6/8 courses to be completed in 4/6/9 terms. Else you will be removed from the program.
+
+Foundation level courses:
+
+1. Mathematics for Data Science 1
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+   Note: Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+2. English 1
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+   Note: Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+3. Computational Thinking
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+   Note: Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+4. Statistics for Data Science 1
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2) + Bonus marks for Extra activity - capped to 5
+
+   Note: Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+   Bonus marks for course specific activity: 5 marks in total - 3.75 marks for weekly extra activity + 1.25 marks based on the quality of activity (Instructors' and Faculty's discretion)
+
+   Extra Activity for Statistics- I Assignment Deadline:
+
+   - Extra Activity 1: Release date: November 1, 2024; Submission end date: November 13, 2024; Peer review end date: November 17, 2024
+   - Extra Activity 2: Release date: November 1, 2024; Submission end date: November 13, 2024; Peer review end date: November 17, 2024
+   - Extra Activity 3: Release date: November 15, 2024; Submission end date: November 27, 2024; Peer review end date: December 4, 2024
+   - Extra Activity 4: Release date: November 29, 2024; Submission end date: December 11, 2024; Peer review end date: December 15, 2024
+
+5. Mathematics for Data Science 2
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+6. English 2
+
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+   Above to be attended in person at designated centres.
+
+   Eligibility to write the final exam:
+   - Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+   - Attendance in one of the 2 quizzes
+
+   Eligibility to obtain the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score T:
+   - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1 = score in Quiz I (0, if not attempted)
+   - Qz2 = score in Quiz II (0, if not attempted)
+   - F = score in final exam
+
+   T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+   Note: Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+7. Intro to Python Programming
+
+   - Quiz 1: October 27, 2024
+   - No Quiz 2 for this course.
+   - End term: December 22, 2024
+
+   - OPPE1: November 17, 2024
+   - OPPE2: December 15, 2024
+
+   Depending on your eligibility for OPPE1 & OPPE2, you will be allocated one of the 3 slots by the team. Please keep yourself free on the dates given.
+
+   Eligibility for Bonus:
+   - Only if you do the SCT, will the bonus be applicable to you and added to your final course score. Even if you attend the mock tests, only if you do the SCT, you will get the bonus.
+
+   Eligibility to appear for the OPPE 1:
+   - Student has to complete the OPPE System Compatibility Test (SCT) exam
+
+   SoP for the SCT Exam is as follows: [Click Here for OPPE SCT SoP Document](https://www.google.com/url?q=https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub&sa=D&source=editors&ust=1726257172174111&usg=AOvVaw1Sh6r61mou05lGyEE-GFrP)
+
+   OPPE1 will not be scheduled for students who fail to complete the OPPE SCT exam.
+
+   Eligibility to appear for the OPPE 2:
+
+--- Chunk starting at line 450 ---
+Computational Thinking
+
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments  
+Qz1 = score in Quiz I (0, if not attempted)  
+Qz2 = score in Quiz II (0, if not attempted)  
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+Statistics for Data Science 1
+
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments  
+Qz1 = score in Quiz I (0, if not attempted)  
+Qz2 = score in Quiz II (0, if not attempted)  
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2) + Bonus marks for Extra activity - capped to 5
+
+Bonus marks for course-specific activity: 5 marks in total - 3.75 marks for weekly extra activity + 1.25 marks based on the quality of activity (Instructors' and Faculty's discretion)
+
+Extra Activity for Statistics- I Assignment Deadline
+
+Note: If a student does not complete the required number of peer reviews, he/she will be awarded 0 marks for that activity even if he/she submitted the activity.
+
+| Extra activity | Release date for extra activity | End date of submission | End date for peer review |
+| --- | --- | --- | --- |
+| Extra Activity 1 | Friday, November 1, 2024 | Wednesday, November 13, 2024 | Sunday, November 17, 2024 |
+| Extra Activity 2 | Friday, November 1, 2024 | Wednesday, November 13, 2024 | Sunday, November 17, 2024 |
+| Extra Activity 3 | Friday, November 15, 2024 | Wednesday, November 27, 2024 | Wednesday, December 4, 2024 |
+| Extra Activity 4 | Friday, November 29, 2024 | Wednesday, December 11, 2024 | Sunday, December 15, 2024 |
+
+Mathematics for Data Science 2
+
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments  
+Qz1 = score in Quiz I (0, if not attempted)  
+Qz2 = score in Quiz II (0, if not attempted)  
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+English 2
+
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+Above to be attended in person at designated centers.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+The calculation of Final course Score T for eligible students is as follows:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments  
+Qz1 = score in Quiz I (0, if not attempted)  
+Qz2 = score in Quiz II (0, if not attempted)  
+F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment.
+
+Intro to Python Programming
+
+Quiz 1: October 27th, 2024  
+No Quiz 2 for this course.  
+End term: December 22nd, 2024
+
+OPPE1: Sunday, November 17, 2024  
+OPPE2: Sunday, December 15, 2024
+
+Depending on your eligibility for OPPE1 & OPPE2, you will be allocated one of the 3 slots by the team. Please keep yourself free on the dates given.
+
+Eligibility for Bonus: Only if you do the SCT, will the bonus be applicable to you and added to your final course score. Even if you attend the mock tests, only if you do the SCT, you will get the bonus.
+
+Eligibility to appear for the OPPE 1: Student has to complete the OPPE System Compatibility Test (SCT) exam
+
+OPPE1 will not be scheduled for students who fail to complete the OPPE SCT exam.
+
+Eligibility to appear for the OPPE 2: If the Average of the scores of the best 5 out of the first 9 Weekly programming assignments (GrPA) >= 40/100 AND Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100, then we will schedule the OPPE2 for you. If you do not satisfy this, we will not schedule OPPE2 for you.
+
+Eligibility to appear for the end term exam is as follows: Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100
+
+Eligibility to obtain the final course grade: Both the conditions below should be satisfied.
+
+1. Attending the end term exam AND
+2. Minimum score to be obtained in one of the programming exams (OPPE1, OPPE2) should be >= 40/100
+
+The calculation of Final course Score for eligible students is as follows:
+
+GAA1 = Average score in Best 10 objective assignments out of First 11 graded objective assignments  
+GAA2 = Average score in Best 10 programming assignments out of First 11 graded programming assignments  
+Qz1 = score in Quiz I (0, if not attempted) - in center  
+PE1 = score in OPPE1 (0, if not attempted) - programming exam 1  
+PE2 = score in OPPE2 (0, if not attempted) - programming exam 2  
+F = score in final exam
+
+T = 0.1 GAA1 (objective) + 0.1GAA2 (programming) + 0.1Qz1 + 0.4F + 0.25 max(PE1, PE2) + 0.15 min(PE1, PE2) — capped to 100
+
+| OPE1/OPE2 | ET | T | Grade | Possibilities for student |
+| --- | --- | --- | --- | --- |
+| Absent | Absent | - | U | Repeat the course. |
+| Absent | Present | >=35 | I_OP | Complete OPE alone in next term; Both OPPEs will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course |
+| <35 | - | U | Repeat the entire course |
+| Present, score < 40/100 | Present | >=40 | I_OP | Complete OPE alone in next term, Both OPPEs will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course |
+| <40 | - | U | Repeat the entire course |
+| Absent | - | I_BOTH | Complete ET and OPE in next term, Both OPPEs will be scheduled. GA and quiz marks will be carried over OR Repeat the entire course |
+| Present, Score > 40/100 | Absent | - | I | Complete ET alone in next term; OPPE will NOT be scheduled. GA, quiz, and OPPE marks will be carried over OR Repeat the entire course |
+| Present | - | - | Grade as per the Total score T |
+
+Statistics for Data Science 2
+
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+Above to be attended in person at designated centers.
+
+--- Chunk starting at line 500 ---
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final course Score for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2) + Bonus marks for Extra activity - capped to 5
+
+(Though the W12 assignment score is not included in GAA, W12 contents will be included for the final exam. Hence please practice and submit W12 assignment).
+
+Bonus marks for course specific activity: 5 marks in total - 3.75 marks for weekly extra activity + 1.25 marks based on the quality of activity (Instructors' and Faculty's discretion).
+
+Note: If a student does not complete the required number of peer reviews, they will be awarded 0 marks for that activity even if they submitted the activity.
+
+Extra Activity for Statistics-II Assignment Deadlines:
+
+- Extra Activity 1: Release date: Friday, September 20, 2024 | End date of submission: Wednesday, October 2, 2024 | End date for peer review: Sunday, October 6, 2024
+- Extra Activity 2: Release date: Friday, October 4, 2024 | End date of submission: Wednesday, October 16, 2024 | End date for peer review: Sunday, October 20, 2024
+- Extra Activity 3: Release date: Friday, October 18, 2024 | End date of submission: Wednesday, October 30, 2024 | End date for peer review: Sunday, November 3, 2024
+- Extra Activity 4: Release date: Friday, November 1, 2024 | End date of submission: Wednesday, November 13, 2024 | End date for peer review: Sunday, November 17, 2024
+- Extra Activity 5: Release date: Friday, November 15, 2024 | End date of submission: Wednesday, November 27, 2024 | End date for peer review: Wednesday, December 4, 2024
+
+Diploma Level Courses:
+
+Suggested pathway to register and study Diploma level courses:
+
+1. Most aggressive pathway - completing in 4 terms: ONLY IF YOU ARE DOING THIS AS FULL TIME AND NOTHING ELSE AND CAN SPEND 70 HRs PER WEEK MINIMUM
+2. Comfortable pathway - 6 terms (2 years): Suggested for students and working professionals doing this along with another degree or their job (40 hrs/week)
+3. Those from non-technical backgrounds, new to programming, or have busy schedules are recommended to take 6 or 7 terms for the 2 diplomas.
+4. The same sequence of courses is suggested if you are taking only the Diploma in programming or Diploma in Data Science separately.
+
+Maximum number of terms to complete both Diplomas: 12.
+
+--- Chunk starting at line 550 ---
+### English 2
+
+**Quiz Dates:**
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End Term: December 22, 2024
+
+**Eligibility:**
+- To write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+- To obtain the final course grade: Attending the end term exam.
+
+**Final Course Score Calculation:**
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = Score in Quiz I (0, if not attempted)
+- Qz2 = Score in Quiz II (0, if not attempted)
+- F = Score in final exam
+
+**Formula:**
+\[ T = 0.1 \times GAA + \max(0.6 \times F + 0.2 \times \max(Qz1, Qz2), 0.4 \times F + 0.2 \times Qz1 + 0.3 \times Qz2) \]
+
+### Intro to Python Programming
+
+**Quiz Dates:**
+- Quiz 1: October 27, 2024
+- End Term: December 22, 2024
+
+**OPPE Dates:**
+- OPPE1: November 17, 2024
+- OPPE2: December 15, 2024
+
+**Eligibility:**
+- For Bonus: Complete the SCT.
+- To appear for OPPE 1: Complete the OPPE System Compatibility Test (SCT).
+- To appear for OPPE 2: Average of the best 5 out of the first 9 weekly programming assignments >= 40/100 AND Average of the best 5 out of the first 9 weekly assessments >= 40/100.
+- To appear for the end term exam: Average of the best 5 out of the first 9 weekly assessments >= 40/100.
+- To obtain the final course grade: Attend the end term exam AND score >= 40/100 in one of the programming exams (OPPE1, OPPE2).
+
+**Final Course Score Calculation:**
+- GAA1 = Average score in Best 10 objective assignments out of First 11 graded objective assignments
+- GAA2 = Average score in Best 10 programming assignments out of First 11 graded programming assignments
+- Qz1 = Score in Quiz I (0, if not attempted)
+- PE1 = Score in OPPE1 (0, if not attempted)
+- PE2 = Score in OPPE2 (0, if not attempted)
+- F = Score in final exam
+
+**Formula:**
+\[ T = 0.1 \times GAA1 + 0.1 \times GAA2 + 0.1 \times Qz1 + 0.4 \times F + 0.25 \times \max(PE1, PE2) + 0.15 \times \min(PE1, PE2) \]
+
+**Grade Possibilities:**
+1. Absent for both OPPE and end term: Repeat the course.
+2. Absent for OPPE, present for end term with T >= 35: Complete OPPE next term or repeat the course.
+3. Present for OPPE with score < 35: Repeat the course.
+4. Present for OPPE with score < 40, present for end term with T >= 40: Complete OPPE next term or repeat the course.
+5. Present for OPPE with score >= 40, absent for end term: Complete end term next term or repeat the course.
+6. Present for both OPPE and end term: Grade as per the total score T.
+
+### Statistics for Data Science 2
+
+**Quiz Dates:**
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End Term: December 22, 2024
+
+**Eligibility:**
+- To write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+- To obtain the final course grade: Attending the end term exam.
+
+**Final Course Score Calculation:**
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = Score in Quiz I (0, if not attempted)
+- Qz2 = Score in Quiz II (0, if not attempted)
+- F = Score in final exam
+
+**Formula:**
+\[ T = 0.1 \times GAA + \max(0.6 \times F + 0.2 \times \max(Qz1, Qz2), 0.4 \times F + 0.2 \times Qz1 + 0.3 \times Qz2) + \text{Bonus marks (up to 5)} \]
+
+**Bonus Marks:**
+- Total of 5 marks: 3.75 for weekly extra activity + 1.25 based on quality (Instructors' and Faculty's discretion).
+
+**Extra Activity Deadlines:**
+- Extra Activity 1: Release - September 20, 2024; Submission - October 2, 2024; Peer Review - October 6, 2024
+- Extra Activity 2: Release - October 4, 2024; Submission - October 16, 2024; Peer Review - October 20, 2024
+- Extra Activity 3: Release - October 18, 2024; Submission - October 30, 2024; Peer Review - November 3, 2024
+- Extra Activity 4: Release - November 1, 2024; Submission - November 13, 2024; Peer Review - November 17, 2024
+- Extra Activity 5: Release - November 15, 2024; Submission - November 27, 2024; Peer Review - December 4, 2024
+
+### Diploma Level Courses
+
+**Suggested Pathways:**
+1. **Most Aggressive (4 terms):** Full-time commitment, 70 hours/week.
+2. **Comfortable (6 terms):** Suitable for students and working professionals, 40 hours/week.
+3. **Non-technical/New to Programming/Busy Schedules (6-7 terms):** Recommended to take 6 or 7 terms for the 2 diplomas.
+
+**Maximum Terms to Complete Both Diplomas:** 12
+
+**New Rules for May 2024 Onwards:**
+- Complete a minimum of 3 courses and 1 project every 3 terms.
+- If not completed, warnings will be issued, and failure to meet requirements at 6/9/12 terms will result in removal from the program.
+
+**OPPE Schedule (September 2024 Term):**
+
+**Exam Dates:**
+- **Saturday, Nov 16, 2024:**
+  - OPPE1 (Day 1): 07:00 PM to 09:00 PM
+- **Sunday, Nov 17, 2024:**
+  - OPPE1 (Day 2): 09:30 AM to 11:30 AM, 01:30 PM to 03:30 PM, 04:30 PM to 06:30 PM
+- **Saturday, Dec 7, 2024:**
+  - OPPE2 (Day 1): 07:00 PM to 09:00 PM
+- **Sunday, Dec 8, 2024:**
+  - OPPE2 (Day 2): 09:30 AM to 11:00 AM, 09:30 AM to 11:30 AM, 01:30 PM to 03:00 PM, 01:30 PM to 03:30 PM, 04:30 PM to 06:30 PM
+- **Saturday, Dec 14, 2024:**
+  - OPPE2 (Day 3): 07:00 PM to 09:00 PM
+- **Sunday, Dec 15, 2024:**
+  - OPPE2 (Day 4): 09:30 AM to 11:00 AM, 09:30 AM to 11:30 AM, 01:30 PM to 03:00 PM, 01:30 PM to 03:30 PM, 02:00 PM to 06:00 PM, 04:30 PM to 06:30 PM
+
+**Important:**
+- Python exams will be scheduled for students in one of the 3 slots provided. Ensure availability on those dates.
+- OPPEs for all Diploma courses will be scheduled accordingly.
+
+--- Chunk starting at line 600 ---
+If the average of the scores of the best 5 out of the first 9 weekly programming assignments (GrPA) is >= 40/100 and the average of the best 5 out of the first 9 weekly assessments (objective and programming) scores is >= 40/100, then OPPE2 will be scheduled. If these conditions are not met, OPPE2 will not be scheduled.
+
+Eligibility for the end term exam:
+- Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100
+
+Eligibility to obtain the final course grade:
+1. Attending the end term exam
+2. Minimum score in one of the programming exams (OPPE1, OPPE2) should be >= 40/100
+
+Calculation of Final Course Score for eligible students:
+- GAA1: Average score in Best 10 objective assignments out of First 11 graded objective assignments
+- GAA2: Average score in Best 10 programming assignments out of First 11 graded programming assignments
+- Qz1: Score in Quiz I (0 if not attempted)
+- PE1: Score in OPPE1 (0 if not attempted)
+- PE2: Score in OPPE2 (0 if not attempted)
+- F: Score in final exam
+
+Final Score (T) = 0.1 GAA1 (objective) + 0.1 GAA2 (programming) + 0.1 Qz1 + 0.4 F + 0.25 max(PE1, PE2) + 0.15 min(PE1, PE2) (capped to 100)
+
+|     | OPPE1/OPPE2 | ET | T | Grade | Possibilities for student |
+| --- | --- | --- | --- | --- | --- |
+| 1. | Absent | Absent | - | U | Repeat the course. |
+| 2. | Absent | Present | >=35 | I_OP | Complete OPPE alone next term; Both OPPEs will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course |
+| 3. | <35 | U | Repeat the entire course |
+| 4. | Present, score < 40/100 | Present | >=40 | I_OP | Complete OPPE alone next term; Both OPPEs will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course |
+| 5. | <40 | U | Repeat the entire course |
+| 6. | Absent | - | I_BOTH | Complete ET and OPPE next term; Both OPPEs will be scheduled. GA and quiz marks will be carried over OR Repeat the entire course |
+| 7. | Present, Score > 40/100 | Absent | - | I | Complete ET alone next term; OPPE will NOT be scheduled. GA, quiz, and OPPE marks will be carried over OR Repeat the entire course |
+| 8. | Present |  |  | Grade as per the Total score T |
+
+---
+
+Statistics for Data Science 2
+
+Quiz 1: October 27th, 2024
+Quiz 2: December 1st, 2024
+End term: December 22nd, 2024
+
+Eligibility to write the final exam:
+- Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100
+- Attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade:
+- Attending the end term exam
+
+Calculation of Final Course Score:
+- GAA: Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1: Score in Quiz I (0 if not attempted)
+- Qz2: Score in Quiz II (0 if not attempted)
+- F: Score in final exam
+
+Final Score (T) = 0.1 GAA + max(0.6 F + 0.2 max(Qz1, Qz2), 0.4 F + 0.2 Qz1 + 0.3 Qz2) + Bonus marks for Extra activity (capped to 5)
+
+Extra Activity for Statistics-II Assignment Deadlines:
+- Extra Activity 1: Release date: September 20, 2024; Submission: October 2, 2024; Peer review: October 6, 2024
+- Extra Activity 2: Release date: October 4, 2024; Submission: October 16, 2024; Peer review: October 20, 2024
+- Extra Activity 3: Release date: October 18, 2024; Submission: October 30, 2024; Peer review: November 3, 2024
+- Extra Activity 4: Release date: November 1, 2024; Submission: November 13, 2024; Peer review: November 17, 2024
+- Extra Activity 5: Release date: November 15, 2024; Submission: November 27, 2024; Peer review: December 4, 2024
+
+---
+
+Diploma Level Courses
+
+Suggested pathways to register and study Diploma level courses:
+1. Most aggressive pathway: Completing in 4 terms (full-time, 70 hours/week minimum)
+2. Comfortable pathway: 6 terms (2 years), suggested for students and working professionals (40 hours/week)
+3. For non-technical backgrounds, new to programming, or busy schedules: 6 or 7 terms for 2 diplomas
+
+Maximum number of terms to complete both Diplomas: 12
+
+New rules for those entering Diploma Level from May 2024 onwards:
+- Complete a minimum of 3 courses and 1 project every 3 terms
+- Slowest pace: 3 courses and 1 project in 3 terms (1 year), 6 courses and 2 projects in 6 terms (2 years), 9 courses and 3 projects in 9 terms (3 years), 12 courses and 4 projects in 12 terms (4 years)
+- Warning if 3 courses and 1 project are not completed in 3 terms; removal from the program if 6/9/12 courses and 2/3/4 projects are not completed in 6/9/12 terms
+
+OPPE Schedule (Sep 2024 Term):
+- Python exams will be scheduled in one of the 3 slots given
+- OPPEs for all Diploma courses will be scheduled as follows:
+  1. If you have 2 courses with OPPEs, both will be scheduled on December 8, 2024.
+  2. If you have 3 courses with OPPEs, OPPEs for 2 courses will be scheduled on December 8, 2024, and OPPE for 1 course will be scheduled on December 15, 2024.
+  3. If you have 4 courses with OPPEs, OPPEs for 2 courses will be scheduled on December 8, 2024, and OPPE for the other 2 courses will be scheduled on December 15, 2024.
+
+Pattern for OPPE for System Commands has changed from previous terms.
+
+Important Dates:
+- October 30 (Tentative): Release of slots for OPPE 1 & Dates for OPPE 2 allocated for each student for their registered subjects. If eligibility is specified and met, the exam will be scheduled as per the slots allocated.
+
+Please choose courses for the Sep 2024 term keeping these points in mind.
+
+---
+
+Diploma Level Courses
+
+1. Machine Learning Foundations (DS Diploma)
+   - Quiz 1: October 27th, 2024
+   - Quiz 2: December 1st, 2024
+   - End term: December 22nd, 2024
+
+   Eligibility to attend the final exam:
+   - Average of the best 5 out of the first 9 weekly assignment scores >= 40/100
+   - Attendance in at least one of the 2 quizzes
+
+   Eligibility to get the final course grade:
+   - Attending the end term exam
+
+   Calculation of Final Course Score:
+   - GAA: Average score in Best 10 out of First 11 weekly graded assignments
+   - Qz1: Score in Quiz I (0 if not attempted)
+   - Qz2: Score in Quiz II (0 if not attempted)
+   - F: Score in final exam
+
+   Final Score (T) = 0.1 GAA + max(0.6 F + 0.2 max(Qz1, Qz2), 0.4 F + 0.2 Qz1 + 0.3 Qz2)
+
+2. Machine Learning Techniques (Diploma in DS)
+   - Quiz 1: October 27th, 2024
+   - Quiz 2: December 1st, 2024
+   - End term: December 22nd, 2024
+
+   Eligibility to attend the end term exam:
+   - Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100
+   - Attendance in at least one of the 2 quizzes
+
+   Eligibility to get the course grade:
+   - Attending the end term exam
+
+--- Chunk starting at line 650 ---
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+The calculation of Final Course Score for eligible students is as follows:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+Total course score T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2) + Bonus marks for Extra activity (capped to 5).
+
+Note: The W12 assignment score is not included in GAA, but W12 contents will be included in the final exam. Please practice and submit the W12 assignment.
+
+Bonus marks for course-specific activity: 5 marks in total - 3.75 marks for weekly extra activity + 1.25 marks based on the quality of activity (Instructors' and Faculty's discretion).
+
+Extra Activity Deadlines:
+
+- Extra Activity 1: Release date - September 20, 2024; Submission - October 2, 2024; Peer review - October 6, 2024
+- Extra Activity 2: Release date - October 4, 2024; Submission - October 16, 2024; Peer review - October 20, 2024
+- Extra Activity 3: Release date - October 18, 2024; Submission - October 30, 2024; Peer review - November 3, 2024
+- Extra Activity 4: Release date - November 1, 2024; Submission - November 13, 2024; Peer review - November 17, 2024
+- Extra Activity 5: Release date - November 15, 2024; Submission - November 27, 2024; Peer review - December 4, 2024
+
+Diploma Level Courses:
+
+Suggested pathway to register and study Diploma level courses:
+
+1. Most aggressive pathway - completing in 4 terms (full-time, 70 hours/week minimum)
+2. Comfortable pathway - 6 terms (2 years): Suitable for students and working professionals (40 hours/week)
+3. Non-technical backgrounds or busy schedules: Recommended 6 or 7 terms for the 2 diplomas
+4. Same sequence of courses is suggested if taking only the Diploma in Programming or Diploma in Data Science separately.
+
+Maximum number of terms to complete both Diplomas: 12
+
+Even with a relaxed pathway, completion should be within 7 or 8 terms.
+
+New rules for those entering Diploma Level from May 2024 onwards:
+
+- Complete a minimum of 3 courses and 1 project every 3 terms.
+- At the end of 3 terms, if you do not complete 3 courses and 1 project, you will receive a warning. At the end of 6/9/12 terms, if you do not complete 6/9/12 courses and 2/3/4 projects, you will be removed from the program.
+
+If you wish to do the Diploma in Programming and Diploma in Data Science one after the other and not mix up the courses, here are the suggested pathways.
+
+OPPE Schedule (Sep 2024 Term):
+
+- Python exams will be scheduled for students in one of the 3 slots given here.
+- OPPEs for all Diploma courses will be scheduled as follows:
+  - 2 courses: December 8, 2024
+  - 3 courses: December 8, 2024, and December 15, 2024
+  - 4 courses: December 8, 2024, and December 15, 2024
+
+Pattern for OPPE for System Commands has changed from previous terms.
+
+Only if you have a conflicting engagement on December 8, 2024, which cannot be changed or moved, and you submit a request with proof, we will check the proofs and make changes if found valid.
+
+Oct 30 (Tentative): Slots for OPPE 1 & Dates for OPPE 2 allocated for each student for their registered subjects will be released.
+
+Please choose courses for the Sep 2024 term keeping all these points in mind.
+
+Diploma Level Courses:
+
+1. Machine Learning Foundations (DS Diploma):
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+Eligibility to attend final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the final course grade: Attending the end sem exam.
+
+Calculation of Final Course Score:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+- Overall score for eligible students: T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+2. Machine Learning Techniques (Diploma in DS):
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+Eligibility to attend the end term exam: Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the course grade: Attending the end sem exam.
+
+3. Machine Learning Practice (Diploma in DS):
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+
+Eligibility to attend the end term exam: Average of the best 5 out of the 9 weekly assessments (objective and programming) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the course grade: Attending the end sem exam AND one programming exam with a score in the programming exam >= 40/100.
+
+Eligibility to appear for the OPPE 1: Complete the OPPE System Compatibility Test (SCT) exam.
+
+Online programming exam 1 (OPE1): November 16, 2024
+Online programming exam 2 (OPE2): December 8, 2024
+
+Calculation of Final Course Score:
+- GAA = score in Best 10 out of first 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OPE1 = Score in online remote proctored programming exam
+- OPE2 = Score in online remote proctored programming exam
+- NPE1, NPE2 = Score in Non-proctored programming exam
+- F = score in final exam
+- Total course score T = 0.1GAA + 0.3F + 0.15 OPE1 + 0.15 OPE2 + Max(0.15Qz1 + 0.15Qz2, 0.2max(Qz1, Qz2)) + Bonus (0.025 NPE1 + 0.025 NPE2)
+
+--- Chunk starting at line 700 ---
+Even with a relaxed pathway, you should complete in a maximum of 7 or 8 terms.
+
+The new rules for those entering Diploma Level from May 2024 onwards:
+
+- Complete a minimum of 3 courses and 1 project every 3 terms.
+- The slowest pace is 3 courses and 1 project in 3 terms (1 year), 6 courses and 2 projects in 6 terms (2 years), 9 courses and 3 projects in 9 terms (3 years), and 12 courses and 4 projects in 12 terms (4 years).
+- At the end of 3 terms, if you do not complete 3 courses and 1 project, you will receive a warning. At the end of 6/9/12 terms, if you do not complete 6/9/12 courses and 2/3/4 projects, you will be removed from the program.
+
+If you wish to do the Diploma in programming and Diploma in data science one after the other without mixing courses, here are the suggested pathways.
+
+OPPE SCHEDULE (SEP 2024 TERM):
+
+- Exam Timing: Python, DBMS, PDSA, Java, SC, MLP, C, Intro to Big Data
+- Saturday, Nov 16, 2024: OPPE1 (Day 1) 07:00 PM to 09:00 PM
+- Sunday, Nov 17, 2024: OPPE1 (Day 2) 09:30 AM to 11:30 AM, 01:30 PM to 03:30 PM, 04:30 PM to 06:30 PM
+- Saturday, Dec 7, 2024: OPPE2 (Day 1) 07:00 PM to 09:00 PM
+- Sunday, Dec 8, 2024: OPPE2 (Day 2) 09:30 AM to 11:00 AM, 09:30 AM to 11:30 AM, 01:30 PM to 03:00 PM, 01:30 PM to 03:30 PM, 04:30 PM to 06:30 PM
+- Saturday, Dec 14, 2024: OPPE2 (Day 3) 07:00 PM to 09:00 PM
+- Sunday, Dec 15, 2024: OPPE2 (Day 4) 09:30 AM to 11:00 AM, 09:30 AM to 11:30 AM, 01:30 PM to 03:00 PM, 01:30 PM to 03:30 PM, 04:30 PM to 06:30 PM
+
+IMPORTANT:
+
+1. Python exams will be scheduled for students in one of the 3 slots given here. Please keep yourself available on that date.
+2. OPPEs for all Diploma courses will be scheduled as follows:
+   - 2 courses with OPPEs: Both scheduled on Dec 8, 2024.
+   - 3 courses with OPPEs: 2 courses on Dec 8, 2024, and 1 course on Dec 15, 2024.
+   - 4 courses with OPPEs: 2 courses on Dec 8, 2024, and 2 courses on Dec 15, 2024.
+3. Pattern for OPPE for System Commands has changed from previous terms - Please check.
+
+If you have a conflicting engagement on Dec 8, 2024, which cannot be changed or moved, submit a request with proof. We will check the proofs and, if valid, make changes to the allocation. Since both Dec 8 and Dec 15 are Sundays, please keep them free, especially during the time slots given for the exams.
+
+Oct 30 (Tentative): We will release the slots for OPPE 1 & Dates for OPPE 2 allocated for each student for their registered subjects. If eligibility is specified as part of the grading document to attend the exam and if you are eligible, the exam will be scheduled as per the slots allocated.
+
+Please choose courses for the SEP 2024 term keeping all these points in mind.
+
+Diploma level courses:
+
+1. Machine Learning Foundations (DS Diploma)
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - Eligibility to attend final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+   - Eligibility to get the final course grade: Attending the end sem exam.
+   - Calculation of Final course Score:
+     - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+     - Qz1 = score in Quiz I (0, if not attempted)
+     - Qz2 = score in Quiz II (0, if not attempted)
+     - F = score in final exam
+     - Overall score for eligible students: T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+2. Machine Learning Techniques (Diploma in DS)
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - Eligibility to attend the end term exam: Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+   - Eligibility to get the course grade: Attending the end sem exam.
+   - Calculation of Final course Score:
+     - GAA = Average score in Best 10 out of First 11 weekly graded assignments
+     - Qz1 = score in Quiz I (0, if not attempted)
+     - Qz2 = score in Quiz II (0, if not attempted)
+     - F = score in final exam
+     - Total course score T = 0.1 GAA for Weekly MCQ + 0.4F + Max(0.25 Qz1 + 0.25 Qz2, 0.4max(Qz1,Qz2))
+
+3. Machine Learning Practice (Diploma in DS)
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - Eligibility to attend the end term exam: Average of the best 5 out of the 9 weekly assessments (objective and programming) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+   - Eligibility to get the course grade: Attending the end sem exam AND one programming exam with a score in programming exam >= 40/100.
+   - Eligibility to appear for the OPPE 1: Student has to complete the OPPE System Compatibility Test (SCT) exam.
+   - OPPE1 will not be scheduled for students who fail to complete the OPPE SCT exam.
+   - Online programming exam 1 (OPE1): Saturday, November 16, 2024
+   - Online programming exam 2 (OPE2): Sunday, December 8, 2024
+   - Calculation of Final course Score:
+     - GAA = score in Best 10 out of first 11 weekly graded assignments
+     - Qz1 = score in Quiz I (0, if not attempted)
+     - Qz2 = score in Quiz II (0, if not attempted)
+     - OPE1 - Score in online remote proctored programming exam
+     - OPE2 - Score in online remote proctored programming exam
+     - NPE1, NPE2 - Score in Non proctored programming exam
+     - F = score in final exam
+     - Total course score T = 0.1GAA + 0.3F + 0.15 OPE1 + 0.15 OPE2 + Max(0.15Qz1 + 0.15Qz2, 0.2max(Qz1,Qz2)) + Bonus (0.025 NPE1 + 0.025 NPE2)
+
+4. Business Data Management (DS Diploma)
+   - No Quiz 1, No Quiz 2
+   - End term: December 22, 2024
+   - There will be no Quiz 1 or Quiz 2 for BDM in the SEP 2024 term.
+   - There will be 11 weekly assignments designed for this of 10 Marks each.
+   - Eligibility to take the final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100.
+   - Eligibility to get the final course grade: Attending the end sem exam AND average of best 7/11 weekly assignments >= 30/70.
+   - Components of evaluation for final course score T=0.7GA +0.30F:
+     - 70 marks (GA): Best 7 out of 11 assignments (10 Marks each).
+     - 30 marks (F): End sem exam (in person in centers).
+   - No Bonus Marks for BDM.
+
+5. Business Analytics (Diploma in DS)
+   - Quiz 1: October 27, 2024
+   - Quiz 2: December 1, 2024
+   - End term: December 22, 2024
+   - There will be no regular weekly graded assignments for this course. Instead, there are 3 course assignments.
+   - Eligibility to take the final exam: Submission of at least 1 out of the first two assignments - Asgn 1 and Asgn 2.
+
+OPE1/OPE2 | ET | T | Grade | Next steps
+--- | --- | --- | --- | --- | ---
+1. | Absent | Absent | - | U | Repeat the entire course
+2. | Absent (OPE1 and OPE2=0) | Present | >=35 | I_OP | Complete OPE alone in the next term, Both OPPEs will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course
+3. | <35 | U | Repeat the entire course
+4. | Present score < 40/100 | Present | >=40 | I_OP | Redo OPE alone next term. Both OPPE will be scheduled. GA, quiz, and ET marks will be carried over OR Repeat the entire course
+5. | <40 | U | Repeat the entire course
+6. | Absent | - | I_BOTH | Redo End term exam and OPE alone in the next term. Both OPPE will be scheduled for you. GA, quiz will be carried over OR Repeat the entire course
+7. | Present Score > 40/100 | Absent | - | I | Complete ET alone in the next term, OPPE will NOT be scheduled. GA, quiz, and OPPE marks will be carried over OR Repeat the entire course
+8. | Present |  |  | Grade as per the Total score T
+
+--- Chunk starting at line 750 ---
+If you have 2 courses with OPPEs, both will be scheduled on December 8, 2024. If you have 3 courses with OPPEs, OPPEs for 2 courses will be scheduled on December 8, 2024, and OPPE for 1 course will be scheduled on December 15, 2024. If you have 4 courses with OPPEs, OPPEs for 2 courses will be scheduled on December 8, 2024, and OPPE for the other 2 courses will be scheduled on December 15, 2024.
+
+Pattern for OPPE for System Commands has changed from previous terms - Please check.
+
+If you have a conflicting engagement on December 8, 2024, which cannot be changed or moved, submit a request with proof. If the proof is valid, changes to the allocation will be made. Ensure both December 8 and December 15 are kept free, especially during the time slots given for exams.
+
+Oct 30 (Tentative): Slots for OPPE 1 and dates for OPPE 2 allocated for each student will be released. If eligibility is specified in the grading document and you are eligible, the exam will be scheduled as per the allocated slots.
+
+Choose courses for the SEP 2024 term keeping these points in mind.
+
+### Diploma Level Courses
+
+#### Machine Learning Foundations (DS Diploma)
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to attend final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the final course grade: Attending the end sem exam.
+
+Final course score calculation:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+- Overall score for eligible students: T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+#### Machine Learning Techniques (Diploma in DS)
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to attend the end term exam: Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the course grade: Attending the end sem exam.
+
+Final course score calculation:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+- Total course score T = 0.1 GAA for Weekly MCQ + 0.4F + Max(0.25 Qz1 + 0.25 Qz2, 0.4max(Qz1,Qz2))
+
+#### Machine Learning Practice (Diploma in DS)
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to attend the end term exam: Average of the best 5 out of the 9 weekly assessments (objective and programming) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the course grade: Attending the end sem exam AND one programming exam with score in programming exam >= 40/100.
+
+Eligibility to appear for the OPPE 1: Complete the OPPE System Compatibility Test (SCT) exam.
+
+Online programming exam 1: November 16, 2024
+Online programming exam 2: December 8, 2024
+
+Final course score calculation:
+- GAA = score in Best 10 out of first 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OPE1 - Score in online remote proctored programming exam
+- OPE2 - Score in online remote proctored programming exam
+- NPE1, NPE2 - Score in Non proctored programming exam
+- F = score in final exam
+- Total course score T = 0.1GAA + 0.3F + 0.15 OPE1 + 0.15 OPE2 + Max(0.15Qz1 + 0.15Qz2, 0.2max(Qz1,Qz2)) + Bonus (0.025 NPE1 + 0.025 NPE2)
+
+#### Business Data Management (DS Diploma)
+
+- End term: December 22, 2024
+
+Eligibility to take the final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100.
+
+Eligibility to get the final course grade: Attending the end sem exam AND average of best 7/11 weekly assignments >= 30/70.
+
+Final course score calculation:
+- T = 0.7GA + 0.30F
+- 70 marks (GA): Best 7 out of 11 weekly assignments (10 Marks each)
+- 30 marks (F): End sem exam (in person)
+
+#### Business Analytics (Diploma in DS)
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to take the final exam: Submission of at least 1 out of the first two assignments (Asgn 1 and Asgn 2).
+
+Final course score calculation:
+- Eligibility to get final course grade: Attending the end term exam AND End term exam score F >=10/40
+- 20 marks: In center quiz (Qz)
+  - Quiz 1 will be from Week 1-4
+  - Quiz 2 will be from Week 3-8
+  - Quiz Marks Qz = 0.7*Max(Qz1, Qz2) + 0.3*Min(Qz1, Qz2)
+- 40 Marks: 3 Assignments for a total of 40 marks
+  - Assignment 1: 20 marks
+  - Assignment 2: 20 marks
+  - Assignment 3: 20 marks
+  - A = Sum of the Best 2 out of (Assignment 1, Assignment 2, Assignment 3)
+- 40 Marks (F): End Term Exam
+  - Set to 45 marks and students can attempt all.
+  - Marks obtained will be capped at 40.
+  - Syllabus: Weeks 1 to 12
+
+##### Business Analytics (BA) Assignment Deadlines
+
+- Week 5: Release date: October 18, 2024 | Submission date: November 3, 2024
+- Week 6: Release date: October 25, 2024 | Submission date: November 10, 2024
+- Week 9: Release date: November 15, 2024 | Submission date: November 24, 2024
+
+#### Tools in Data Science (Diploma in DS)
+
+- End term exam: December 22, 2024
+
+Eligibility to attend the end term exam: Average of best 3 out of the first 5 weekly assessment scores >= 40/100.
+
+Eligibility to get the course grade: Attending end-term exam.
+
+--- Chunk starting at line 800 ---
+GAA: Average score in Best 10 out of First 11 weekly graded assignments
+Qz1: Score in Quiz I (0, if not attempted)
+Qz2: Score in Quiz II (0, if not attempted)
+F: Score in final exam
+Total course score T = 0.1 GAA for Weekly MCQ + 0.4F + Max(0.25 Qz1 + 0.25 Qz2, 0.4max(Qz1,Qz2))
+
+Weekly 12 assignment score is not included in GAA, but W12 contents will be included in the final exam.
+
+### Machine Learning Practice (Diploma in DS)
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- End term exam: Average of the best 5 out of the 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+- Course grade: Attending the end term exam and one programming exam with a score >= 40/100.
+
+OPPE 1 Eligibility:
+- Complete the OPPE System Compatibility Test (SCT) exam.
+
+Online Programming Exams:
+- OPE1: November 16, 2024
+- OPE2: December 8, 2024
+
+Total course score T = 0.1GAA + 0.3F + 0.15 OPE1 + 0.15 OPE2 + Max(0.15Qz1 + 0.15Qz2, 0.2max(Qz1,Qz2)) + Bonus (0.025 NPE1 + 0.025 NPE2)
+
+|  | OPE1/OPE2 | ET | T | Grade | Next steps |
+| --- | --- | --- | --- | --- | --- |
+| 1. | Absent | Absent | - | U | Repeat the entire course |
+| 2. | Absent (OPE1 and OPE2=0) | Present | >=35 | I_OP | Complete OPE alone in next term, Both OPPEs will be scheduled. GA, quiz and ET marks will be carried over OR Repeat the entire course |
+| 3. | <35 | U | Repeat the entire course |
+| 4 | Present score < 40/100 | Present | >=40 | I_OP | Redo OPE alone next term. Both OPPE will be scheduled, GA, quiz and ET marks will be carried over OR Repeat the entire course |
+| 5 | <40 | U | Repeat the entire course |
+| 6 | Absent | - | I_BOTH | Redo End term exam and OPE alone in next term. Both OPPE will be scheduled for you. GA, quiz will be carried over OR Repeat the entire course |
+| 7 | Present Score > 40/100 | Absent | - | I | Complete ET alone in next term, OPPE will NOT be scheduled; GA, quiz and OPPE marks will be carried over OR Repeat the entire course |
+| 8 | Present |  |  | Grade as per the Total score T |
+
+### Business Data Management (DS Diploma)
+
+- No Quiz 1 or Quiz 2
+- End term: December 22nd, 2024
+
+Eligibility:
+- Final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100.
+- Course grade: Attending the end sem exam and average of best 7/11 weekly assignments >= 30/70.
+
+Final course score T = 0.7GA + 0.30F
+
+### Business Analytics (Diploma in DS)
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Final exam: Submission of at least 1 out of the first two assignments.
+- Course grade: Attending the end term exam and End term exam score F >=10/40.
+
+Evaluation:
+- 20 marks: In-center quiz
+- 40 Marks: 3 Assignments (Sum of the Best 2 out of Assignment 1, Assignment 2, Assignment 3)
+- 40 Marks (F): End Term Exam
+
+Assignment Deadlines:
+| Week no. | Release date | Submission date |
+| --- | --- | --- |
+| 5 | October 18, 2024 | November 3, 2024 |
+| 6 | October 25, 2024 | November 10, 2024 |
+| 9 | November 15, 2024 | November 24, 2024 |
+
+### Tools in Data Science (Diploma in DS)
+
+- No in-center quizzes
+- End term exam: December 22, 2024
+
+Eligibility:
+- End term exam: Average of best 3 out of the first 5 weekly assessment scores >= 40/100.
+- Course grade: Attending end-term exam.
+
+| ROE1 | Remote Online Exam 1 (45 mins, open internet, Objective assessments) | YTD | YTD | YTD |
+| P1 | Take home project 1 (open internet) | October 18, 2024 | November 10, 2024 | November 13, 2024 |
+| P2 | Take home project 2 (open internet) | November 8, 2024 | November 20, 2024 | November 23, 2024 |
+
+Final course score T = 0.1GAA + 0.2 ROE1 + 0.2 P1 + 0.2P2 + 0.3F
+
+### Programming Data Structures and Algorithms using Python (PDSA) - Diploma in Programming
+
+- Weekly assignments: Mix of autograded and programming assignments
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- End sem exams: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+- Course grade: Attendance in the end sem exam.
+
+Final course score T = 0.1GAA + 0.4F + 0.2OP + max(0.2max(Qz1, Qz2), (0.15Qz1 + 0.15Qz2))
+
+### Database Management System (DBMS) - Diploma in Programming
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- End term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+--- Chunk starting at line 850 ---
+Eligibility to get the final course grade:
+
+- Attend the end-semester exam.
+- Score a minimum of 35% in the OPE (overall).
+- Correctly answer the Python-DB connectivity question.
+
+If you do not achieve 35% in the OPE or fail the Python-DB connectivity question, you will receive a Fail in the OPE.
+
+**OPPE:**
+- Conducted at the end of 8-9 weeks with 2 chances to attempt.
+- Mandatory to attend the first date. If failed, a reattempt is allowed the next weekend.
+- Absence on the first date forfeits the reattempt chance.
+- Postponement to the second date is possible with sufficient proof. If failed on the second date, no further reattempt is allowed until the next term.
+
+**Assessment Types and Weightage:**
+- **Week 1-12:** 100% objective (GA)
+- **Weekly assessments, Weeks 2,3:** PostgreSQL assignments (GAA2)
+- **Week 7:** Programming assignment (GAA3)
+- **Quiz 1 (Weeks 1-4):** October 27, 2024, Objective, In-person at TCS centres (Qz1)
+- **Quiz 2 (Weeks 1-8):** December 1, 2024, Objective, In-person at TCS centres (Qz2)
+- **Online remote proctored exam (OPE1):** December 8, 2024 (Reattempt: December 15, 2024), Testing on SQL queries and Python-database connections, Online remote proctored (OPE1)
+- **End Sem:** December 22, 2024, 100% Objective, In-person at TCS centres (F)
+
+**Final Course Score Calculation:**
+- **GAA1:** Average score in Best 10 out of First 11 weekly graded assignments
+- **GAA2:** Average score of week 2 and 3 SQL-based assignments
+- **GAA3:** Average score of week 7 programming assignment
+- **Qz1:** Score in Quiz I (0 if not attempted)
+- **Qz2:** Score in Quiz II (0 if not attempted)
+- **OPE1:** Score in online remote proctored programming exam
+- **F:** Score in final exam
+
+**Overall Score for Eligible Students:**
+- T = 0.1GAA1 + 0.4F + 0.2OPE1 + max(0.2max(Qz1, Qz2), (0.15Qz1 + 0.15Qz2))
+
+--- Chunk starting at line 900 ---
+Eligibility to get the final course grade: Attending the end term exam AND End term exam score F >=10/40
+
+### Course Components and Grading
+
+**20 Marks: In-center Quiz (Qz)**
+- Quiz 1: Weeks 1-4
+- Quiz 2: Weeks 3-8
+- Quiz Marks: Qz = 0.7 * Max(Qz1, Qz2) + 0 * Min(Qz1, Qz2)
+
+**40 Marks: Assignments**
+- Assignment 1: 20 marks
+- Assignment 2: 20 marks
+- Assignment 3: 20 marks
+- A = Sum of the Best 2 out of (Assignment 1, Assignment 2, Assignment 3)
+
+**40 Marks (F): End Term Exam**
+- Set to 45 marks, capped at 40
+- Syllabus: Weeks 1 to 12
+
+### Business Analytics (BA) Assignment Deadlines
+- Week 5: Release - October 18, 2024, Submission - November 3, 2024
+- Week 6: Release - October 25, 2024, Submission - November 10, 2024
+- Week 9: Release - November 15, 2024, Submission - November 24, 2024
+
+### Tools in Data Science (Diploma in DS)
+- No in-center quizzes
+- End term exam: December 22, 2024 (in-person)
+
+**Eligibility:**
+- Attend end term exam
+- Average of best 3 out of the first 5 weekly assessment scores >= 40/100
+
+**Assessments:**
+- ROE1: Remote Online Exam 1 (45 mins, open internet)
+- P1: Take-home project 1 (open internet) - October 18, 2024 to November 10, 2024
+- P2: Take-home project 2 (open internet) - November 8, 2024 to November 20, 2024
+
+**Final Course Score:**
+- T = 0.1 * GAA + 0.2 * ROE1 + 0.2 * P1 + 0.2 * P2 + 0.3 * F
+
+### Programming Data Structures and Algorithms using Python (PDSA)
+- Weekly assignments: Mix of autograded and programming assignments
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024 (in-person)
+- Online proctored programming exam: December 8, 2024
+
+**Eligibility:**
+- Average of the best 5 out of the first 9 weekly assessments >= 40/100
+- Attend at least one of the 2 quizzes
+
+**Final Course Score:**
+- T = 0.1 * GAA + 0.4 * F + 0.2 * OP + max(0.2 * max(Qz1, Qz2), 0.15 * Qz1 + 0.15 * Qz2)
+
+### Database Management System (DBMS)
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024 (in-person)
+
+**Eligibility:**
+- Average of the best 5 out of the first 9 weekly assessments >= 40/100
+- Attend at least one of the 2 quizzes
+- Score a minimum of 35% in the OPE (overall)
+- Get the Python-DB connectivity question correct
+
+**Final Course Score:**
+- T = 0.04 * GAA1 + 0.03 * GAA2 + 0.03 * GAA3 + 0.2 * OP + max(0.45 * F + 0.15 * max(Qz1, Qz2), 0.4 * F + 0.1 * Qz1 + 0.2 * Qz2)
+
+**Assessment Outcomes:**
+1. Absent for OPE and End term: Repeat the course.
+2. Absent for OPE, Present for End term (>=35): Complete OPE next term or repeat the course.
+3. Score <35 in OPE: Repeat the course.
+4. Present for OPE, score <35 or incorrect Python-DB question, Present for End term (>=40): Complete OPE next term or repeat the course.
+5. Score <40 in End term: Repeat the course.
+6. Absent for End term: Complete End term and OPE next term or repeat the course.
+7. Present for OPE, score >35 and correct Python-DB question, Absent for End term: Complete End term next term or repeat the course.
+8. Present for both: Grade as per Total score T.
+
+### Application Development - 1 (Diploma in Programming)
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024 (in-person)
+
+**Eligibility:**
+- Average of the best 5 out of the first 9 weekly assessments >= 40/100
+- Attend at least one of the 2 quizzes
+
+**Final Course Score:**
+- T = 0.15 * GLA + 0.05 * GA + max(0.35 * F + 0.2 * Qz1 + 0.25 * Qz2, 0.4 * F + 0.3 * max(Qz1, Qz2))
+
+### Programming Concepts using Java (Diploma in Programming)
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024 (in-person)
+- OPPE: November 17, 2024
+
+**Eligibility:**
+- Average of the best 5 out of the first 9 weekly assessments >= 40/100
+- Attend at least one of the 2 quizzes
+- Attend the end term exam and one programming exam with a minimum score of 30%.
+
+--- Chunk starting at line 950 ---
+Remote Online Exam 1 (45 mins, open internet, Objective assessments)
+
+Take-home Project 1 (open internet): 
+- Start: Friday, October 18, 2024 
+- Submission: Sunday, November 10, 2024 
+- Peer Review: Sunday, November 13, 2024
+
+Take-home Project 2 (open internet): 
+- Start: Friday, November 8, 2024 
+- Submission: Wednesday, November 20, 2024 
+- Peer Review: Wednesday, November 23, 2024
+
+GAA: Score in best 5 of 7 weekly assignments on the portal (open internet, MCQs)
+
+Final Exam: No internet, in-person, mandatory
+
+P1 and P2 will have two components: Submissions and peer reviews with weightage 80:20
+
+Final course score T = 0.1GAA + 0.2 ROE1 + 0.2 P1 + 0.2 P2 + 0.3 F
+
+### Programming Data Structures and Algorithms using Python (PDSA) - Diploma in Programming
+
+Weekly assignments: Mix of autograded and programming assignments
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024  
+(All to be attended in person at designated centres)
+
+Programming exam of 120 minutes: Online remote proctored (Dec 8, 2024)
+
+Eligibility for end sem exams: 
+- Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get the final course grade: Attendance in the end sem exam
+
+Final course score calculation:
+
+GAA = Average score in Best 9 out of First 10 weekly graded assignments  
+Qz1 = Score in Quiz I (0, if not attempted)  
+Qz2 = Score in Quiz II (0, if not attempted)  
+OP = Score in Online proctored remote exam  
+F = Score in final exam
+
+Overall score for eligible students: T = 0.1GAA + 0.4F + 0.2OP + max(0.2 max(Qz1, Qz2), 0.15Qz1 + 0.15Qz2)
+
+### Database Management System (DBMS) - Diploma in Programming
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024  
+(All to be attended in person at designated centres)
+
+Eligibility to write end term exam: 
+- Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: 
+- Attending the End sem exam 
+- Scoring a minimum of 35% in the OPE (overall) 
+- Correct answer to Python-DB connectivity question
+
+OPPE: Conducted at the end of 8-9 weeks with 2 chances to attempt
+
+Assessment Types and Contributions:
+
+- Weekly assessments (Weeks 1-12): 100% objective
+- Weekly assessments (Weeks 2,3): PostgreSQL assignments considered
+- Programming assignment (Week 7)
+- Quiz 1 (Weeks 1-4): October 27, 2024
+- Quiz 2 (Weeks 1-8): December 1, 2024
+- Online remote proctored exam (OPE1): December 8, 2024 (Reattempt: December 15, 2024)
+- End Sem: December 22, 2024
+
+Final course score calculation:
+
+GAA1 = Average score in Best 10 out of First 11 weekly graded assignments  
+GAA2 = Average score of week 2 and 3 SQL based assignments  
+GAA3 = Average score of week 7 programming assignment  
+Qz1 = Score in Quiz I (0, if not attempted)  
+Qz2 = Score in Quiz II (0, if not attempted)  
+OPE1 = Score in online remote proctored programming exam  
+F = Score in final exam
+
+Overall score for eligible students: T = 0.04GAA1 + 0.03GAA2 + 0.03GAA3 + 0.2OP + max (0.45F + 0.15 max(Qz1, Qz2), 0.4F + (0.10Qz1 + 0.20Qz2))
+
+### Application Development - 1 (Diploma in Programming)
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024  
+(All to be attended in person at designated centres)
+
+Eligibility to write end term exam: 
+- Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100 
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Assessment Types and Contributions:
+
+- Lab assignments (Weeks 2-7): 100% auto-evaluated via framework (Best 5 out of 6)
+- Objective Assignments (Weeks 1-12): 100% objective (Best 10 out of First 11)
+- Quiz 1 and 2: October 27, 2024 & December 1, 2024
+- End Sem: December 22, 2024
+
+Final course score T = 0.15 GLA + 0.05 GA + Max(0.35 F + 0.2 Qz1 + 0.25 Qz2, 0.4 F + 0.3 Best(Qz1, Qz2))
+
+### Programming Concepts using Java (Diploma in Programming)
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024  
+(All to be attended in person at designated centres)
+
+OPPE: November 17, 2024
+
+Eligibility to attend the end term exam: 
+- Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100 
+- Attending at least one of the 2 quizzes in the center
+
+Eligibility to get the course grade: Attending the end term exam AND one programming exam with a minimum score of 30%
+
+Assessment Types and Contributions:
+
+- Weekly Objective Assessments (Weeks 1-12): Objective Questions on Course Portal
+- Weekly Programming Assignments (Weeks 2-8): Programming Questions on Course Portal
+- Quiz 1: October 27, 2024 (Weeks 1-4)
+- Quiz 2: December 1, 2024 (Weeks 1-8)
+- Online Proctored Examination 1: November 17, 2024 (syllabus weeks 1-6)
+- Online Proctored Examination 2: December 8 or 15, 2024 (syllabus weeks 1-9)
+- End Sem: December 22, 2024 (Weeks 1-12)
+
+GAA: Average of score in Best 6 out of 7 programming graded assignments
+
+Final course score T = 0.1 GAA + 0.3 F + 0.2 of Max(PE1, PE2) + (Bonus) 0.10 Min(PE1, PE2) + max (0.25 Max(Qz1, Qz2), 0.15 Qz1 + 0.25 Qz2) capped to 100
+
+### System Commands (Diploma in Programming)
+
+Quiz 1: October 27, 2024  
+No Quiz 2  
+End term: December 22, 2024  
+(All to be attended in person at designated centres)
+
+OPPE: December 7, 2024; ReOPPE: December 14, 2024
+
+Biweekly Programming Test (BPT) Release Dates: October 5, October 19, November 2, November 23  
+BPT Due dates: October 6, October 20, November 3, November 24
+
+Quiz 1 Syllabus: Week 1 to Week 4
+
+Eligibility to attend the end term exam: 
+- Average of the best 7 out of the first 9 weekly assessments (objective and programming) scores >= 40/100
+
+Eligibility to get the course grade: 
+- Attending the end semester exam 
+- Programming exam (OPPE) with a score >= 40/100
+
+--- Chunk starting at line 1000 ---
+Eligibility to get final course grade:
+
+- Attend the End Sem exam.
+- Score a minimum of 35% in the OPE (overall).
+- Get the question based on Python-DB connectivity correct.
+
+The OPE will be based on SQL queries (Week 2-3) and Python-Database connectivity (Week 7). If you do not meet the 35% in OPE or do not pass the Python-DB connectivity question, you will receive a Fail in the OPE.
+
+OPPE:
+
+- Only one OPPE is conducted at the end of 8-9 weeks, with 2 chances to attempt it.
+- Students must attend the OPPE on the first date. If failed, a reattempt is available the next weekend.
+- Absence on the first date forfeits the reattempt.
+- If the first date is inconvenient, apply for postponement to the second date with proof. If accepted, the exam is moved to the second date. Failing this, no further reattempt is allowed, and the exam must be taken in the subsequent term.
+
+Assessment Types and Contributions:
+
+- **Weekly Assessments (Weeks 2,3):** PostgreSQL assignments.
+- **Week 7:** Programming assignment.
+- **Quiz 1 (Weeks 1-4):** Objective, in-person at TCS centers.
+- **Quiz 2 (Weeks 1-8):** Objective, in-person at TCS centers.
+- **Online remote proctored exam (OPE1):** SQL queries and Python-database connections, with options to choose the date and slot.
+- **End Sem:** 100% Objective, in-person at TCS centers.
+
+Calculation of Final Course Score:
+
+- GAA1 = Average score in Best 10 out of First 11 weekly graded assignments.
+- GAA2 = Average score of week 2 and 3 SQL based assignments.
+- GAA3 = Average score of week 7 programming assignment.
+- Qz1 = Score in Quiz I (0, if not attempted).
+- Qz2 = Score in Quiz II (0, if not attempted).
+- OPE1 = Score in online remote proctored programming exam.
+- F = Score in final exam.
+
+Overall score for eligible students:
+
+\[ T = 0.04GAA1 + 0.03GAA2 + 0.03GAA3 + 0.2OP + \max(0.45F + 0.15\max(Qz1, Qz2), 0.4F + (0.10Qz1 + 0.20Qz2)) \]
+
+Grading Outcomes:
+
+1. Absent for both OPE and ET: Repeat the course.
+2. Absent for OPE, present for ET, score >=35: Complete OPE in next term or repeat the course.
+3. Present for OPE, score <35: Repeat the course.
+4. Present for OPE, score <35 or Python-DB question incorrect, present for ET, score >=40: Complete OPE in next term or repeat the course.
+5. Present for OPE, score <40: Repeat the course.
+6. Absent for ET: Complete ET and OPE in next term or repeat the course.
+7. Present for OPE, score >35 and Python-DB question correct, absent for ET: Complete ET in next term or repeat the course.
+8. Present for both OPE and ET: Grade as per the Total score T.
+
+Application Development - 1 (Diploma in Programming):
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weekly assessments (objective) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get final course grade: Attending the End Sem exam.
+
+Assessment Types and Contributions:
+
+- **Lab assignments (Weeks 2-7):** Auto-evaluated via framework.
+- **Objective Assignments (Weeks 1-12):** Best 10 out of First 11.
+- **Quiz 1 and 2:** Objective and subjective questions, in person at TCS centers.
+- **End Sem:** Objective, in person at TCS centers.
+
+Final course score T = 0.15 GLA + 0.05 GA + \max(0.35 F + 0.2 Qz1 + 0.25 Qz2, 0.4 F + 0.3 \max(Qz1, Qz2))
+
+Programming Concepts Using Java (Diploma in Programming):
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to attend the end term exam: Average of the best 5 out of the first 9 weekly assessments (objective and programming) scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the course grade: Attending the end term exam AND one programming exam with a minimum score of 30%.
+
+Assessment Types and Contributions:
+
+- **Weekly Objective Assessments (Weeks 1-12):** Objective Questions.
+- **Weekly Programming Assignments (Weeks 2-8):** Programming Questions.
+- **Quiz 1:** Objective + subjective, in TCS centers.
+- **Online Proctored Examination 1:** Programming Questions.
+- **Online Proctored Examination 2:** Programming Questions.
+- **End Sem:** Objective, in TCS centers.
+
+Final course score T = 0.1 GAA + 0.3 F + 0.2 \max(PE1, PE2) + 0.1 \min(PE1, PE2) + \max(0.25 \max(Qz1, Qz2), 0.15 Qz1 + 0.25 Qz2) (capped to 100)
+
+Grading Outcomes:
+
+1. Absent for both OPE and ET: Repeat the course.
+2. Absent for OPE, present for ET, score >=35: Complete OPE in next term or repeat the course.
+3. Present for OPE, score <35: Repeat the course.
+4. Present for OPE, score <30, present for ET, score >=40: Complete OPE in next term or repeat the course.
+5. Present for OPE, score <40: Repeat the course.
+6. Absent for ET: Complete ET and OPE in next term or repeat the course.
+7. Present for OPE, score >30, absent for ET: Complete ET in next term or repeat the course.
+8. Present for both OPE and ET: Grade as per the Total score T.
+
+System Commands (Diploma in Programming):
+
+- Quiz 1: October 27th, 2024
+- End term: December 22nd, 2024
+
+Eligibility to attend the end term exam: Average of the best 7 out of the first 9 weekly assessments (objective and programming) scores >= 40/100.
+
+Eligibility to get the course grade: Attending the end semester exam AND programming exam (OPPE) with a score >= 40/100.
+
+Eligibility for OPPE:
+
+- Successfully completing 3 out of the first 4 BPTs (Biweekly Programming Tests).
+- SCT for OPPE and exam day rules: [Link](https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub#h.t5nwrevshz0a)
+
+There will be one OPPE based on weeks 1-9. Students must attend the OPPE on the first date. If failed, a reattempt is available the next weekend. If the first date is inconvenient, apply for postponement to the second date with proof. Absence on December 8, 2024, forfeits the reattempt.
+
+NPPE (Syllabus Weeks 1-9): Dec 5, 2024 (Practice for OPE, not part of final course grade).
+
+Assessment Types and Contributions:
+
+- GAA = Average of score in Best 7 out of all weekly graded assignments.
+- BPT = Biweekly Programming Tests (4 programming questions each, conducted in the course VM).
+- Qz1 = Score in Quiz I (0, if not attempted).
+- OPE = Score in online remote proctored programming exam (one additional attempt if score < 40 in first attempt).
+- F = Score in End Term exam.
+
+Final course score T = 0.15 GAA + 0.2 Qz1 + 0.3 OPE + 0.3 F + 0.2 BPT (Total 115, capped to 100).
+
+Grading Outcomes:
+
+1. Absent for both OPE and ET: Repeat the course.
+2. Absent for OPE, present for ET, score >=35: Complete the BPT and OPE in next term or repeat the course.
+3. Present for OPE, score <35: Repeat the course.
+4. Present for OPE, score <40, present for ET, score >=40: Complete the BPT and OPE in next term or repeat the course.
+5. Present for OPE, score <40: Repeat the course.
+6. Absent for ET: Complete ET and OPE in next term or repeat the course.
+7. Present for OPE, score >40, absent for ET: Complete ET in next term or repeat the course.
+8. Present for both OPE and ET: Grade as per the Total score T.
+
+Application Development - 2 (Diploma in Programming):
+
+- Quiz 1: October 27th, 2024
+- End term: December 22nd, 2024
+
+--- Chunk starting at line 1050 ---
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+These exams are to be attended in person at designated centers.
+
+Eligibility to write the end term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get the final course grade: Attending the end semester exam.
+
+Assessment Types:
+- Weekly assessments (Weeks 1 - 11): 100% objective, no proctoring, contributes 5 marks (GAA1).
+- Programming Assignments (Weeks 1 and 2): Auto Evaluated, no proctoring, contributes 5 marks (GAA2).
+- Quiz 1 (October 27th) and Quiz 2 (December 1st): Objective + Descriptive, in person at TCS centers.
+- End Sem (December 22nd): 100% Objective, in person at TCS centers.
+
+GAA1: Average score in Best 10 out of First 11 weekly graded assignments.  
+GAA2: Average of weeks 1 and 2 programming assignments.
+
+Final course score T = 0.05 GAA1 + 0.05 GAA2 + Max(0.35 F + 0.25 Qz1 + 0.3 Qz2, 0.5 F + 0.3 Best(Qz1, Qz2)).
+
+Project Courses:
+- Project courses are now for 2 credits each: BDM, MLP, App Dev 1, and App Dev 2.
+- Project courses are not part of CCC, which is only for theory courses.
+- App Dev1 Theory is a co-requisite for App Dev 1 project.
+- App Dev1 project is a co-requisite for App Dev2 Theory.
+- App Dev2 Theory is a co-requisite for App Dev2 Project.
+- MLP course is a co-requisite for MLP project.
+- BDM course is a co-requisite for BDM project.
+
+MLP:
+- If you completed the MLP Theory course in May 2024 or Sep 2024 and complete the MLP project in Sep 2024, the project will be evaluated for 105 marks and capped at 100.
+- There will be fortnightly assessments in the MLP project course to monitor engagement.
+
+App Dev 1 and 2:
+- If you completed App Dev 1/App Dev 2 Theory courses in May 2024 or Sep 2024 and complete the corresponding projects in Sep 2024, the project will be evaluated for 120 marks and capped at 100.
+
+BDM:
+- The BDM project will be evaluated out of 100 marks for all students, regardless of the term submitted.
+
+Each project has its own modalities and processes. Please check your course announcements for the project timelines and submission details.
+
+--- Chunk starting at line 1100 ---
+Guideline documents:
+
+**BDM:**
+
+1. General instructions on preparing a report:
+   [General Instructions](https://docs.google.com/document/d/e/2PACX-1vTzF1dpoe40s7mSD633u_fTE1knPer32LyFxNwb978rGtMDO45Hny4KLmN2kKmN0A/pub)
+
+2. Capstone Project Rubrics for Analysis with Primary Data:
+   [Primary Data Rubrics](https://docs.google.com/document/d/e/2PACX-1vShnBLNHmdbVlpoK9y0Fb_5ew5rKNJpYmAJ3HJG4rK1rRWwnKbzzqKGJcX9iGFctA/pub)
+
+3. Capstone Project Rubrics for Analysis with Secondary Data:
+   [Secondary Data Rubrics](https://docs.google.com/document/d/e/2PACX-1vRuykh6558Gsw5yZmwu3xs_sbF97aMcC2NN2YEnd4D5xS8mKUQn5onkKuzOyzO1xA/pub)
+
+**MLP:**
+
+[MLP Guidelines](https://docs.google.com/document/d/1CHqr8IRtTGdq5IFfcXv39C7Wgkn8UW8eeaa515OEQnE/pub)
+
+**MAD I:**
+
+Household Services App:
+[Household Services App Guidelines](https://docs.google.com/document/d/1waf_CKBLk25fkwF-R4KS7wLq4KTIPhUcAtj6if5N-zo/pub)
+
+**MAD II:**
+
+IESCP V2:
+[IESCP V2 Guidelines](https://docs.google.com/document/d/e/2PACX-1vSkNI3l6q_QcsK2cKChhxgYErTpUzNo-4MH11lf7YQxokY-C3PjThNVVgN-gLkSk19QZ_rx4AFtd5s6/pub)
+
+Household Services App V2:
+[Household Services App V2 Guidelines](https://docs.google.com/document/d/1g-TDnTHgpAcgMIdMYC2ePBgasJfOIkjRXvjkHjEHiqk/pub)
+
+**Rules regarding project fees:**
+
+The fee paid for each of the 4 projects is valid for 2 terms.
+
+**Fee details for Project:**
+
+| Category          | Payment | Category Waiver | Grade       |
+|-------------------|---------|-----------------|-------------|
+| New Registration  | 2500    | Yes             | Actual grade |
+
+--- Chunk starting at line 1150 ---
+Eligibility for OPPE:
+
+- Successfully complete 3 BPTs from the first 4 BPTs (solving at least one question from the BPT). Getting 0 marks is not considered successful.
+
+SCT for OPPE and exam day rules:
+
+- We will have ONE OPPE based on weeks 1-9.
+- Students must attend the OPPE on the first date.
+  - If you fail, you can reappear the next weekend (2 chances to attempt the exam).
+  - If the first date is inconvenient, you can apply for a postponement to the second date with sufficient proof. If accepted, your exam is moved to the second date, but if you fail, you will not get another chance and must do it in the subsequent term.
+  - If absent on December 8, 2024, you do not get another chance on December 15.
+
+NPPE (Syllabus Weeks 1-9): Dec 5, 2024 (Practice for OPE, not part of final course grade)
+
+GAA = Average score in Best 7 out of all weekly graded assignments
+
+BPT = Biweekly Programming Tests:
+- Each BPT has 4 programming questions
+- Released on Saturday 12:00 am and closed on Sunday 11:59 pm
+- Conducted in the course VM
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+OPE = Score in online remote proctored programming exam:
+- One additional attempt if score < 40 in the first attempt
+
+F = Score in End Term exam
+
+Final course score T = 0.15 GAA + 0.2 Qz1 + 0.3 OPE + 0.3 F + 0.2 BPT (Total 115, capped to 100)
+
+| OPE1/OPE2 | ET | T | Grade | Outcome |
+| --- | --- | --- | --- | --- |
+| Absent | Absent | - | U | Repeat entire course |
+| Absent (OPE1 and OPE2=0) | Present | >=35 | I_OP | Complete BPT and OPE next term; GA, quiz, and ET marks carried over OR repeat the course |
+| <35 | - | U | Repeat the course |
+| Present (score < 40/100) | Present | >=40 | I_OP | Complete BPT and OPE next term; GA, quiz, and ET marks carried over OR repeat the course |
+| <40 | - | U | Repeat the course |
+| Absent | - | I_Both | Redo End term exam and OPE next term; BPTs must be done to become eligible; GA, quiz carried over OR repeat the course |
+| Present (score > 40/100) | Absent | - | I | Complete ET next term; OPPE not given; GA, quiz, and OPPE marks carried over OR repeat the course |
+| Present | - | - | Grade as per Total score T |
+
+Application Development - 2 (Diploma in Programming):
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the center.
+
+Eligibility to get final course grade: Attending the End sem exam.
+
+| Assessment Type | Method | Proctoring | Percentage contribution |
+| --- | --- | --- | --- |
+| Weekly assessments (Weeks 1-11) | 100% objective | None | GAA1 = 5 marks |
+| Programming Assignments (Weeks 1 and 2) | Auto Evaluated | None | GAA2 = 5 marks |
+| Quiz 1 (October 27, Qz1) and Quiz 2 (December 1, Qz2) | Objective + Descriptive | In person at TCS centers | Qz1, Qz2 |
+| End Sem (December 22, F) | 100% Objective | In person at TCS centers | F |
+
+GAA1 = Average score in Best 10 out of First 11 weekly graded assignments
+
+GAA2 = Average of weeks 1 and 2 programming assignments
+
+Final course score T = 0.05 GAA1 + 0.05 GAA2 + Max(0.35 F + 0.25 Qz1 + 0.3 Qz2, 0.5 F + 0.3 Best(Qz1, Qz2))
+
+Project Courses:
+
+Project courses are now for 2 credits each - BDM, MLP, App Dev 1, and App Dev 2. They are not part of CCC, which is only for theory courses.
+
+- App Dev1 Theory is a co-requisite for App Dev 1 project.
+- App Dev1 project is a co-requisite for App Dev2 Theory.
+- App Dev2 Theory is a co-requisite for App Dev2 Project.
+- MLP course is a co-requisite for MLP project.
+- BDM course is a co-requisite for BDM project.
+
+MLP: If you completed MLP Theory in May 2024 or Sep 2024 and the MLP project in Sep 2024, your project will be evaluated for 105 marks, capped at 100. Fortnightly assessments will be used to check your engagement.
+
+App Dev 1 and 2: If you completed App Dev 1/App Dev 2 Theory in May 2024 or Sep 2024 and the corresponding projects in Sep 2024, your project will be evaluated for 120 marks, capped at 100.
+
+BDM project will be evaluated out of 100 marks for all students, regardless of the term submitted.
+
+Each project has its own modalities and processes. Check course announcements for project timelines and submissions.
+
+Project Fees:
+
+- If the project is not completed in the registered term, the fee is retained for the subsequent term, and the grade will be marked as I. If not completed in the second term, the registration becomes invalid, and the student must pay the full fees again, receiving a U grade.
+- If the student fails the project, they must redo it by registering and paying the full fees.
+- If the project is plagiarized, the student will face disciplinary action and must redo the project by registering and paying the full fees.
+
+Timelines (App Dev 1, App Dev 2, MLP, BDM projects):
+
+- Complete all projects and vivas by November 2024 to enter Degree level courses in Jan 2025.
+- BDM project final submission must be done and approved by October/November 2024 for viva in November/December 2024. Project grades will be pushed before Dec 25th.
+
+Degree Level Courses:
+
+- The first digit of the course code represents the level (e.g., CS1001 is a 1 level course, CS3004 is a 3 level course).
+- It is mandatory to complete both core pairs and SPG at the BSc level. Credits = 20.
+- Earn 8 credits from IITM BS courses or NPTEL (up to 4 credits) or campus courses.
+- For BS level, complete 2 courses at level 4 or higher in each BP and BD categories. Earn 4 credits in HS/MG category from in-house electives or NPTEL.
+- Remaining credits from in-house/campus electives or Apprenticeship electives.
+
+--- Chunk starting at line 1200 ---
+Quiz 1: October 27th, 2024  
+Quiz 2: December 1st, 2024  
+End term: December 22nd, 2024
+
+These exams must be attended in person at designated centers.
+
+**Eligibility to write the end term exam:**
+- Average of the best 5 out of the first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes in the center
+
+**Eligibility to get the final course grade:**
+- Attending the end term exam
+
+**Assessment Types and Contributions:**
+- Weekly assessments (Weeks 1 - 11): 100% objective, no proctoring, contributes 5 marks (GAA1)
+- Programming Assignments (Weeks 1 and 2): Auto-evaluated, no proctoring, contributes 5 marks (GAA2)
+- Quiz 1 (October 27th) and Quiz 2 (December 1st): Objective + Descriptive, in person at TCS centers
+- End Sem (December 22nd): 100% Objective, in person at TCS centers
+
+**Scoring:**
+- GAA1 = Average score in the best 10 out of the first 11 weekly graded assignments
+- GAA2 = Average of weeks 1 and 2 programming assignments
+- Final course score T = 0.05 GAA1 + 0.05 GAA2 + Max(0.35 * F + 0.25 * Qz1 + 0.3 * Qz2, 0.5 * F + 0.3 * Best(Qz1, Qz2))
+
+**Project Courses:**
+- Each project course is for 2 credits (BDM, MLP, App Dev 1, App Dev 2)
+- Project courses are not part of CCC, which is only for theory courses
+- Co-requisites exist between theory and project courses for App Dev and MLP
+
+**Project Evaluation:**
+- MLP project: Evaluated for 105 marks, capped at 100
+- App Dev 1 and 2 projects: Evaluated for 120 marks, capped at 100
+- BDM project: Evaluated out of 100 marks
+
+**Project Guidelines:**
+- BDM: General instructions and rubrics for analysis with primary and secondary data
+- MLP: Specific guidelines
+- App Dev 1 and 2: Specific guidelines for different app versions
+
+**Project Fees:**
+- Fee for each project is 2500, valid for 2 terms
+- If the project is not completed in the registered term, the fee is retained for the subsequent term with a grade marked as I
+- If not completed in the second term, the registration becomes invalid, and the student must pay the full fee again, receiving a U grade
+
+**Timelines:**
+- Projects and vivas for SEP 2024 term must be completed by November 2024 to start degree-level courses in Jan 2025
+- BDM project final submission and approval by October/November 2024, with viva in November/December 2024
+
+**Degree Level Courses:**
+- Course level indicated by the first digit in the course code
+- Mandatory completion of core pairs and SPG at the BSc level, earning 20 credits
+- Additional credits can be earned from IITM BS courses, NPTEL, or campus courses
+
+**Apprenticeship:**
+- Optional for BS level completion
+- Recommendations for additional courses and skills:
+  - C++ Programming
+  - Introduction to Haskell Programming
+  - Competitive Programming
+  - Cloud Computing
+  - Blockchain and its Applications
+  - Compiler Design
+- Collaboration with Microsoft and AWS for discounted certification courses
+
+**Software Testing:**
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+- Eligibility: Average of best 5 out of first 9 weekly assessments >= 40/100 and attending at least one quiz
+- Final Score: T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+**Software Engineering:**
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+--- Chunk starting at line 1250 ---
+Guideline documents:
+
+BDM:
+
+1. General instructions on preparing a report.
+2. Capstone Project Rubrics for Analysis with Primary Data: Convince a business owner to share data, collect, and analyze it.
+3. Capstone Project Rubrics for Analysis with Secondary Data: Use data from the internet, quote sources, and complete the analysis and suggestions.
+
+MLP:
+
+Guideline document available.
+
+MAD I:
+
+Household Services App: Guideline document available.
+
+MAD II:
+
+IESCP V2: Guideline document available.
+Household Services App V2: Guideline document available.
+
+Rules regarding project fees:
+
+The fee paid for each of the 4 projects is valid for 2 terms.
+
+Fee details for Project:
+
+| Category | Payment | Category Waiver | Grade |
+| --- | --- | --- | --- |
+| New Registration | 2500 | Yes | Actual grade |
+| If the project is not completed in the registered term, the fee is retained for the subsequent term, grade will be marked as I. If the project is not completed in the second term, the registration becomes invalid, and the student has to pay the full fees again, resulting in a U grade. | 2500 | Yes | I or U |
+| If the student fails in the project, they have to redo the project by registering and paying the full fees. | 2500 | Yes | U |
+| If the student fails or the submission is found to be plagiarized, the student will be subjected to disciplinary action and has to redo the project by registering and paying the full fees. | 2500 | Yes | U |
+
+Timelines (Appdev1, Appdev2 & MLP, BDM projects):
+
+For students entering the Degree level in Jan 2025, all projects and vivas must be completed by November 2024. The BDM project final submission must be done and approved by October/November 2024, with the viva completed by November/December 2024. Project grades will be posted by Dec 25th.
+
+Viva planner for Sep 2024 term is available.
+
+Rules for project vivas (MLP and MAD1/MAD2) effective from Sep 2024 term are available.
+
+Students who completed App dev1, App dev2, MLP, and BDM in Sep 2021/Jan 2022 terms:
+
+Completing 6 courses and 2 projects of any two Diplomas will earn the Diploma certificates, but credits will not be 27, rather 23 or 25. For the BSc level, 114 credits are required, and any deficit must be made up by taking more elective courses offered by the IITM BS program.
+
+Degree Level Courses:
+
+The first digit of the course code represents the level of the course (e.g., CS1001 is a 1 level course, CS3004 is a 3 level course, CS4002 is a 4 level course).
+
+BSc level:
+
+Students must complete both core pairs and SPG, earning 20 credits. Credits can be earned from IITM BS courses, NPTEL (up to 4 credits), or campus courses (IITM or other institutes). This is mandatory from Sep 2023 for the batch entering the degree level in Sep 2023.
+
+BS level:
+
+Two courses at level 4 or higher must be completed in each of the BP and BD categories. Out of the remaining 12 credits, 4 credits must be earned in the HS/MG category. Remaining credits can come from in-house/campus electives or Apprenticeship electives.
+
+Apprenticeship is optional. Students can complete the BS level by just doing coursework.
+
+Recommendations for additional courses and skills:
+
+1. C++ Programming - Prof Partha Das, IIT Kgp
+2. Introduction to Haskell Programming - Prof. S. P Suresh, CMI
+3. Competitive Programming - Prof. Neeldhara Misra, IIT Gn
+4. Cloud Computing - Prof SK Ghosh, IIT Kgp
+5. Blockchain and its Applications - Prof. Sandip Chakraborty & Prof. Shamik Sural, IIT Kgp
+6. Compiler Design - Prof. Santanu Chattopadhyay, IIT Kgp
+
+SWAYAM NPTEL Approved Dep/Free Elective course list and HS/MG course list are available.
+
+Collaboration with Microsoft and AWS certification programs is ongoing to offer discounted courses.
+
+1. Software Testing:
+
+Quiz 1: October 27th, 2024
+Quiz 2: December 1st, 2024
+End term: December 22nd, 2024
+
+Eligibility to write the end term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes.
+
+Eligibility to get final course grade: Attending the End sem exam.
+
+Overall score for eligible students:
+
+GAA = Average score in Best 10 out of 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+Qz2 = score in Quiz II (0, if not attempted)
+F = score in End Term exam
+T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+2. Software Engineering:
+
+Quiz 2: December 1st, 2024
+End term: December 22nd, 2024
+
+Eligibility to write the end term exam: Average of the best 5 out of the first 7 weekly assignment scores >= 40/100 AND submission of Group project Milestones 1-3.
+
+Eligibility to get final course grade: Attending the End term exam AND submission of group project (All milestones) is mandatory for course grade AND score in group project > 0.
+
+Overall score for eligible students:
+
+GAA = score in Best 9 out of first 10 graded assignments
+Qz2 = score in Quiz II (0, if not attempted)
+Group Project- Milestone 1-3 (After week 6) - GP1
+Group project - Milestone 4-6 (After week 12) - GP2
+Project Presentation - PP
+Course participation activity - CP
+F = score in End Term exam
+T = 0.05GAA + 0.2Qz2 + 0.4F + 0.1GP1 + 0.1GP2 + 0.1PP + 0.05CP
+
+3. Deep Learning:
+
+Quiz 1: October 27th, 2024
+Quiz 2: December 1st, 2024
+End term: December 22nd, 2024
+
+Bonus Marks: The average score of all (3) programming activity assignments will be used as Bonus marks. Maximum bonus marks will be 5. - weeks 4, 9, 11
+
+Eligibility to write the end term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes.
+
+Eligibility to get final course grade: Attending the End sem exam.
+
+Overall score for eligible students:
+
+GAA = Average score in Best 10 out of First 11 weekly graded assignments
+Qz1 = score in Quiz I (0, if not attempted)
+
+--- Chunk starting at line 1300 ---
+If the project is not completed in the registered term, the fee is retained for the subsequent term, and the grade will be marked as "I". If the project is not completed in the second term, the registration becomes invalid, and the student has to pay the full fees again, receiving a "U" grade.
+
+If the student fails the project, they must redo it by registering and paying the full fees.
+
+If the project submission is found to be plagiarized, the student will face disciplinary action and must redo the project by registering and paying the full fees.
+
+## Timelines for SEP 2024 Term Projects (Appdev1, Appdev2, MLP, BDM)
+
+Students must complete all projects and vivas by November 2024 to enter Degree level courses in Jan 2025. The BDM project final submission must be approved by October/November 2024, with vivas completed by November/December 2024. Project grades will be released by December 25th.
+
+### Important Links
+- Viva planner for Sep 2024 term: [Viva Calendar](https://docs.google.com/spreadsheets/d/19FgRR7iVP6gr58heu4phNZxb-pSzEJTATZNJDTc_l_Q/pubhtml)
+- Rules for project vivas (MLP and MAD1/MAD2): [Project Vivas Rules](https://docs.google.com/document/d/1-vQLOjFbPE7-Fu9QeYd1lsTUUjv3qIX94QPMNNjCCw8/pub)
+
+### Diploma and BSc Level Requirements
+
+For students who completed App dev1, App dev2, MLP, and BDM in Sep 2021/Jan 2022 terms, diploma certificates will be issued upon completion of 6 courses and 2 projects. However, credits may vary (23 or 25). For the BSc level, 114 credits are required, and any deficit must be made up by taking additional elective courses.
+
+### Degree Level Courses
+
+- Course levels are indicated by the first digit in the course code (e.g., CS1001 is a level 1 course).
+- Deep Learning (CS3004) is a level 3 course.
+- Reinforcement Learning (CS4002) is a level 4 course.
+
+### BSc Level Requirements
+
+- Completion of core pairs and SPG is mandatory (20 credits).
+- 8 credits can be earned from IITM BS courses or NPTEL (up to 4 credits).
+- 2 courses at level 4 or higher must be completed in each of the BP and BD categories.
+- 4 credits must be earned in the HS/MG category.
+- Remaining credits can come from other electives or Apprenticeship electives.
+- Apprenticeship is optional.
+
+### Recommendations for Additional Learning
+
+1. C++ Programming - Prof. Partha Das, IIT Kgp
+2. Introduction to Haskell Programming - Prof. S. P Suresh, CMI
+3. Competitive Programming - Prof. Neeldhara Misra, IIT Gn
+4. Cloud Computing - Prof. SK Ghosh, IIT Kgp
+5. Blockchain and its Applications - Prof. Sandip Chakraborty & Prof. Shamik Sural, IIT Kgp
+6. Compiler Design - Prof. Santanu Chattopadhyay, IIT Kgp
+
+### SWAYAM NPTEL Approved Courses
+
+- [Dep/Free Elective Course List](https://docs.google.com/spreadsheets/d/e/2PACX-1vSJXV0JECyoQvgWvBlVxO13G0KRm5a1qNCRBa7rAw8GDY4e0cfm1KiVCwIgs_ed80ObtzQ1rfx_JWIR/pubhtml?gid=399341609&single=true)
+- [HS/MG Course List](https://docs.google.com/spreadsheets/d/e/2PACX-1vSJXV0JECyoQvgWvBlVxO13G0KRm5a1qNCRBa7rAw8GDY4e0cfm1KiVCwIgs_ed80ObtzQ1rfx_JWIR/pubhtml?gid=1418834182&single=true)
+
+### Certifications
+
+Collaboration with Microsoft and AWS certification programs will offer discounted courses. Completing cloud certifications is recommended.
+
+## Course Details
+
+### 1. Software Testing
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes
+
+Final Grade Calculation:
+- GAA = Average score in Best 10 out of 11 weekly graded assignments
+- Qz1 = score in Quiz I (0 if not attempted)
+- Qz2 = score in Quiz II (0 if not attempted)
+- F = score in End Term exam
+- T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+### 2. Software Engineering
+
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Average of the best 5 out of the first 7 weekly assignment scores >= 40/100
+- Submission of Group project Milestones 1-3
+
+Final Grade Calculation:
+- GAA = score in Best 9 out of first 10 graded assignments
+- Qz2 = score in Quiz II (0 if not attempted)
+- Group Project Milestones 1-3 (GP1)
+- Group Project Milestones 4-6 (GP2)
+- Project Presentation (PP)
+- Course Participation Activity (CP)
+- F = score in End Term exam
+- T = 0.05GAA + 0.2Qz2 + 0.4F + 0.1GP1 + 0.1GP2 + 0.1PP + 0.05CP
+
+### 3. Deep Learning
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes
+
+Final Grade Calculation:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0 if not attempted)
+- Qz2 = score in Quiz II (0 if not attempted)
+- F = score in End Term exam
+- T = 0.1GAA + Max((0.4F + 0.25Qz1 + 0.25Qz2), 0.5F + 0.3 Max(Qz1, Qz2)) + Bonus (as applicable)
+
+### 4. AI: Search Methods for Problem Solving
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes
+
+Final Grade Calculation:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0 if not attempted)
+- Qz2 = score in Quiz II (0 if not attempted)
+- F = score in End Term exam
+- T = 0.1GAA + max (0.45F + 0.35max(Qz1, Qz2), 0.4F + 0.25Qz1 + 0.25Qz2) + bonus (if applicable)
+
+Bonus Marks:
+- 5 bonus marks for those who pass the course
+- Programming Assignment 1 will be released between Quiz 1 and Quiz 2
+
+### 5. Strategies for Professional Growth
+
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility:
+- Average of best 5 of the first 9 weeks' graded assignments; >= 40/100
+
+Final Grade Calculation:
+- GAA = Average of best 10 of the 11 weeks' graded assignments
+
+--- Chunk starting at line 1350 ---
+Apprenticeship is optional. Students can complete the BS level by only doing coursework.
+
+### Recommendations for Additional Courses and Skills
+
+1. **C++ Programming** - Prof. Partha Das, IIT Kgp
+2. **Introduction to Haskell Programming** - Prof. S. P. Suresh, CMI
+3. **Competitive Programming** - Prof. Neeldhara Misra, IIT Gn
+4. **Cloud Computing** - Prof. SK Ghosh, IIT Kgp
+5. **Blockchain and Its Applications** - Prof. Sandip Chakraborty & Prof. Shamik Sural, IIT Kgp
+6. **Compiler Design** - Prof. Santanu Chattopadhyay, IIT Kgp
+
+### SWAYAM NPTEL Approved Courses
+
+- [Dep/Free Elective Course List](https://docs.google.com/spreadsheets/d/e/2PACX-1vSJXV0JECyoQvgWvBlVxO13G0KRm5a1qNCRBa7rAw8GDY4e0cfm1KiVCwIgs_ed80ObtzQ1rfx_JWIR/pubhtml?gid=399341609&single=true)
+- [HS/MG Course List](https://docs.google.com/spreadsheets/d/e/2PACX-1vSJXV0JECyoQvgWvBlVxO13G0KRm5a1qNCRBa7rAw8GDY4e0cfm1KiVCwIgs_ed80ObtzQ1rfx_JWIR/pubhtml?gid=1418834182&single=true)
+
+### Collaborations
+
+We are collaborating with Microsoft and AWS certification programs to offer courses at discounted rates. Completing cloud certifications is recommended.
+
+### Course Details
+
+#### 1. Software Testing
+
+- **Quiz 1:** October 27, 2024
+- **Quiz 2:** December 1, 2024
+- **End Term:** December 22, 2024
+
+**Eligibility:**
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attend at least one of the two quizzes
+
+**Final Grade Calculation:**
+- GAA = Average score in best 10 out of 11 weekly assignments
+- Qz1 = Quiz I score (0 if not attempted)
+- Qz2 = Quiz II score (0 if not attempted)
+- F = End Term exam score
+- T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+#### 2. Software Engineering
+
+- **Quiz 1:** No Quiz 1
+- **Quiz 2:** December 1, 2024
+- **End Term:** December 22, 2024
+
+**Eligibility:**
+- Average of the best 5 out of the first 7 weekly assignment scores >= 40/100
+- Submission of Group Project Milestones 1-3
+
+**Final Grade Calculation:**
+- GAA = Best 9 out of first 10 graded assignments
+- Qz2 = Quiz II score (0 if not attempted)
+- GP1 = Group Project Milestone 1-3
+- GP2 = Group Project Milestone 4-6
+- PP = Project Presentation
+- CP = Course Participation
+- F = End Term exam score
+- T = 0.05GAA + 0.2Qz2 + 0.4F + 0.1GP1 + 0.1GP2 + 0.1PP + 0.05CP
+
+#### 3. Deep Learning
+
+- **Quiz 1:** October 27, 2024
+- **Quiz 2:** December 1, 2024
+- **End Term:** December 22, 2024
+
+**Bonus Marks:**
+- Average score of all three programming activity assignments (max 5 marks)
+
+**Eligibility:**
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attend at least one of the two quizzes
+
+**Final Grade Calculation:**
+- GAA = Average score in best 10 out of 11 weekly assignments
+- Qz1 = Quiz I score (0 if not attempted)
+- Qz2 = Quiz II score (0 if not attempted)
+- F = End Term exam score
+- T = 0.1GAA + max(0.4F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.3 max(Qz1, Qz2)) + Bonus
+
+#### 4. AI: Search Methods for Problem Solving
+
+- **Quiz 1:** October 27, 2024
+- **Quiz 2:** December 1, 2024
+- **End Term:** December 22, 2024
+
+**Eligibility:**
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attend at least one of the two quizzes
+
+**Final Grade Calculation:**
+- GAA = Average score in best 10 out of 11 weekly assignments
+- Qz1 = Quiz I score (0 if not attempted)
+- Qz2 = Quiz II score (0 if not attempted)
+- F = End Term exam score
+- T = 0.1GAA + max(0.45F + 0.35 max(Qz1, Qz2), 0.4F + 0.25Qz1 + 0.25Qz2) + Bonus (if passed)
+
+**Bonus Marks:**
+- 5 marks for passing the course
+- Programming Assignment 1 will be released between Quiz 1 and Quiz 2
+
+#### 5. Strategies for Professional Growth
+
+- **Quiz 1:** No Quiz 1
+- **Quiz 2:** December 1, 2024
+- **End Term:** December 22, 2024
+
+**Eligibility:**
+- Average of best 5 of the first 9 weeks' graded assignments >= 40/100
+
+**Final Grade Calculation:**
+- GAA = Average of best 10 of the 11 weeks' graded assignments
+- GP = Group Project score (0 if not participated)
+- Qz2 = Quiz II score (0 if not attempted)
+- F = Final exam score
+- T = 0.15GAA + 0.25GP + 0.25Qz2 + 0.35F
+
+**Project:**
+- Milestone I: Week 1 to Week 3, Submission Date: End of Week 3, Marks: 50, Evaluation: Before Week 5
+- Milestone II: Week 4 to Week 6, Submission Date: End of Week 6, Marks: 50, Evaluation: Before End-Term
+
+#### 6. Introduction to Big Data
+
+**Note:** Requires access to a credit card for $300 free Google Cloud credit.
+
+- **Quiz 1 and Quiz 2:** Not applicable
+- **End Term:** December 22, 2024
+- **OPPE:** December 8, 2024
+
+**Eligibility:**
+- Average of the best 5 out of the first 7 weeks of weekly assignment scores >= 40/100
+- Attend the end-term exam and OPPE
+
+**Final Grade Calculation:**
+- GAA = Average score in best 6 out of 9 weekly assignments
+- F = Final exam score
+- T = 0.25GAA + 0.25F + 0.5OPPE
+
+#### 7. Programming in C
+
+- **Quiz 1:** October 27, 2024
+- **Quiz 2:** No Quiz 2
+- **End Term:** December 22, 2024
+
+--- Chunk starting at line 1400 ---
+Eligibility to write end term exam:
+
+- Average of the best 5 out of the first 7 weekly assignment scores >= 40/100
+- Submission of Group Project Milestones 1-3
+
+Eligibility to get final course grade:
+
+- Attending the End term exam
+- Submission of Group Project (All milestones) is mandatory for course grade
+- Score in Group Project > 0
+
+Overall score for eligible students:
+
+- GAA = score in Best 9 out of first 10 graded assignments
+- Qz2 = score in Quiz II (0, if not attempted)
+- Group Project Milestones 1-3 (After week 6) - GP1
+- Group Project Milestones 4-6 (After week 12) - GP2
+- Project Presentation - PP
+- Course participation activity - CP
+- F = score in End Term exam
+
+T = 0.05GAA + 0.2Qz2 + 0.4F + 0.1GP1 + 0.1GP2 + 0.1PP + 0.05CP
+
+(More details about the Group Project will be given in the course).
+
+## Deep Learning
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to write end term exam:
+
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade:
+
+- Attending the End term exam
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.1GAA + Max((0.4F + 0.25Qz1 + 0.25Qz2), 0.5F + 0.3 Max(Qz1,Qz2)) + Bonus (as applicable)
+
+## AI: Search Methods for Problem Solving
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to write end term exam:
+
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade:
+
+- Attending the End term exam
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.1GAA + Max(0.45F + 0.35 Max(Qz1, Qz2), 0.4F + 0.25Qz1 + 0.25Qz2) + Bonus (as given below, if you pass the course)
+
+Bonus marks for those who pass the course: 5
+
+Programming Assignment 1 will be released between Quiz 1 and Quiz 2. The dates will be announced in the forum. This assignment will be evaluated offline.
+
+## Strategies for Professional Growth
+
+- Quiz 1: NO
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to write the final exam:
+
+- Average of best 5 of the first 9 weeks' graded assignments; >= 40/100
+
+Eligibility to obtain the final course grade:
+
+- Attending the end-term exam
+
+Overall score for eligible students:
+
+- GAA = Average of best 10 of the 11 weeks' graded assignments
+- GP = score in Group Project (0, if not participated)
+- Qz2 = score in Quiz II (0, if not attempted), based on weeks 1-7 (Subjective & Objective)
+- F = score in final exam, based on weeks 1-12 (Subjective & Objective)
+
+T = 0.15GAA + 0.25GP + 0.25Qz2 + 0.35F
+
+Project:
+
+| Milestone | Timeline | Submission Date | Marks | Evaluation and Score Release |
+| --- | --- | --- | --- | --- |
+| I | Week 1 to Week 3 | End of Week 3 | 50 marks | Before Week 5 |
+| II | Week 4 to Week 6 | End of Week 6 | 50 marks | Before End-Term |
+
+More details about the Group Project will be given in the course.
+
+## Introduction to Big Data
+
+Note: This course requires students to have access to link a credit card and avail $300 one-time free credit available for the GOOGLE CLOUD platform. If you do not have either a credit card or have availed the free Google Cloud credits, then it will not be possible for you to take up this course.
+
+- Quiz 1 and Quiz 2: Not applicable
+- End term: December 22nd, 2024
+- OPPE: December 8th, 2024
+
+Eligibility to write the final exam:
+
+- Average of the best 5 out of the first 7 weeks of weekly assignment scores >= 40/100
+
+Eligibility to obtain the final course grade:
+
+- Attending the end term exam AND the OPPE
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 6 out of 9 weekly graded assignments
+- OPPE: December 8th, 2024, 4 hr exam
+- F = score in final exam
+
+T = 0.25GAA + 0.25F + 0.5OPPE
+
+## Programming in C
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: No Quiz 2
+- End term: December 22nd, 2024
+
+For OPPE1, OPPE2 exam dates please refer to Annexure I
+
+- OPPE 1: November 16th, 2024
+- OPPE 2: December 8th, 2024
+
+Eligibility to write the final exam:
+
+- Average of the best 5 out of the first 9 weeks of weekly assignments (objective and programming) scores >= 40/100
+
+Eligibility to obtain the final course grade:
+
+- Attending the end term exam AND
+- Score in one of the two programming exams (OPPE1, OPPE2) should be >= 40/100
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 assignments out of 11 weekly graded assignments
+- GAAP = Average score in Best 7 out of 8 weekly graded programming assignments (weeks 3-10)
+- Qz1 = score in Quiz 1 (0, if not attempted)
+- OPPE1 = score in OPPE 1 (0, if not attempted)
+- OPPE2 = score in OPPE 2 (0, if not attempted)
+- F = score in final End Term exam
+
+T = 0.05GAA + 0.1GAAP + 0.15Qz1 + 0.20OPPE1 + 0.20OPPE2 + 0.30F
+
+## Advanced Algorithms
+
+- Quiz 1: October 27th, 2024
+- Quiz 2: December 1st, 2024
+- End term: December 22nd, 2024
+
+Eligibility to write end term exam:
+
+- Average of best 5 out of first 7 weekly assessments scores >= 40/100
+- Attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade:
+
+- Attending the End term exam
+
+Overall score for eligible students:
+
+- GAA = score in Best 10 out of all 11 graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.15GAA + Max(0.35F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.25 Max(Qz1, Qz2))
+
+--- Chunk starting at line 1450 ---
+Game Theory and Strategy
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Final course score calculation:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)  
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+Speech Technology
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the end term exam
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OPPE1 = programming exam or a test+viva (December 8, 2024)
+- F = score in End Term exam
+
+T = 0.15GAA + 0.15 OPPE1 + max(0.4F + 0.20max(Qz1, Qz2), 0.3F + 0.20Qz1 + 0.20Qz2)  
+T = 0.15GAA + 0.15 OPPE1 + 0.3F + 0.20Qz1 + 0.20Qz2
+
+--- Chunk starting at line 1500 ---
+## Design Thinking for Data-Driven App Development
+
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of 9 weekly assignment scores >= 40/100
+
+Eligibility to obtain the final course grade: Attending the term-end exam AND submitting the final project, with a score of more than 60/100 in the project
+
+Final course score calculation:
+
+- GAA = Average score in best 9 out of 10 weekly graded assignments (Subjective & Objective)
+- Qz2 = score in Quiz II (0, if not attempted)
+- GP1, GP2, GP3 = scores in the group project; The group must obtain 60 out of 100 marks in the project. Else, students will be given a U grade.
+- F = score in final exam, based on weeks 1-12 (Pen-and-paper mode-Subjective & Objective - computer-based)
+
+T = 0.1 GAA + 0.1 GP1 + 0.1 GP2 + 0.2 GP3 + 0.2 Qz2 + 0.3 F
+
+Project Milestones:
+
+- Milestone I: Week 1 to Week 3, Submission Date: End of Week 3, Marks: 25, Evaluation and Score Release: Before Week 5
+- Milestone II: Week 4 to Week 6, Submission Date: End of Week 6, Marks: 25, Evaluation and Score Release: Before Week 8
+- Milestone III: Week 7 to Week 10, Submission Date: End of Week 10, Marks: 50, Evaluation and Score Release: Before End Term Exam
+- Viva Voce: Week 11 to 12
+
+More details about the Group Project will be provided in the course.
+
+## Market Research
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2023
+
+Eligibility to attend the final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 AND attending at least one of the 2 quizzes in the centre
+
+Eligibility to get the final course grade: Attending the end sem exam
+
+Final course score calculation:
+
+- GAA = Average score in Best 10 out of all weekly graded assignments
+
+--- Chunk starting at line 1550 ---
+### Advanced Algorithms
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to write the end term exam: Average of best 5 out of first 7 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre.
+
+Eligibility to get the final course grade: Attending the end term exam.
+
+Overall score for eligible students:
+- GAA = score in Best 10 out of all 11 graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.15GAA + Max((0.35F + 0.25Qz1 + 0.25Qz2), 0.5F + 0.25Max(Qz1, Qz2))
+
+### Game Theory and Strategy
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes.
+
+Eligibility to obtain the final course grade: Attending the end term exam.
+
+Final course score calculation:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max (0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+### Speech Technology
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre.
+
+Eligibility to get the final course grade: Attending the End sem exam.
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OPPE1 = programming exam or test+viva (December 8, 2024)
+- F = score in End Term exam
+
+T = 0.15GAA + 0.15 OPPE1 + max (0.4F + 0.20max(Qz1, Qz2), 0.3F + 0.20Qz1 + 0.20Qz2)
+
+### Design Thinking for Data-Driven App Development
+
+- Quiz 1: No
+- Quiz 2: December 1, 2024
+- End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of 9 weekly assignment scores >= 40/100.
+
+Eligibility to obtain the final course grade: Attending the term-end exam AND submitting the final project, with more than 60/100 in the project.
+
+Final course score calculation:
+- GAA = Average score in best 9 out of 10 weekly graded assignments (Subjective & Objective)
+- Qz2 = score in Quiz II (0, if not attempted)
+- GP1, GP2, GP3 = scores in the group project; The group must obtain 60 out of 100 marks in the project. Else students will be given a U grade.
+- F = score in final exam, based on weeks 1-12 (Pen-and-paper mode-Subjective & Objective - computer-based)
+
+T = 0.1GAA + 0.1GP1 + 0.1GP2 + 0.2GP3 + 0.2Qz2 + 0.3F
+
+Project Milestones:
+- Milestone I: Week 1 to Week 3, Submission Date: End of Week 3, Marks: 25, Evaluation and Score Release: Before Week 5
+- Milestone II: Week 4 to Week 6, Submission Date: End of Week 6, Marks: 25, Evaluation and Score Release: Before Week 8
+- Milestone III: Week 7 to Week 10, Submission Date: End of Week 10, Marks: 50, Evaluation and Score Release: Before End Term Exam
+- Viva Voce: Week 11 to 12
+
+### Market Research
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term exam: December 22, 2023
+
+Eligibility to attend final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 AND attending at least one of the 2 quizzes in the centre.
+
+Eligibility to get the final course grade: Attending the end sem exam.
+
+Final course score calculation:
+- GAA = Average score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- OP = score in Open-ended project (0, if not submitted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + Max(0.2Qz1 + 0.2Qz2 + 0.25OP + 0.25F, 0.3 Max(Qz1, Qz2) + 0.25OP + 0.25F)
+
+Case release date: Nov 26th (Tuesday)
+Case presentation: Dec 14 & 15 (Saturday & Sunday)
+
+### Privacy & Security in Online Social Media
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre.
+
+Eligibility to get the final course grade: Attending the End sem exam.
+
+Overall score for eligible students:
+- GAA = score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.2GAA + Max(0.3F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.25Max(Qz1, Qz2))
+
+### Statistical Computing
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End term exam: December 22, 2024
+
+--- Chunk starting at line 1600 ---
+### Game Theory and Strategy
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term:** December 22, 2024  
+
+Eligibility to write the final exam:  
+- Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100  
+- Attendance in one of the 2 quizzes  
+
+Eligibility to obtain the final course grade:  
+- Attending the end term exam  
+
+**Final course score calculation:**
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)  
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+### Speech Technology
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the end term exam:  
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100  
+- Attending at least one of the 2 quizzes  
+
+Eligibility to get final course grade:  
+- Attending the end term exam  
+
+**Overall score calculation:**
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OPPE1 = programming exam or test+viva (December 8, 2024)
+- F = score in End Term exam
+
+T = 0.15GAA + 0.15 OPPE1 + max(0.4F + 0.20max(Qz1, Qz2), 0.3F + 0.20Qz1 + 0.20Qz2)  
+T = 0.15GAA + 0.15 OPPE1 + 0.3F + 0.20Qz1 + 0.20Qz2
+
+### Design Thinking for Data-Driven App Development
+
+**Quiz 1:** No  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the final exam:  
+- Average of the best 5 out of 9 weekly assignment scores >= 40/100  
+
+Eligibility to obtain the final course grade:  
+- Attending the term-end exam  
+- Submitting the final project with a score > 60/100  
+
+**Final course score calculation:**
+
+- GAA = Average score in best 9 out of 10 weekly graded assignments
+- Qz2 = score in Quiz II (0, if not attempted)
+- GP1, GP2, GP3 = scores in the group project (minimum 60/100 required)
+- F = score in final exam
+
+T = 0.1GAA + 0.1GP1 + 0.1GP2 + 0.2GP3 + 0.2Qz2 + 0.3F
+
+**Project Milestones:**
+
+| Milestone | Timeline         | Submission Date | Marks | Evaluation and Score Release |
+|-----------|------------------|-----------------|-------|------------------------------|
+| I         | Week 1 to Week 3 | End of Week 3   | 25    | Before Week 5                |
+| II        | Week 4 to Week 6 | End of Week 6   | 25    | Before Week 8                |
+| III       | Week 7 to Week 10| End of Week 10  | 50    | Before End Term Exam         |
+| Viva Voce | Week 11 to 12    |                 |       |                              |
+
+### Market Research
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2023  
+
+Eligibility to attend final exam:  
+- Average of the best 5 out of the first 9 weekly assignment scores >= 40/100  
+- Attending at least one of the 2 quizzes  
+
+Eligibility to get the final course grade:  
+- Attending the end term exam  
+
+**Final course score calculation:**
+
+- GAA = Average score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- OP = score in Open-ended project (0, if not submitted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.2Qz1 + 0.2Qz2 + 0.25OP + 0.25F, 0.3max(Qz1, Qz2) + 0.25OP + 0.25F)  
+T = 0.1GAA + 0.2Qz1 + 0.2Qz2 + 0.25OP + 0.25F
+
+**Case Release Date:** Nov 26  
+**Case Presentation:** Dec 14 & 15  
+
+### Privacy & Security in Online Social Media
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the end term exam:  
+- Average of best 5 out of first 9 weekly assessments scores >= 40/100  
+- Attending at least one of the 2 quizzes  
+
+Eligibility to get the final course grade:  
+- Attending the end term exam  
+
+**Overall score calculation:**
+
+- GAA = score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.2GAA + max(0.3F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.25max(Qz1, Qz2))  
+T = 0.2GAA + 0.3F + 0.25Qz1 + 0.25Qz2
+
+### Statistical Computing
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the end term exam:  
+- Average of best 5 out of first 7 weekly assessments scores >= 40/100  
+- Attending at least one of the 2 quizzes  
+
+Eligibility to get the final course grade:  
+- Attending the end term exam  
+
+**Overall score calculation:**
+
+- GAA = score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+### Computer Systems Design
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the final exam:  
+- Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100  
+- Attendance in one of the 2 quizzes  
+
+Eligibility to obtain the final course grade:  
+- Attending the end term exam  
+
+**Final course score calculation:**
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+### Financial Forensics
+
+**Quiz 1:** October 27, 2024  
+**Quiz 2:** December 1, 2024  
+**End term exam:** December 22, 2024  
+
+Eligibility to write the final exam:  
+- Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 50/100  
+
+Eligibility to obtain the final course grade:  
+- Attending the end term exam
+
+--- Chunk starting at line 1650 ---
+### Design Thinking for Data-Driven App Development
+
+Quiz 1: No  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of the best 5 out of 9 weekly assignment scores >= 40/100  
+Eligibility for final course grade: Attend the term-end exam and submit the final project with a score > 60/100
+
+Final course score calculation:
+- GAA = Average score in best 9 out of 10 weekly assignments
+- Qz2 = Score in Quiz II (0 if not attempted)
+- GP1, GP2, GP3 = Scores in group project (must obtain 60/100 marks)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + 0.1\*GP1 + 0.1\*GP2 + 0.2\*GP3 + 0.2\*Qz2 + 0.3\*F
+
+Project milestones:
+- Milestone I: Week 1 to Week 3, Submission: End of Week 3, Marks: 25
+- Milestone II: Week 4 to Week 6, Submission: End of Week 6, Marks: 25
+- Milestone III: Week 7 to Week 10, Submission: End of Week 10, Marks: 50
+- Viva Voce: Week 11 to 12
+
+### Market Research
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2023
+
+Eligibility for final exam: Average of the best 5 out of the first 9 weekly assignment scores >= 40/100 and attendance in at least one quiz  
+Eligibility for final course grade: Attend the end sem exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of all weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- OP = Score in Open-ended project (0 if not submitted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + Max(0.2\*Qz1 + 0.2\*Qz2 + 0.25\*OP + 0.25\*F, 0.3\*Max(Qz1, Qz2) + 0.25\*OP + 0.25\*F)
+
+Case release date: November 26  
+Case presentation: December 14 & 15
+
+### Privacy & Security in Online Social Media
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attendance in at least one quiz  
+Eligibility for final course grade: Attend the end sem exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of all weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.2\*GAA + Max(0.3\*F + 0.25\*Qz1 + 0.25\*Qz2, 0.5\*F + 0.25\*Max(Qz1, Qz2))
+
+### Statistical Computing
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of best 5 out of first 7 weekly assessments scores >= 40/100 and attendance in at least one quiz  
+Eligibility for final course grade: Attend the end sem exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of all weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + 0.4\*F + 0.25\*Qz1 + 0.25\*Qz2
+
+### Computer Systems Design
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 and attendance in one quiz  
+Eligibility for final course grade: Attend the end term exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of first 11 weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + 0.4\*F + 0.2\*Qz1 + 0.3\*Qz2
+
+### Financial Forensics
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 50/100  
+Eligibility for final course grade: Attend the end term exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of all weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- GP1 = Score in Group Project (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + Max(0.25\*Qz1 + 0.30\*GP1 + 0.35\*F, 0.5\*F + 0.3\*Max(Qz1, GP1))
+
+### Introduction to Natural Language Processing (i-NLP)
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 and attendance in one quiz  
+Eligibility for final course grade: Attend the end sem exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of first 11 weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + 0.5\*F + Max(0.2\*Qz1 + 0.2\*Qz2, 0.3\*Max(Qz1, Qz2))
+
+### Corporate Finance
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility for final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 and attendance in one quiz  
+Eligibility for final course grade: Attend the end term exam
+
+Final course score calculation:
+- GAA = Average score in best 10 out of all weekly assignments
+- Qz1 = Score in Quiz I (0 if not attempted)
+- Qz2 = Score in Quiz II (0 if not attempted)
+- F = Score in final exam
+
+Total score (T) = 0.1\*GAA + 0.4\*F + 0.25\*Qz1 + 0.25\*Qz2
+
+--- Chunk starting at line 1700 ---
+Privacy & Security in Online Social Media
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+- GAA = score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.2 GAA + Max(0.3F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.25Max(Qz1, Qz2))
+T = 0.2 GAA + 0.3F + 0.25Qz1 + 0.25Qz2
+
+Statistical Computing
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 7 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+- GAA = score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.1 GAA + 0.4F + 0.25Qz1 + 0.25Qz2
+
+Computer Systems Design
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+Financial Forensics
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 50/100
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- GP1 = score in Group Project (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + Max(0.25Qz1 + 0.30GP1 + 0.35F, 0.5F + 0.3Max(Qz1, GP1))
+T = 0.1GAA + 0.25Qz1 + 0.30GP1 + 0.35F
+
+Introduction to Natural Language Processing (i-NLP)
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of first 11 weekly assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1 GAA + 0.5F + Max(0.2Qz1 + 0.2Qz2, 0.3 Max(Qz1, Qz2))
+T = 0.1 GAA + 0.5F + 0.2Qz1 + 0.2Qz2
+
+Corporate Finance
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + Max(0.6F + 0.2Max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+Deep Learning for CV
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of first 11 weekly assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+- P = Project component (statement released in week 5, completed in week 10, evaluated through a viva)
+
+T = 0.1 GAA + 0.3F + Max(0.2Qz1 + 0.2Qz2, 0.3 Max(Qz1, Qz2)) + 0.2P
+T = 0.1 GAA + 0.3F + 0.2Qz1 + 0.2Qz2 + 0.2P
+
+Large Language Models
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+- GAA = Average score in Best 10 out of first 11 weekly assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + Max(0.6F + 0.2Max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+--- Chunk starting at line 1750 ---
+### 15. Computer Systems Design
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Final course Score T for eligible students:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+### 16. Financial Forensics
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 50/100
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Final course Score T for eligible students:
+
+- GAA = Average score in Best 10 out of all weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- GP1 = score in Group Project (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + Max(0.25Qz1 + 0.30GP1 + 0.35F, 0.5F + 0.3Max(Qz1, GP1))
+
+T = 0.1GAA + 0.25Qz1 + 0.30GP1 + 0.35F
+
+### 17. Introduction to Natural Language Processing (i-NLP)
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 out of first 11 weekly assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1 GAA + 0.5F + Max(0.2Qz1 + 0.2Qz2, 0.3 Max(Qz1, Qz2))
+
+T = 0.1 GAA + 0.5F + 0.2Qz1 + 0.2Qz2
+
+### 18. Corporate Finance
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term: December 22, 2024
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+Final course Score T for eligible students:
+
+- GAA = Average score in Best 10 out of First 11 weekly graded assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+
+T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+### 19. Deep Learning for CV
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+- GAA = Average score in Best 10 out of first 11 weekly assignments
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in final exam
+- Project component P - statement will be released in week 5 and should be completed in week 10 - to be done individually or as a group will be decided based on number of registration. Project code along with the report will be evaluated through a viva.
+
+T = 0.1 GAA + 0.3F + Max(0.2Qz1 + 0.2Qz2, 0.3 Max(Qz1, Qz2)) + 0.2P
+
+T = 0.1 GAA + 0.3F + 0.2Qz1 + 0.2Qz2 + 0.2P
+
+### 20. Large Language Models
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+End term exam: December 22, 2024
+
+Eligibility to write end term exam: Average of best 5 out of first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+- GAA = Average score of 8 out of 9 weekly graded assignments
+- Bonus - Total 10 marks - Average score of 5 programming assignments - Week 1 and 2, Week 6, Week 9, Week 10
+- Qz1 = score in Quiz I (0, if not attempted)
+- Qz2 = score in Quiz II (0, if not attempted)
+- F = score in End Term exam
+
+T = 0.1GAA + Max(0.4F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.3 Max(Qz1, Qz2)) + Bonus
+
+T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2 + Bonus (if passed)
+
+### 21. Deep Learning Practice
+
+Quiz 1: October 27, 2024  
+Quiz 2: December 1, 2024  
+Quiz 3: December 22, 2024
+
+Quiz1 - based on content taught by Prof Mitesh (Based on weeks 1-4)  
+Non-proctored programming assignment 1 - NPPE1 (Configured in the portal in week 4)  
+Quiz2 - based on content taught by Prof Umesh (Based on weeks 5-8)  
+Non-proctored programming assignment 2 - NPPE2 (Configured in the portal in week 8)  
+Quiz3 - based on content taught by Prof Kaushik (Based on weeks 9-12)  
+Non-proctored programming assignment 3 - NPPE3 (Configured in the portal in week 12)
+
+Final score T for eligible students:
+
+- GA = Average score in Best 10 out of first 11 weekly assignments
+
+T = 0.2 GA + 0.15 Quiz 1 + 0.15 Quiz 2 + 0.15 Quiz 3 + 0.2 (Best of NPPE1, NPPE2, NPPE3) + 0.15 (Second best of NPPE1, NPPE2, NPPE3) + 0.1 (Lowest NPPE score) - capped to 100
+
+### Important Dates
+
+| Event                       | Start Date             | End Date               |
+|-----------------------------|------------------------|------------------------|
+| Qualifier Registration Form | Friday, June 7, 2024   | Sunday, September 15, 2024 |
+| Course and Program Orientation | Monday, September 9, 2024 | Thursday, September 19, 2024 |
+| Qualifier Exam              | Sunday, October 27, 2024 |                        |
+
+--- Chunk starting at line 1800 ---
+The calculation of Final Course Score T for eligible students is as follows:
+
+GAA = Average score in the best 10 out of all weekly graded assignments
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+GP1 = Score in Group Project (0 if not attempted)
+
+F = Score in final exam
+
+T = 0.1GAA + Max(0.25Qz1 + 0.30GP1 + 0.35F, 0.5F + 0.3Max(Qz1, GP1))
+
+T = 0.1GAA + 0.25Qz1 + 0.30GP1 + 0.35F
+
+Introduction to Natural Language Processing (i-NLP)
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+GAA = Average score in the best 10 out of the first 11 weekly assignments
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+Qz2 = Score in Quiz II (0 if not attempted)
+
+F = Score in final exam
+
+T = 0.1GAA + 0.5F + Max(0.2Qz1 + 0.2Qz2, 0.3Max(Qz1, Qz2))
+
+T = 0.1GAA + 0.5F + 0.2Qz1 + 0.2Qz2
+
+Corporate Finance
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write the final exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to obtain the final course grade: Attending the end term exam
+
+The calculation of Final Course Score T for eligible students is as follows:
+
+GAA = Average score in the best 10 out of the first 11 weekly graded assignments
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+Qz2 = Score in Quiz II (0 if not attempted)
+
+F = Score in final exam
+
+T = 0.1GAA + Max(0.6F + 0.2Max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2)
+
+T = 0.1GAA + 0.4F + 0.2Qz1 + 0.3Qz2
+
+Deep Learning for CV
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weeks of weekly assignment scores >= 40/100 AND attendance in one of the 2 quizzes
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+GAA = Average score in the best 10 out of the first 11 weekly assignments
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+Qz2 = Score in Quiz II (0 if not attempted)
+
+F = Score in final exam
+
+Project component P - statement will be released in week 5 and should be completed in week 10 - to be done individually or as a group will be decided based on the number of registrations. Project code along with the report will be evaluated through a viva.
+
+T = 0.1GAA + 0.3F + Max(0.2Qz1 + 0.2Qz2, 0.3Max(Qz1, Qz2)) + 0.2P
+
+T = 0.1GAA + 0.3F + 0.2Qz1 + 0.2Qz2 + 0.2P
+
+Large Language Models
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+End term exam: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Eligibility to write end term exam: Average of the best 5 out of the first 9 weekly assessments scores >= 40/100 and attending at least one of the 2 quizzes in the centre
+
+Eligibility to get final course grade: Attending the End sem exam
+
+Overall score for eligible students:
+
+GAA = Average score of 8 out of 9 weekly graded assignments
+
+Bonus - Total 10 marks - Average score of 5 programming assignments - Week 1 and 2, Week 6, Week 9, Week 10
+
+Qz1 = Score in Quiz I (0 if not attempted)
+
+Qz2 = Score in Quiz II (0 if not attempted)
+
+F = Score in End Term exam
+
+T = 0.1GAA + Max(0.4F + 0.25Qz1 + 0.25Qz2, 0.5F + 0.3Max(Qz1, Qz2)) + Bonus
+
+T = 0.1GAA + 0.4F + 0.25Qz1 + 0.25Qz2 + Bonus (if passed)
+
+Deep Learning Practice
+
+Quiz 1: October 27, 2024
+Quiz 2: December 1, 2024
+Quiz 3: December 22, 2024
+
+Above to be attended in person at designated centres.
+
+Quiz 1 - Based on content taught by Prof Mitesh (Based on weeks 1-4)
+
+Non-proctored programming assignment 1 - NPPE1 (Configured in the portal in week 4)
+
+Quiz 2 - Based on content taught by Prof Umesh (Based on weeks 5-8)
+
+Non-proctored programming assignment 2 - NPPE2 (Configured in the portal in week 8)
+
+Quiz 3 - Based on content taught by Prof Kaushik (Based on weeks 9-12)
+
+Non-proctored programming assignment 3 - NPPE3 (Configured in the portal in week 12)
+
+GA = Average score in the best 10 out of the first 11 weekly assignments
+
+Final score T = 0.2GA + 0.15Quiz 1 + 0.15Quiz 2 + 0.15Quiz 3 + 0.2(Best of NPPE1, NPPE2, NPPE3) + 0.15(Second best of NPPE1, NPPE2, NPPE3) + 0.1(Lowest NPPE score) - capped to 100
+
+Important Dates
+
+For Qualifier Students:
+
+- Qualifier Registration Form: June 7, 2024 - September 15, 2024
+- Course and Program Orientation: September 9, 2024 - September 19, 2024
+- Qualifier Exam: October 27, 2024
+- Publishing results for Qualifier exam: November 1, 2024
+- QF Course Registration and Reattempt Qualifier window: November 6, 2024 - November 7, 2024
+- Reattempt Qualifier Exam: December 1, 2024
+- Publishing results Qual_Reattempt: December 11, 2024
+
+For Term Students:
+
+- Course registration window: September 12, 2024 - September 13, 2024
+- Drop Course form window: October 7, 2024 - October 9, 2024
+- Term start: September 20, 2024
+- Quiz 1: October 27, 2024
+- Publishing results for Quiz 1: November 4, 2024
+- Programming Quiz 1 (Day 1): November 16, 2024 - November 17, 2024
+- Programming Quiz 1 (Day 2): November 17, 2024
+- OPPE1 Result Release: November 21, 2024 - November 26, 2024
+- Quiz 2: December 1, 2024
+- Publishing results for Quiz 2: December 9, 2024
+- Programming Quiz 2 (Day 1): December 8, 2024 - December 9, 2024
+- Programming Quiz 2 (Day 2): December 15, 2024
+- OPPE2 Result release: December 12, 2024 - December 17, 2024
+- END TERM (DAD_Qualifier): December 22, 2024
+- Publishing results for EndTerm: December 30, 2024 - January 4, 2025
+
+For DAD Qualifier Students:
+
+- DAD Qualifier Registration Window: September 17, 2024 - November 22, 2024
+- DAD Qualifier Exam: December 22, 2024
+- Publishing results for DAD Qualifier: December 30, 2024 - January 4, 2025
+
+Last Date to Edit Exam City:
+
+- Quiz 1: October 27, 2024
+- Quiz 2: December 1, 2024
+- End Term: December 22, 2024
+

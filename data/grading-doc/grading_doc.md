@@ -1,11 +1,3 @@
-Published using Google Docs
-
-[Report abuse](//drive.google.com/abuse?id=AKkXjoxT9leWl8cMzt8D5LDJX63lhooEhW3MbZF6Qhfek6hUF1ZW5GK9_uc0AwTZQ99X4m82RfcmUQG8ZTUWOBg:0&docurl=https://docs.google.com/document/d/1e1l9ERBGYoS2jhKZHcTP6zZUH_NLzJv99xdcyi21Z1Y/pub)[Learn more](https://support.google.com/docs/answer/183965 "Learn more")
-
-BS-DS: Sep 2024 Grading document (Student)
-
-Updated automatically every 5 minutes
-
 Sep 2024 TERM GRADING DOCUMENT - DRAFT
 
 APPROVED BY THE CLASS COMMITTEE
