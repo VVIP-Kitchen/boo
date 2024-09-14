@@ -11,7 +11,7 @@
   },
   {
     "instruction": "Explain the proctoring method for OPPE2 Day 1.",
-    "context": "Details regarding the OPPE (Online Practical Performance Evaluation) assessments.",
+    "context": "Details regarding the OPPE (Online Proctored Programming Exam) assessments.",
     "response": "OPPE2 Day 1 is conducted online with remote proctoring."
   },
   {
@@ -290,12 +290,12 @@
     "response": "The final course score is calculated using the formula: T = 0.1 GAA1 + 0.1 GAA2 + 0.1 Qz1 + 0.4 F + 0.25 max(PE1, PE2) + 0.15 min(PE1, PE2), which is capped at 100."
   },
   {
-    "instruction": "What happens if a student is absent from both programming exams?",
+    "instruction": "What happens if a student is absent from both programming exams (OPPE)?",
     "context": null,
     "response": "If a student is absent from both programming exams, they receive a grade of 'U' and will need to repeat the course."
   },
   {
-    "instruction": "Describe the minimum score requirement for the programming exams.",
+    "instruction": "Describe the minimum score requirement for the programming exams (OPPE).",
     "context": null,
     "response": "Students must obtain a minimum score of 40 out of 100 in at least one of the programming exams (OPPE1 or OPPE2) to be eligible for the final course score calculation."
   },
@@ -455,7 +455,7 @@
     "response": "Students who fail to complete the OPPE SCT exam will not be scheduled for OPPE1."
   },
   {
-    "instruction": "List the dates for the online programming exams.",
+    "instruction": "List the dates for the online programming exams (OPPE).",
     "context": null,
     "response": "The dates for the online programming exams are as follows: OPE1 on Saturday, November 16, 2024, and OPE2 on Sunday, December 8, 2024."
   },
@@ -957,7 +957,7 @@
   {
     "instruction": "How is the final course score calculated?",
     "context": null,
-    "response": "The final course score is calculated as follows: GAA is the average score in the best 10 assignments out of 11 weekly graded assignments, GAAP is the average score in the best 7 out of 8 weekly graded programming assignments (weeks 3-10), and scores from quizzes and programming exams are also included."
+    "response": "The final course score is calculated as follows: GAA is the average score in the best 10 assignments out of 11 weekly graded assignments, GAAP is the average score in the best 7 out of 8 weekly graded programming assignments (weeks 3-10), and scores from quizzes and programming exams (OPPE) are also included."
   },
   {
     "instruction": "Explain the eligibility criteria to write the end term exam.",
