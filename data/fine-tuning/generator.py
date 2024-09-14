@@ -29,7 +29,9 @@ def split_into_chunks(text, chunk_size=1000):
   return [text[i : i + chunk_size] for i in range(0, len(text), chunk_size)]
 
 
-def generate_instruction_response_pairs(chunk, max_retries=5, model="gpt-4o-mini", temperature=0.7):
+def generate_instruction_response_pairs(
+  chunk, max_retries=5, model="gpt-4o-mini", temperature=0.7
+):
   prompt = f"""
 Given the following text, create 3 instruction-response pairs suitable for fine-tuning an AI model.
 Each pair should consist of an instruction, an optional context, and a response.

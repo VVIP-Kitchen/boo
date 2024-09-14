@@ -69,8 +69,14 @@ class WorkersService:
 
     return output.getvalue()
 
-  def chat_completions(self, messages: List[Dict[str, str]], temperature=0.55) -> str:
-    json = {"messages": messages, "temperature": temperature}
+  def chat_completions(
+    self, messages: Union[str, List[Dict[str, str]]], temperature=0.55
+  ) -> str:
+    json = (
+      {"prompt": messages}
+      if isinstance(messages, str)
+      else {"messages": messages, "temperature": temperature}
+    )
 
     try:
       response = self._make_request(
