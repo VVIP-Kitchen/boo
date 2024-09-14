@@ -21,6 +21,10 @@ CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 
+QDRANT_HOST = os.getenv("QDRANT_HOST")
+QDRANT_PORT = os.getenv("QDRANT_PORT")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
+
 GH_MODEL_NAME = os.getenv("GH_MODEL_NAME", "meta-llama-3.1-8b-instruct")
 CF_WORKERS_MODEL_NAME = os.getenv(
   "CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct"
@@ -51,6 +55,9 @@ for var_name in [
   "DB_SERVICE_BASE_URL",
   "CLOUDFLARE_ACCOUNT_ID",
   "CLOUDFLARE_WORKERS_AI_API_KEY",
+  "QDRANT_HOST",
+  "QDRANT_PORT",
+  "QDRANT_COLLECTION",
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

@@ -7,10 +7,11 @@ import discord
 from typing import List
 from discord.ext import commands
 from discord.ui import View, Button
-from services.weather_service import WeatherService
 from discord import File, Embed, ButtonStyle
-from services.workers_service import WorkersService
 from services.tenor_service import TenorService
+from services.vector_service import VectorService
+from services.weather_service import WeatherService
+from services.workers_service import WorkersService
 from utils.config import server_contexts, user_memory
 
 
@@ -68,6 +69,7 @@ class GeneralCommands(commands.Cog):
     self.posts = self.load_posts()
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
+    self.vector_service = VectorService()
     self.weather_service = WeatherService()
 
   def load_posts(self):
@@ -282,6 +284,21 @@ class GeneralCommands(commands.Cog):
       await ctx.send(
         content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}"
       )
+
+  @commands.hybrid_command(
+    name="grading", description="Ask questions related to Grading Doc"
+  )
+  async def grading_doc(self, ctx: commands.Context, *, question: str) -> None:
+    if question is None or len(question.strip()) == 0:
+      return await ctx.send(content="You forgor 💀")
+
+    async with ctx.typing():
+      search_result = self.vector_service.search(question)
+      prompt = (
+        f"Using this information: {search_result}\nAnswer the question: {question}"
+      )
+      answer = self.llm_service.chat_completions(prompt)
+      return await ctx.send(content=answer)
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"

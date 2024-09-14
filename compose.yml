@@ -16,6 +16,24 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    container_name: qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    volumes:
+      - qdrant_data:/qdrant/storage
+    configs:
+      - source: qdrant_config
+        target: /qdrant/config/production.yaml
+
   manager:
     depends_on:
       postgres:
@@ -30,9 +48,11 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
+
   discord-bot:
     depends_on:
       - manager
+      - qdrant
     build: .
     container_name: boo
     command: sh -c "python src/main.py"
@@ -50,6 +70,15 @@ services:
       - CF_WORKERS_IMAGE_MODEL_NAME=${CF_WORKERS_IMAGE_MODEL_NAME}
       - CLOUDFLARE_WORKERS_AI_API_KEY=${CLOUDFLARE_WORKERS_AI_API_KEY}
       - CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME=${CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_COLLECTION=grading-doc-sep-2024
 
 volumes:
   postgres_data:
+  qdrant_data:
+
+configs:
+  qdrant_config:
+    content: |
+      log_level: INFO

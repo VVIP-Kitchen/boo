@@ -1,0 +1,226 @@
+[
+{
+  "instruction": "List all quiz and exam dates for the Sep 2024 term.",
+  "context": null,
+  "response": "Quiz 1: Sunday, October 27, 2024; Quiz 2: Sunday, December 1, 2024; End term exam: Sunday, December 22, 2024."
+},
+{
+  "instruction": "Explain the format of the OPPE exams.",
+  "context": "The OPPE exams are scheduled for multiple days.",
+  "response": "The OPPE exams are conducted online in a remote proctored format over several days, specifically OPPE1 on November 16-17, 2024, and OPPE2 on December 7-15, 2024."
+},
+{
+  "instruction": "Identify the subjects associated with each OPPE exam.",
+  "context": null,
+  "response": "OPPE1 is associated with Dip-MLP & Deg-C prog and FL-Python; OPPE2 covers subjects like Dip - SC, Dip - DBMS, PDSA, Java, MLP, and Deg - Big Data."
+},
+{
+  "instruction": "List the assignment deadlines for Week 1.",
+  "context": null,
+  "response": "For Week 1, the assignment deadlines are: Foundation - Wednesday, October 2, 2024; Diploma - Sunday, October 6, 2024."
+},
+{
+  "instruction": "What is the policy on changing assignment deadlines?",
+  "context": null,
+  "response": "None of the assignment deadlines will be changed this time from the schedule given."
+},
+{
+  "instruction": "Provide the content release date for Week 3.",
+  "context": null,
+  "response": "The content release date for Week 3 is Friday, October 4, 2024."
+},
+{
+  "instruction": "List the dates for Week 11.",
+  "context": null,
+  "response": "Week 11 dates are Friday, November 29, 2024, and Wednesday, December 11, 2024."
+},
+{
+  "instruction": "Explain the eligibility criteria for final exams in Week 9.",
+  "context": null,
+  "response": "Eligibility for final exams in Week 9 depends on the average assignment scores of the best 5 out of the first 9 weeks."
+},
+{
+  "instruction": "What changes were made to the schedule and why?",
+  "context": "The text mentions changes related to quizzes and festivals.",
+  "response": "The schedule was changed to accommodate a quiz on October 27 and Diwali on October 31, affecting weeks 6 and 7."
+},
+{
+  "instruction": "List all diploma level orientation sessions and their timings.",
+  "context": null,
+  "response": "The diploma level orientation sessions are as follows:\n1. Java/PDSA/SC/App dev1/Appdev2/DBMS - Sunday, Sep 8 2024, 6pm\n2. MLF/MLT/MLP - Sunday, Sep 8 2024, 8pm\n3. BDM/BA/TDS - Sunday, Sep 8 2024, 9pm"
+},
+{
+  "instruction": "What degree level orientations are scheduled for Monday, Sep 9 2024?",
+  "context": null,
+  "response": "On Monday, Sep 9 2024, the degree level orientations scheduled are:\n1. Introduction to NLP, Corporate Finance - 5pm\n2. (Sw Engg + Sw Testing + C Programming + Advanced Algorithms + PSOSM + CSD + Statistical Computing) - 6pm\n3. (AI: SMPS + DL + Big Data + Speech Tech) - 8pm"
+},
+{
+  "instruction": "Provide the dates and details for project orientation sessions.",
+  "context": null,
+  "response": "The project orientation sessions are scheduled as follows:\n- Sep 23, 2024, 7pm: Appdev 1 Project\n- Sep 24, 2024, 7pm: Appdev 2 Project\n- Sep 25, 2024, 7pm: ML Project\n- Sep 26, 2024, 7pm: BDM Project"
+},
+{
+  "instruction": "What must a student complete before being scheduled for OPPE1?",
+  "context": null,
+  "response": "A student must complete the OPPE System Compatibility Test (SCT) exam."
+},
+{
+  "instruction": "What happens if a student fails to meet the eligibility criteria for the final exam?",
+  "context": null,
+  "response": "If a student fails to meet the eligibility criteria for the final exam, OPPE2 will not be scheduled, and they will receive a WA/WQ grade, requiring them to repeat the entire course."
+},
+{
+  "instruction": "Where can I find the Standard Operating Procedure (SoP) document for the OPPE SCT exam?",
+  "context": null,
+  "response": "You can find the Standard Operating Procedure (SoP) document for the OPPE SCT exam by clicking [here](https://www.google.com/url?q=https://docs.google.com/document/d/13WhnPprgKrgMfJ-Ep9IJQdolharbkY4ucrrfQYVoe4c/pub&sa=D&source=editors&ust=1726257172103306&usg=AOvVaw2CW1ISmz7ix503Nm-f4Lp5)."
+},
+{
+  "instruction": "List the initial courses available for data science.",
+  "context": null,
+  "response": "The initial courses available for data science include Mathematics for Data Science 1, English 1, Computational Thinking, and Statistics for Data Science 1."
+},
+{
+  "instruction": "What are the suggested pathways for Diploma level courses?",
+  "context": null,
+  "response": "The suggested pathways for Diploma level courses include Machine Learning Foundations, Machine Learning Techniques, Machine Learning Practice, Business Data Management, Business Analytics, and Tools in Data Science."
+},
+{
+  "instruction": "Identify the assignment deadlines mentioned for Business Analytics.",
+  "context": null,
+  "response": "The assignment deadlines for Business Analytics (BA) are specifically listed as Business Analytics (BA) Assignment Deadlines."
+},
+{
+  "instruction": "List the courses related to application development.",
+  "context": null,
+  "response": "The courses related to application development are: Application Development - 1, Application Development - 2."
+},
+{
+  "instruction": "What programming language is mentioned for learning programming concepts?",
+  "context": null,
+  "response": "The programming language mentioned for learning programming concepts is Java."
+},
+{
+  "instruction": "Identify two degree level courses from the text.",
+  "context": null,
+  "response": "Two degree level courses mentioned are Software Testing and Deep Learning."
+},
+{
+  "instruction": "What are the criteria for earning course participation marks?",
+  "context": null,
+  "response": "The criteria for course participation marks include: they are applicable based on the availability of mock activities in the course, can vary from 0-2 marks, and students will receive 2 marks if the average marks obtained in all mock tests conducted before Quiz 1 & Quiz 2 is >= 40/100."
+},
+{
+  "instruction": "How will bonus marks affect a student's course grade?",
+  "context": null,
+  "response": "Bonus marks for course participation will only impact the course grade for students who pass the course and will not affect the pass criteria."
+},
+{
+  "instruction": "Explain the relationship between mock tests and course participation marks.",
+  "context": null,
+  "response": "The availability of mock tests influences the course participation marks. If the average score of the mock tests before Quiz 1 & Quiz 2 is 40/100 or higher, students will earn 2 marks."
+},
+{
+  "instruction": "What are the criteria for earning badges in the Discourse forum?",
+  "context": "The course emphasizes participation in the Discourse forum to encourage student engagement.",
+  "response": "Badges are awarded based on the number of hours spent reading posts in Discourse: Badge 1 for up to 4 hours, Badge 2 for up to 8 hours, and Badge 3 for 12 hours or more."
+},
+{
+  "instruction": "Explain the grading system used in the course.",
+  "context": "Understanding the grading scale is crucial for students to know their academic standing.",
+  "response": "The grading system consists of grades S, A, B, C, D, E for passing, and U for failing. Additionally, the I grade has specific conditions for absence."
+},
+{
+  "instruction": "How can students earn bonus marks in the course?",
+  "context": "Bonus activities can enhance student engagement and academic performance.",
+  "response": "Students can earn up to 3 bonus marks if the course team sets up additional activities. If no such activities are established, the bonus marks will not be applicable."
+},
+{
+  "instruction": "What happens if I fail the OPPE but pass the ET exam?",
+  "context": null,
+  "response": "If you fail the OPPE but cross the cutoff for the ET exam as per the course grading policy, your grade will be recorded as I/OP."
+},
+{
+  "instruction": "Can I register for the OPPE after failing it?",
+  "context": "You have previously failed the OPPE.",
+  "response": "Yes, you can register to do the OPPE alone. If the course has one OPPE, it will be scheduled for you; if there are two, both will be scheduled."
+},
+{
+  "instruction": "What grade will I receive if I failed the OPPE and was absent for the ET exam?",
+  "context": null,
+  "response": "If you fail the OPPE and are absent for the ET exam, your grade will be recorded as I/BOTH."
+},
+{
+  "instruction": "What are the scheduled dates for OPPE 1?",
+  "context": "The OPPE schedule for the September 2024 term includes multiple assessment days.",
+  "response": "OPPE 1 is scheduled for Saturday, November 16, 2024, and Sunday, November 17, 2024."
+},
+{
+  "instruction": "Explain the option to repeat the course.",
+  "context": "There is a mention of reattempting assessment components.",
+  "response": "You can choose to repeat the entire course instead of just doing the ET/OPPE if you want to reattempt all assessment components."
+},
+{
+  "instruction": "List the subjects assessed on OPPE 1 Day 1.",
+  "context": "The OPPE schedule includes various subjects for different days.",
+  "response": "On OPPE 1 Day 1, the subjects assessed are Python, DBMS, PDSA, Java, SC, MLP, C, and Intro to Big Data."
+},
+{
+  "instruction": "What are the dates and times for OPPE 2 sessions?",
+  "context": null,
+  "response": "The OPPE 2 sessions are scheduled as follows: Day 3 on Saturday, December 14, 2024, from 07:00 PM to 09:00 PM, and Day 4 on Sunday, December 15, 2024, from 09:30 AM to 11:00 AM."
+},
+{
+  "instruction": "Explain the new rules for Foundation Level courses starting in May 2024.",
+  "context": null,
+  "response": "For those entering Foundation Level in May 2024 or after, the new rules require students to complete 4, 6, or 8 courses in 4, 6, or 9 terms, respectively. Failure to do so may result in removal from the program."
+},
+{
+  "instruction": "Where can I find the suggested pathway to register for Foundation level courses?",
+  "context": null,
+  "response": "The suggested pathway to register and study Foundation level courses can be found in the provided image link."
+},
+{
+  "instruction": "What are the dates for the quizzes and the end term for the Mathematics course?",
+  "context": null,
+  "response": "Quiz 1 is on October 27, 2024, Quiz 2 is on December 1, 2024, and the end term is on December 22, 2024."
+},
+{
+  "instruction": "Explain the eligibility criteria to write the final exam in the Mathematics course.",
+  "context": null,
+  "response": "To be eligible to write the final exam, a student must have an average of the best 5 out of the first 9 weeks of weekly assignment scores that is greater than or equal to 40/100 and must attend one of the two quizzes."
+},
+{
+  "instruction": "How is the final course score calculated for eligible students in the Mathematics course?",
+  "context": null,
+  "response": "The final course score T is calculated using the formula: T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2), where GAA is the average score in the best 10 out of the first 11 weekly graded assignments, F is the final exam score, and Qz1 and Qz2 are the scores in Quiz 1 and Quiz 2 respectively."
+},
+{
+  "instruction": "Explain the eligibility criteria for writing the final exam.",
+  "context": null,
+  "response": "To be eligible to write the final exam, students must have an average of the best 5 out of the first 9 weeks of weekly assignment scores that is greater than or equal to 40 out of 100, and they must attend one of the two quizzes."
+},
+{
+  "instruction": "How is the final course score T calculated?",
+  "context": null,
+  "response": "The final course score T for eligible students is calculated using the formula: T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2), where GAA is the average score in the best 10 out of the first 11 weekly graded assignments, F is the final exam score, and Qz1 and Qz2 are the scores from Quiz I and Quiz II, respectively."
+},
+{
+  "instruction": "When are the quizzes and the end term exam scheduled?",
+  "context": null,
+  "response": "Quiz 1 is scheduled for October 27th, 2024, Quiz 2 for December 1st, 2024, and the end term exam is set for December 22nd, 2024."
+},
+{
+  "instruction": "What are the eligibility requirements to obtain the final course grade?",
+  "context": null,
+  "response": "To obtain the final course grade, students must have an average score of at least 40/100 in the best 5 out of the first 9 weekly assignments and must attend one of the two quizzes."
+},
+{
+  "instruction": "How is the final course score calculated for eligible students?",
+  "context": null,
+  "response": "The final course score T for eligible students is calculated using the formula: T = 0.1GAA + max(0.6F + 0.2max(Qz1, Qz2), 0.4F + 0.2Qz1 + 0.3Qz2), where GAA is the average score from the best 10 out of the first 11 weekly assignments, F is the final exam score, and Qz1 and Qz2 are the scores from Quiz I and Quiz II respectively."
+},
+{
+  "instruction": "When are the quizzes and final exam scheduled?",
+  "context": null,
+  "response": "Quiz 1 is scheduled for October 27th, 2024, Quiz 2 for December 1st, 2024, and the final exam will take place on December 22nd, 2024."
+},
