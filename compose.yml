@@ -73,6 +73,8 @@ services:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - QDRANT_COLLECTION=grading-doc-sep-2024
+      - DISCOURSE_COOKIE=${DISCOURSE_COOKIE}
+      - DISCOURSE_CSRF_TOKEN=${DISCOURSE_CSRF_TOKEN}
 
 volumes:
   postgres_data:
