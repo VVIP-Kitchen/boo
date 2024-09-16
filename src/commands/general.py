@@ -12,6 +12,7 @@ from services.tenor_service import TenorService
 from services.vector_service import VectorService
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
+from services.discourse_service import DiscourseService
 from utils.config import server_contexts, user_memory
 
 
@@ -71,6 +72,7 @@ class GeneralCommands(commands.Cog):
     self.tenor_service = TenorService()
     self.vector_service = VectorService()
     self.weather_service = WeatherService()
+    self.discourse_service = DiscourseService()
 
   def load_posts(self):
     posts = []
@@ -93,9 +95,7 @@ class GeneralCommands(commands.Cog):
     else:
       await ctx.typing()
 
-    matching_posts = [
-      post for post in self.posts if keyword.lower() in post["Title"].lower()
-    ]
+    matching_posts = self.discourse_service.discourse_search(keyword)
 
     if not matching_posts:
       await ctx.send(f"No posts found matching the keyword: {keyword}")
@@ -107,6 +107,7 @@ class GeneralCommands(commands.Cog):
       for i in range(0, len(matching_posts), posts_per_page)
     ]
     current_page = 0
+
 
     async def update_embed(page):
       embed = Embed(
