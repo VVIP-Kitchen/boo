@@ -4,7 +4,7 @@ import math
 import random
 import discord
 
-from typing import List
+from typing import List, Dict
 from discord.ext import commands
 from discord.ui import View, Button
 from discord import File, Embed, ButtonStyle
@@ -14,6 +14,58 @@ from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from services.discourse_service import DiscourseService
 from utils.config import server_contexts, user_memory
+
+
+class DiscoursePostPaginator:
+  def __init__(
+    self, posts: List[Dict[str, str]], keyword: str, posts_per_page: int = 6
+  ):
+    self.posts = posts
+    self.keyword = keyword
+    self.posts_per_page = posts_per_page
+    self.pages = [
+      posts[i : i + posts_per_page] for i in range(0, len(posts), posts_per_page)
+    ]
+    self.current_page = 0
+
+  async def send(self, ctx: commands.Context) -> None:
+    embed = await self._create_embed()
+    view = self._create_view()
+    await ctx.send(embed=embed, view=view)
+
+  async def _create_embed(self) -> Embed:
+    embed = Embed(
+      title="Discourse Posts", description=f"Search results for '{self.keyword}'\n\n"
+    )
+    for post in self.pages[self.current_page]:
+      embed.add_field(
+        name=f"\n{post['Title'][:100]}",
+        value=f"_{post['Blurb'][:100]}..._\n[post link]({post['Post Link']}) _{post['Tags'][:100]}_\n\n",
+        inline=False,
+      )
+    embed.set_footer(
+      text=f"Page {self.current_page + 1}/{len(self.pages)} • Total posts: {len(self.posts)}"
+    )
+    return embed
+
+  def _create_view(self) -> View:
+    view = View()
+    prev_button = Button(style=ButtonStyle.gray, label="Previous")
+    next_button = Button(style=ButtonStyle.gray, label="Next")
+
+    prev_button.callback = lambda i: self._button_callback(i, -1)
+    next_button.callback = lambda i: self._button_callback(i, 1)
+
+    view.add_item(prev_button)
+    view.add_item(next_button)
+    return view
+
+  async def _button_callback(
+    self, interaction: discord.Interaction, change: int
+  ) -> None:
+    self.current_page = (self.current_page + change) % len(self.pages)
+    embed = await self._create_embed()
+    await interaction.response.edit_message(embed=embed, view=self._create_view())
 
 
 class ModelPaginator(discord.ui.View):
@@ -82,6 +134,17 @@ class GeneralCommands(commands.Cog):
         posts.append(row)
     return posts
 
+  async def _defer_response(self, ctx: commands.Context) -> None:
+    if ctx.interaction:
+      await ctx.defer()
+    else:
+      await ctx.typing()
+
+  async def _fetch_matching_posts(self, keyword: str) -> List[Dict[str, str]]:
+    return await self.bot.loop.run_in_executor(
+      None, self.discourse_service.discourse_search, keyword
+    )
+
   @commands.hybrid_command(
     name="discourse", description="Search for posts from Discourse"
   )
@@ -90,60 +153,18 @@ class GeneralCommands(commands.Cog):
       await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
       return
 
-    if ctx.interaction:
-      await ctx.defer()
-    else:
-      await ctx.typing()
+    await self._defer_response(ctx)
+    try:
+      matching_posts = await self._fetch_matching_posts(keyword)
+      if not matching_posts:
+        await ctx.send(f"No posts found matching the keyword: {keyword}")
+        return
 
-    matching_posts = self.discourse_service.discourse_search(keyword)
+      paginator = DiscoursePostPaginator(matching_posts, keyword)
+      await paginator.send(ctx)
 
-    if not matching_posts:
-      await ctx.send(f"No posts found matching the keyword: {keyword}")
-      return
-
-    posts_per_page = 10
-    pages = [
-      matching_posts[i : i + posts_per_page]
-      for i in range(0, len(matching_posts), posts_per_page)
-    ]
-    current_page = 0
-
-
-    async def update_embed(page):
-      embed = Embed(
-        title="Discourse Posts", description=f"Search results for '{keyword}'\n\n\n"
-      )
-      for post in pages[page]:
-        # Use Discord's native linking
-        embed.description += f"**[{post['Title'][:100]}]({post['Post Link']})**\n Tags: {post['Tags'][:100]}\n\n"
-
-      embed.set_footer(
-        text=f"Page {page + 1}/{len(pages)} • Total posts: {len(matching_posts)}"
-      )
-      return embed
-
-    async def button_callback(interaction, change):
-      nonlocal current_page
-      current_page = (current_page + change) % len(pages)
-      await interaction.response.edit_message(
-        embed=await update_embed(current_page), view=create_view()
-      )
-
-    def create_view():
-      view = View()
-      prev_button = Button(style=ButtonStyle.gray, label="Previous")
-      next_button = Button(style=ButtonStyle.gray, label="Next")
-
-      prev_button.callback = lambda i: button_callback(i, -1)
-      next_button.callback = lambda i: button_callback(i, 1)
-
-      view.add_item(prev_button)
-      view.add_item(next_button)
-      return view
-
-    initial_embed = await update_embed(current_page)
-    initial_view = create_view()
-    await ctx.send(embed=initial_embed, view=initial_view)
+    except Exception as e:
+      await ctx.send(f"An error occurred while searching Discourse: {str(e)}")
 
   def _get_bot_avatar(self, ctx: commands.Context):
     return (
