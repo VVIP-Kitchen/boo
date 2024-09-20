@@ -1,7 +1,10 @@
 import io
 from typing import List
-from discord import Message, Member, File
 from discord.ext import commands
+from discord import Message, Member, File
+
+
+CHANNEL_NAME = "chat"
 
 
 def handle_user_mentions(prompt: str, message: Message) -> str:
@@ -41,3 +44,10 @@ def is_direct_reply(message: Message, bot: commands.Bot) -> bool:
 
 def text_to_file(bot_response):
   return File(io.BytesIO(str.encode(bot_response, "utf-8")), filename="output.txt")
+
+
+def prepare_prompt(message: Message) -> str:
+  prompt = handle_user_mentions(message.content.strip(), message)
+  for sticker in message.stickers:
+    prompt += f"&{sticker.name};{sticker.id};{sticker.url}&"
+  return prompt

@@ -14,7 +14,7 @@ class DBService:
     Initialize the DBService with the base URL for the database API.
     """
     self.base_url = DB_SERVICE_BASE_URL
-    self.timeout = 10  # Timeout of 10 seconds
+    self.timeout = 0.5  ### Timeout of 500ms
 
   def fetch_prompt(self, guild_id: str) -> Optional[Dict[str, str]]:
     """
