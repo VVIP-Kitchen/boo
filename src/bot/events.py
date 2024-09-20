@@ -9,7 +9,12 @@ from services.github_service import GithubService
 from services.workers_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
-from utils.message_utils import handle_user_mentions, is_direct_reply, text_to_file
+from utils.message_utils import (
+  CHANNEL_NAME,
+  text_to_file,
+  prepare_prompt,
+  is_direct_reply
+)
 
 ist = pytz.timezone("Asia/Kolkata")
 
@@ -28,12 +33,12 @@ class BotEvents(commands.Cog):
     """
 
     self.bot = bot
-    self.channel_name = "chat"
+    self.custom_emojis = {}
     self.db_service = DBService()
+    self.channel_name = CHANNEL_NAME
     self.github_service = GithubService()
     self.workers_service = WorkersService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
-    self.custom_emojis = {}
     self.error_message = "I'm sorry, I encountered an error while processing your message. Please try again later."
 
   @commands.Cog.listener()
@@ -57,7 +62,7 @@ class BotEvents(commands.Cog):
       return
 
     try:
-      prompt = self._prepare_prompt(message)
+      prompt = prepare_prompt(message)
       server_id = self._get_server_id(message)
       self._load_server_lore(server_id)
 
@@ -85,11 +90,6 @@ class BotEvents(commands.Cog):
     except Exception as e:
       logger.error(f"Error loading custom emojis: {str(e)}")
 
-  def _is_bot_mentioned(self, message: discord.Message) -> bool:
-    if message.guild is None:
-      return True
-    return is_direct_reply(message, self.bot) or self.bot.user in message.mentions
-
   def _should_ignore_message(self, message: discord.Message) -> bool:
     if message.author.bot:
       return True
@@ -102,12 +102,6 @@ class BotEvents(commands.Cog):
     is_mentioned = self.bot.user in message.mentions
     is_reply = is_direct_reply(message, self.bot)
     return not (is_correct_channel and (is_mentioned or is_reply))
-
-  def _prepare_prompt(self, message: discord.Message) -> str:
-    prompt = handle_user_mentions(message.content.strip(), message)
-    for sticker in message.stickers:
-      prompt += f"&{sticker.name};{sticker.id};{sticker.url}&"
-    return prompt
 
   def _get_server_id(self, message: discord.Message) -> str:
     return f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
