@@ -3,6 +3,9 @@ A discord bot who talks to you! Boo supports natural language input like ChatGPT
 
 Powered by Meta's LLaMa 3.1
 
+#### **Invite Boo to your server**
+[Click here to invite](https://discord.com/oauth2/authorize?client_id=1272810273119535195&scope=bot&permissions=66560)
+
 ## **Tech stack**
 - Python
 - Discord.py
