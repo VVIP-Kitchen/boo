@@ -30,7 +30,7 @@ CF_WORKERS_MODEL_NAME = os.getenv(
   "CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct"
 )
 CF_WORKERS_IMAGE_MODEL_NAME = os.getenv(
-  "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+  "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell"
 )
 CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME = os.getenv(
   "CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME", "@cf/llava-hf/llava-1.5-7b-hf"
@@ -78,4 +78,3 @@ def get_time_based_greeting():
 
 server_lore = collections.defaultdict(str)
 server_contexts = collections.defaultdict(list)
-user_memory = collections.defaultdict(dict)

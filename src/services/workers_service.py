@@ -1,4 +1,5 @@
 import io
+import base64
 import requests
 import numpy as np
 from PIL import Image
@@ -100,22 +101,27 @@ class WorkersService:
       logger.error(f"Unexpected error in chat_completions: {e}")
       return "😵 Oops! Something unexpected happened."
 
-  def generate_image(self, prompt: str) -> Union[io.BytesIO, str]:
-    json = {"prompt": prompt}
+  def generate_image(self, prompt: str, num_steps: int = 4) -> Union[io.BytesIO, str]:
+    json_data = {
+      "prompt": prompt,
+      "num_steps": min(max(num_steps, 1), 8)
+    }
 
     try:
       response = self._make_request(
-        "POST", self.model_imagine_url, headers=self.headers, json=json
+        "POST", self.model_imagine_url, headers=self.headers, json=json_data
       )
+      response.raise_for_status()
+      data = response.json()
 
-      if response.headers.get("content-type") == "image/png":
-        return io.BytesIO(response.content)
+      if "image" in data["result"]:
+        image_data = base64.b64decode(data["result"]["image"])
+        return io.BytesIO(image_data)
       else:
-        error_data = response.json()
-        error_message = error_data.get("errors", [{}])[0].get(
-          "message", "Unknown error occurred"
-        )
-        raise ValueError(error_message)
+        raise ValueError("No image data in the response")
+    except requests.exceptions.RequestException as e:
+      logger.error(f"Error making request to Cloudflare API: {e}")
+      return "🤔 I encountered an issue while creating your image. Please try a different prompt or try again later."
     except ValueError as e:
       logger.error(f"Error processing the response: {e}")
       return "🤔 I encountered an issue while creating your image. Please try a different prompt or try again later."

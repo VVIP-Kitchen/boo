@@ -7,13 +7,13 @@ import discord
 from typing import List, Dict
 from discord.ext import commands
 from discord.ui import View, Button
+from utils.config import server_contexts
 from discord import File, Embed, ButtonStyle
 from services.tenor_service import TenorService
 from services.vector_service import VectorService
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from services.discourse_service import DiscourseService
-from utils.config import server_contexts, user_memory
 
 
 class DiscoursePostPaginator:
@@ -325,7 +325,7 @@ class GeneralCommands(commands.Cog):
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"
   )
-  async def imagine(self, ctx: commands.Context, *, prompt: str) -> None:
+  async def imagine(self, ctx: commands.Context, *, prompt: str, num_steps: int = 4) -> None:
     """
     Generate an image based on the given prompt.
 
@@ -361,18 +361,6 @@ class GeneralCommands(commands.Cog):
         {
           "role": "assistant",
           "content": f"I generated an image based on the prompt: '{prompt}'. The image was successfully created and sent to the chat.",
-        }
-      )
-
-      ### Add that to user's memory
-      if server_id not in user_memory[user_id]:
-        user_memory[user_id][server_id] = []
-
-      user_memory[user_id][server_id].append(
-        {
-          "type": "image",
-          "prompt": prompt,
-          "timestamp": ctx.message.created_at.isoformat(),
         }
       )
     else:
