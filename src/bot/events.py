@@ -146,6 +146,13 @@ class BotEvents(commands.Cog):
   ) -> str:
     analysis = ""
     async with message.channel.typing():
+      if len(message.attachments) == 0:
+        return analysis
+      
+      if not message.attachments[0].content_type.startswith("image"):
+        return analysis
+      
+      await self._send_message(message, "-# I am thinking, wait! 🤔")
       for idx, attachment in enumerate(message.attachments):
         if attachment.content_type.startswith("image"):
           image_url = attachment.url
@@ -154,7 +161,8 @@ class BotEvents(commands.Cog):
             if prompt
             else "Generate a caption for this image {idx + 1}"
           )
-          analysis = self.workers_service.analyze_image(image_url, image_prompt)
+          analysis = self.workers_service.analyze_image(image_url, image_prompt) if len(analysis) == 0 else analysis + self.workers_service.analyze_image(image_url, image_prompt)
+          await self._send_message(message, f"-# Analyzed {idx + 1}/{len(message.attachments)} images!")
     return analysis
 
   async def _process_message(
@@ -201,6 +209,12 @@ class BotEvents(commands.Cog):
       await message.channel.send(file=text_to_file(response))
     else:
       await message.channel.send(response, reference=message, stickers=stickers)
+  
+  async def _send_message(self, message: discord.Message, response: str, mention_author: bool = False) -> None:
+    if len(response) > 1800:
+      await message.channel.send(file=text_to_file(response), mention_author=mention_author)
+    else:
+      await message.channel.send(response, mention_author=mention_author)
 
   def _add_assistant_context(self, response: str, server_id: str) -> None:
     server_contexts[server_id].append({"role": "assistant", "content": response})
