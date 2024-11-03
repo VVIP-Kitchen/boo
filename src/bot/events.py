@@ -1,7 +1,6 @@
 import pytz
 import discord
 import datetime
-from pathlib import Path
 from utils.logger import logger
 from discord.ext import commands
 from services.db_service import DBService
@@ -147,16 +146,15 @@ class BotEvents(commands.Cog):
   ) -> str:
     analysis = ""
     async with message.channel.typing():
-      for attachment in message.attachments:
+      for idx, attachment in enumerate(message.attachments):
         if attachment.content_type.startswith("image"):
           image_url = attachment.url
           image_prompt = (
-            f"Analyze this image. Additional context: {prompt}"
+            f"Analyze this image {idx + 1}. Additional context: {prompt}"
             if prompt
-            else "Generate a caption for this image"
+            else "Generate a caption for this image {idx + 1}"
           )
           analysis = self.workers_service.analyze_image(image_url, image_prompt)
-          break  ### Only analyze the first image
     return analysis
 
   async def _process_message(
@@ -210,9 +208,9 @@ class BotEvents(commands.Cog):
   async def _check_context_limit(
     self, message: discord.Message, server_id: str
   ) -> None:
-    if len(server_contexts[server_id]) >= CONTEXT_LIMIT:
-      server_contexts[server_id] = []
-      await message.channel.send(self.context_reset_message)
+    if len(server_contexts[server_id]) > CONTEXT_LIMIT:
+      excess = len(server_contexts[server_id]) - CONTEXT_LIMIT
+      server_contexts[server_id] = server_contexts[server_id][excess:]
 
   async def _send_error_message(self, message: discord.Message) -> None:
     try:
