@@ -17,24 +17,17 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TENOR_API_KEY = os.getenv("TENOR_API_KEY")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 30)
 DB_SERVICE_BASE_URL = os.getenv("DB_SERVICE_BASE_URL")
+TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
-TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 
 QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_PORT = os.getenv("QDRANT_PORT")
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
 
 GH_MODEL_NAME = os.getenv("GH_MODEL_NAME", "meta-llama-3.1-8b-instruct")
-CF_WORKERS_MODEL_NAME = os.getenv(
-  "CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.1-8b-instruct"
-)
-CF_WORKERS_IMAGE_MODEL_NAME = os.getenv(
-  "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell"
-)
-CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME = os.getenv(
-  "CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME", "@cf/meta/llama-3.2-11b-vision-instruct"
-)
+CF_WORKERS_VISION_LANGUAGE_MODEL = os.getenv("CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.2-11b-vision-instruct")
+CF_WORKERS_IMAGE_GENERATION_MODEL = os.getenv("CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell")
 
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]

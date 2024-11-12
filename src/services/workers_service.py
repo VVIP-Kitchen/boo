@@ -6,11 +6,10 @@ from PIL import Image
 from utils.logger import logger
 from typing import List, Dict, Union
 from utils.config import (
-  CF_WORKERS_MODEL_NAME,
-  CF_WORKERS_IMAGE_MODEL_NAME,
   CLOUDFLARE_ACCOUNT_ID,
-  CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME,
   CLOUDFLARE_WORKERS_AI_API_KEY,
+  CF_WORKERS_VISION_LANGUAGE_MODEL,
+  CF_WORKERS_IMAGE_GENERATION_MODEL
 )
 
 
@@ -24,10 +23,9 @@ class WorkersService:
     Initialize the LLMService with necessary API endpoints and headers.
     """
 
-    self.model_search_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/models/search"
-    self.model_inference_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_MODEL_NAME}"
-    self.model_imagine_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_MODEL_NAME}"
-    self.image_analysis_url = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}"
+    self.search_models_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/models/search"
+    self.vision_language_model_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_VISION_LANGUAGE_MODEL}"
+    self.image_generation_model_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_GENERATION_MODEL}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
     self.timeout = 30  ### Timeout of 30s
 
@@ -43,7 +41,7 @@ class WorkersService:
       logger.error(f"Request to {url} failed: {e}")
       raise
 
-  def _get_image_data(self, image: Union[io.BytesIO, bytes, str]) -> bytes:
+  def _download_image(self, image: Union[io.BytesIO, bytes, str]) -> bytes:
     if isinstance(image, str):
       response = self._make_request("GET", image)
       return response.content
@@ -51,7 +49,7 @@ class WorkersService:
       return image.getvalue()
     return image
 
-  def _compress_image(self, image_data: bytes, max_size: int = 600 * 1024) -> bytes:
+  def _compress_image(self, image_data: bytes, max_size: int = 600 * 1024, quality: int = 85) -> bytes:
     if len(image_data) <= max_size:
       return image_data
 
@@ -59,7 +57,6 @@ class WorkersService:
     image = image.convert("RGB")
     output = io.BytesIO()
 
-    quality = 85
     while True:
       image.save(output, format="JPEG", quality=quality, optimize=True)
       if output.tell() <= max_size or quality <= 20:
@@ -81,7 +78,7 @@ class WorkersService:
 
     try:
       response = self._make_request(
-        "POST", self.model_inference_url, headers=self.headers, json=json
+        "POST", self.vision_language_model_endpoint, headers=self.headers, json=json
       )
       result = response.json()
       bot_response = str(result["result"]["response"])
@@ -109,7 +106,7 @@ class WorkersService:
 
     try:
       response = self._make_request(
-        "POST", self.model_imagine_url, headers=self.headers, json=json_data
+        "POST", self.image_generation_model_endpoint, headers=self.headers, json=json_data
       )
       response.raise_for_status()
       data = response.json()
@@ -131,7 +128,7 @@ class WorkersService:
 
   def fetch_models(self) -> List[str]:
     try:
-      response = self._make_request("GET", self.model_search_url, headers=self.headers)
+      response = self._make_request("GET", self.search_models_endpoint, headers=self.headers)
       result = response.json()
       return [
         obj["name"]
@@ -144,7 +141,7 @@ class WorkersService:
 
   def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
     try:
-      image_data = self._get_image_data(image)
+      image_data = self._download_image(image)
       image_data = self._compress_image(image_data)
 
       input_data = {
@@ -154,7 +151,7 @@ class WorkersService:
       }
 
       response = self._make_request(
-        "POST", self.image_analysis_url, headers=self.headers, json=input_data
+        "POST", self.vision_language_model_endpoint, headers=self.headers, json=input_data
       )
       result = response.json()
 
