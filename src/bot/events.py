@@ -152,7 +152,7 @@ class BotEvents(commands.Cog):
       if not message.attachments[0].content_type.startswith("image"):
         return analysis
       
-      await self._send_message(message, "-# I am thinking, wait! 🤔")
+      await self._send_message(message, "-# Thinking 🤔")
       for idx, attachment in enumerate(message.attachments):
         if attachment.content_type.startswith("image"):
           image_url = attachment.url

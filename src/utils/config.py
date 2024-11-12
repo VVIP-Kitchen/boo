@@ -33,7 +33,7 @@ CF_WORKERS_IMAGE_MODEL_NAME = os.getenv(
   "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell"
 )
 CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME = os.getenv(
-  "CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME", "@cf/llava-hf/llava-1.5-7b-hf"
+  "CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME", "@cf/meta/llama-3.2-11b-vision-instruct"
 )
 
 try:
