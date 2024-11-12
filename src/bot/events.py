@@ -65,7 +65,7 @@ class BotEvents(commands.Cog):
       server_id = self._get_server_id(message)
       self._load_server_lore(server_id)
 
-      if "reset chat" in prompt.lower():
+      if "reset" in prompt.lower():
         await self._reset_chat(message, server_id)
         return
 
@@ -123,6 +123,11 @@ class BotEvents(commands.Cog):
     )
 
   async def _reset_chat(self, message: discord.Message, server_id: str) -> None:
+    prompt = message.content.strip()
+    if "reset" in prompt and "reset chat" not in prompt:
+      await message.channel.send("-# Say \"reset chat\"")
+      return
+
     server_contexts[server_id] = []
     await message.channel.send(self.context_reset_message)
 

@@ -7,7 +7,7 @@ from discord import Message, Member, File
 CHANNEL_NAME = "chat"
 
 
-def handle_user_mentions(prompt: str, message: Message) -> str:
+def handle_user_mentions(message: Message) -> str:
   """
   Replace user mentions in a prompt with their corresponding usernames.
 
@@ -23,6 +23,7 @@ def handle_user_mentions(prompt: str, message: Message) -> str:
       str: The prompt with user mentions replaced by usernames.
   """
 
+  prompt = message.content.strip()
   if "<@" in prompt:
     mentions: List[Member] = message.mentions
 
@@ -47,7 +48,7 @@ def text_to_file(bot_response):
 
 
 def prepare_prompt(message: Message) -> str:
-  prompt = handle_user_mentions(message.content.strip(), message)
+  prompt = handle_user_mentions(message)
   for sticker in message.stickers:
     prompt += f"&{sticker.name};{sticker.id};{sticker.url}&"
   return prompt
