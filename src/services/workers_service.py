@@ -155,7 +155,7 @@ class WorkersService:
       )
       result = response.json()
 
-      description = result.get("result", {}).get("description", "")
+      description = result.get("result", {}).get("response", "")
       return (
         description
         if description
