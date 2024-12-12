@@ -181,6 +181,7 @@ class BotEvents(commands.Cog):
     async with message.channel.typing():
       bot_response = self.workers_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
+      logger.info(bot_response)
       bot_response_with_stickers, sticker_ids = replace_stickers(
         bot_response_with_emojis
       )
@@ -213,7 +214,6 @@ class BotEvents(commands.Cog):
     if len(response) > 1800:
       await message.channel.send(file=text_to_file(response))
     else:
-      logger.info(response)
       await message.channel.send(response, reference=message, stickers=stickers)
   
   async def _send_message(self, message: discord.Message, response: str, mention_author: bool = False) -> None:

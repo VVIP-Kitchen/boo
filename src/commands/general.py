@@ -344,7 +344,6 @@ class GeneralCommands(commands.Cog):
 
     result = self.llm_service.generate_image(prompt)
     server_id = f"DM_{ctx.author.id}" if ctx.guild is None else ctx.guild.id
-    user_id = str(ctx.author.id)
 
     if isinstance(result, io.BytesIO):
       file = File(result, "output.png")
@@ -389,7 +388,7 @@ class GeneralCommands(commands.Cog):
     Args:
       ctx (commands.Context): The invocation context.
     """
-    await ctx.send(f"SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
+    await ctx.send("SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
 
   @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
