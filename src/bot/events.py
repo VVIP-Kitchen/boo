@@ -213,6 +213,7 @@ class BotEvents(commands.Cog):
     if len(response) > 1800:
       await message.channel.send(file=text_to_file(response))
     else:
+      print(response)
       await message.channel.send(response, reference=message, stickers=stickers)
   
   async def _send_message(self, message: discord.Message, response: str, mention_author: bool = False) -> None:
