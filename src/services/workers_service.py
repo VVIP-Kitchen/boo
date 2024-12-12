@@ -82,6 +82,7 @@ class WorkersService:
       )
       result = response.json()
       bot_response = str(result["result"]["response"])
+      logger.info(bot_response)
       return (
         bot_response
         if len(bot_response) != 0
