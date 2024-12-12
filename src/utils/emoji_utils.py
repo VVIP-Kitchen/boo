@@ -1,5 +1,6 @@
+import re
 from discord import Emoji
-from typing import Dict, Union
+from typing import Dict, List, Tuple
 
 
 def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
@@ -18,25 +19,32 @@ def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
       str: The text with emoji placeholders replaced by custom emojis.
   """
 
-  words = text.split()
-  for i, word in enumerate(words):
-    ### Check if the word is an emoji placeholder
-    if word.startswith(":") and word.endswith(":"):
-      emoji_name = word[1:-1]
+  def replace_match(match):
+    emoji_name = match.group(1)
+    return str(custom_emojis.get(emoji_name, match.group(0)))
+  
+  return re.sub(r":([a-zA-Z0-9_]+):", replace_match, text)
 
-      ### Replace that placeholder with the custom emoji, if it exists
-      if emoji_name in custom_emojis:
-        words[i] = str(custom_emojis[emoji_name])
-  return " ".join(words)
+def replace_stickers(text: str) -> Tuple[str, List[str]]:
+  """
+  Replace sticker placeholders in text and extract sticker IDs.
 
+  This function identifies sticker placeholders in the text (e.g., &sticker_name;123&)
+  and replaces them with an empty string while collecting the sticker IDs into a list.
+  The original formatting of the text is preserved.
 
-def replace_stickers(text: str):
-  words = text.split()
+  Args:
+      text (str): The input text containing sticker placeholders.
+
+  Returns:
+      Tuple[str, List[str]]: A tuple with the modified text and a list of sticker IDs.
+  """
+
   sticker_list = []
-  for i, word in enumerate(words):
-    if word.startswith("&") and word.endswith("&"):
-      sticker_id = word.split(";")[1]
-      sticker_list.append(sticker_id)
+  def replace_match(match):
+    sticker_id = match.group(1)
+    sticker_list.append(sticker_id)
+    return ""
 
-      words[i] = ""
-  return " ".join(words), sticker_list
+  updated_text = re.sub(r"&[a-zA-Z0-9_]+;([0-9]+)&", replace_match, text)
+  return updated_text, sticker_list

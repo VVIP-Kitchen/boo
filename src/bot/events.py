@@ -181,11 +181,9 @@ class BotEvents(commands.Cog):
     async with message.channel.typing():
       bot_response = self.workers_service.chat_completions(messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
-      logger.info(bot_response_with_emojis)
       bot_response_with_stickers, sticker_ids = replace_stickers(
         bot_response_with_emojis
       )
-      logger.info(bot_response_with_stickers)
       sticker_list = await self._fetch_stickers(sticker_ids)
 
     await self._send_response(message, bot_response_with_stickers, sticker_list)
