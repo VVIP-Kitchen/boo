@@ -73,7 +73,6 @@ services:
       - QDRANT_COLLECTION=grading-doc-sep-2024
       - DISCOURSE_COOKIE=${DISCOURSE_COOKIE}
       - DISCOURSE_CSRF_TOKEN=${DISCOURSE_CSRF_TOKEN}
-    restart: always
 
 volumes:
   postgres_data:
