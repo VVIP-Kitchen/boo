@@ -17,19 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  qdrant:
-    image: qdrant/qdrant
-    restart: always
-    container_name: qdrant
-    ports:
-      - 6333:6333
-      - 6334:6334
-    volumes:
-      - qdrant_data:/qdrant/storage
-    configs:
-      - source: qdrant_config
-        target: /qdrant/config/production.yaml
-
   manager:
     depends_on:
       postgres:
