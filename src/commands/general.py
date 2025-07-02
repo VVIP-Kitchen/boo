@@ -10,7 +10,7 @@ from discord.ui import View, Button
 from utils.config import server_contexts
 from discord import File, Embed, ButtonStyle
 from services.tenor_service import TenorService
-from services.vector_service import VectorService
+# from services.vector_service import VectorService
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from services.discourse_service import DiscourseService
@@ -122,7 +122,7 @@ class GeneralCommands(commands.Cog):
     self.posts = self.load_posts()
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
-    self.vector_service = VectorService()
+    # self.vector_service = VectorService()
     self.weather_service = WeatherService()
     self.discourse_service = DiscourseService()
 

@@ -4,8 +4,10 @@ import pytz
 import datetime
 import collections
 from utils.logger import logger
+from dotenv import load_dotenv
 
 PREFIX = "!@"
+load_dotenv()
 
 ### Timezone config: India Standard Time
 ist = pytz.timezone("Asia/Kolkata")
@@ -16,7 +18,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TENOR_API_KEY = os.getenv("TENOR_API_KEY")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 15)
-DB_SERVICE_BASE_URL = os.getenv("DB_SERVICE_BASE_URL")
+DB_SERVICE_BASE_URL = os.getenv("DB_SERVICE_BASE_URL", "http://localhost:8080")
 TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
@@ -47,10 +49,7 @@ for var_name in [
   "TENOR_API_KEY",
   "DB_SERVICE_BASE_URL",
   "CLOUDFLARE_ACCOUNT_ID",
-  "CLOUDFLARE_WORKERS_AI_API_KEY",
-  "QDRANT_HOST",
-  "QDRANT_PORT",
-  "QDRANT_COLLECTION",
+  "CLOUDFLARE_WORKERS_AI_API_KEY"
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

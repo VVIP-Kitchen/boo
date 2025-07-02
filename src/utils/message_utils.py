@@ -52,3 +52,24 @@ def prepare_prompt(message: Message) -> str:
   for sticker in message.stickers:
     prompt += f"&{sticker.name};{sticker.id};{sticker.url}&"
   return prompt
+
+def log_message(message: Message) -> None:
+  # Message Content
+  print("Content:", message.content)
+
+  # Author Info
+  print("Author:", message.author)               # discord.Member or discord.User object
+  print("Author Name:", message.author.name)     # Just the username
+
+  # Server (Guild) Name
+  if message.guild:
+    print("Server Name:", message.guild.name)
+    # Channel Name (for server text channels)
+    print("Channel Name:", message.channel.name)
+  else:
+    print("This message is from a DM.")
+    print("Channel: Direct Message")
+
+  # Timestamp
+  print("Timestamp:", message.created_at)
+  print()

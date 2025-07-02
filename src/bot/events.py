@@ -12,7 +12,8 @@ from utils.message_utils import (
   CHANNEL_NAME,
   text_to_file,
   prepare_prompt,
-  is_direct_reply
+  is_direct_reply,
+  log_message
 )
 
 ist = pytz.timezone("Asia/Kolkata")
@@ -57,6 +58,8 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
+    log_message(message)
+
     if self._should_ignore_message(message):
       return
 
@@ -69,9 +72,9 @@ class BotEvents(commands.Cog):
         await self._reset_chat(message, server_id)
         return
 
-      if message.guild is not None and not self._is_valid_channel(message):
-        await self._send_channel_redirect(message)
-        return
+      # if message.guild is not None and not self._is_valid_channel(message):
+      #   await self._send_channel_redirect(message)
+      #   return
 
       analysis = await self._handle_image_input(message, prompt, server_id)
       full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
@@ -89,18 +92,32 @@ class BotEvents(commands.Cog):
     except Exception as e:
       logger.error(f"Error loading custom emojis: {str(e)}")
 
+  # def _should_ignore_message(self, message: discord.Message) -> bool:
+  #   if message.author.bot:
+  #     return True
+
+  #   ### Always respond to DMs
+  #   if message.guild is None:
+  #     return False
+
+  #   is_correct_channel = message.channel.name == self.channel_name
+  #   is_mentioned = self.bot.user in message.mentions
+  #   is_reply = is_direct_reply(message, self.bot)
+  #   return not (is_correct_channel and (is_mentioned or is_reply))
+  
   def _should_ignore_message(self, message: discord.Message) -> bool:
     if message.author.bot:
-      return True
+        return True
 
-    ### Always respond to DMs
+    # Always respond to DMs
     if message.guild is None:
-      return False
+        return False
 
-    is_correct_channel = message.channel.name == self.channel_name
     is_mentioned = self.bot.user in message.mentions
     is_reply = is_direct_reply(message, self.bot)
-    return not (is_correct_channel and (is_mentioned or is_reply))
+
+    # Respond only if it's a mention or a reply (ignore everything else)
+    return not (is_mentioned or is_reply)
 
   def _get_server_id(self, message: discord.Message) -> str:
     return f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
