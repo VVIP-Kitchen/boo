@@ -1,71 +1,15 @@
 import io
-import csv
 import math
 import random
 import discord
 
-from typing import List, Dict
+from typing import List
+from discord import File
 from discord.ext import commands
-from discord.ui import View, Button
 from utils.config import server_contexts
-from discord import File, Embed, ButtonStyle
 from services.tenor_service import TenorService
-# from services.vector_service import VectorService
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
-from services.discourse_service import DiscourseService
-
-
-class DiscoursePostPaginator:
-  def __init__(
-    self, posts: List[Dict[str, str]], keyword: str, posts_per_page: int = 6
-  ):
-    self.posts = posts
-    self.keyword = keyword
-    self.posts_per_page = posts_per_page
-    self.pages = [
-      posts[i : i + posts_per_page] for i in range(0, len(posts), posts_per_page)
-    ]
-    self.current_page = 0
-
-  async def send(self, ctx: commands.Context) -> None:
-    embed = await self._create_embed()
-    view = self._create_view()
-    await ctx.send(embed=embed, view=view)
-
-  async def _create_embed(self) -> Embed:
-    embed = Embed(
-      title="Discourse Posts", description=f"Search results for '{self.keyword}'\n\n"
-    )
-    for post in self.pages[self.current_page]:
-      embed.add_field(
-        name=f"\n{post['Title'][:100]}",
-        value=f"_{post['Blurb'][:100]}..._\n[post link]({post['Post Link']}) _{post['Tags'][:100]}_\n\n",
-        inline=False,
-      )
-    embed.set_footer(
-      text=f"Page {self.current_page + 1}/{len(self.pages)} • Total posts: {len(self.posts)}"
-    )
-    return embed
-
-  def _create_view(self) -> View:
-    view = View()
-    prev_button = Button(style=ButtonStyle.gray, label="Previous")
-    next_button = Button(style=ButtonStyle.gray, label="Next")
-
-    prev_button.callback = lambda i: self._button_callback(i, -1)
-    next_button.callback = lambda i: self._button_callback(i, 1)
-
-    view.add_item(prev_button)
-    view.add_item(next_button)
-    return view
-
-  async def _button_callback(
-    self, interaction: discord.Interaction, change: int
-  ) -> None:
-    self.current_page = (self.current_page + change) % len(self.pages)
-    embed = await self._create_embed()
-    await interaction.response.edit_message(embed=embed, view=self._create_view())
 
 
 class ModelPaginator(discord.ui.View):
@@ -119,52 +63,15 @@ class GeneralCommands(commands.Cog):
     """
 
     self.bot = bot
-    self.posts = self.load_posts()
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
-    # self.vector_service = VectorService()
     self.weather_service = WeatherService()
-    self.discourse_service = DiscourseService()
-
-  def load_posts(self):
-    posts = []
-    with open("data/Discourse_Posts_06_09_24.csv", "r", encoding="utf-8") as f:
-      reader = csv.DictReader(f)
-      for row in reader:
-        posts.append(row)
-    return posts
 
   async def _defer_response(self, ctx: commands.Context) -> None:
     if ctx.interaction:
       await ctx.defer()
     else:
       await ctx.typing()
-
-  async def _fetch_matching_posts(self, keyword: str) -> List[Dict[str, str]]:
-    return await self.bot.loop.run_in_executor(
-      None, self.discourse_service.discourse_search, keyword
-    )
-
-  @commands.hybrid_command(
-    name="discourse", description="Search for posts from Discourse"
-  )
-  async def search_posts(self, ctx: commands.Context, keyword: str) -> None:
-    if ctx.guild is not None and ctx.channel.name != "chat":
-      await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
-      return
-
-    await self._defer_response(ctx)
-    try:
-      matching_posts = await self._fetch_matching_posts(keyword)
-      if not matching_posts:
-        await ctx.send(f"No posts found matching the keyword: {keyword}")
-        return
-
-      paginator = DiscoursePostPaginator(matching_posts, keyword)
-      await paginator.send(ctx)
-
-    except Exception as e:
-      await ctx.send(f"An error occurred while searching Discourse: {str(e)}")
 
   def _get_bot_avatar(self, ctx: commands.Context):
     return (
@@ -306,21 +213,6 @@ class GeneralCommands(commands.Cog):
       await ctx.send(
         content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}"
       )
-
-  @commands.hybrid_command(
-    name="grading", description="Ask questions related to Grading Doc"
-  )
-  async def grading_doc(self, ctx: commands.Context, *, question: str) -> None:
-    if question is None or len(question.strip()) == 0:
-      return await ctx.send(content="You forgor 💀")
-
-    async with ctx.typing():
-      search_result = self.vector_service.search(question)
-      prompt = (
-        f"Using this information: {search_result}\nAnswer the question: {question}"
-      )
-      answer = self.llm_service.chat_completions(prompt)
-      return await ctx.send(content=answer)
 
   @commands.hybrid_command(
     name="imagine", description="Generates an image from a prompt"

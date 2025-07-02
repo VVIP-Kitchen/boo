@@ -46,7 +46,6 @@ class BotEvents(commands.Cog):
     """
     Event listener for when the bot is ready and connected.
     """
-
     logger.info(f"{self.bot.user} has connected to Discord!")
     self._load_custom_emojis()
 
@@ -58,7 +57,7 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
-    log_message(message)
+    # log_message(message)
 
     if self._should_ignore_message(message):
       return
@@ -66,15 +65,11 @@ class BotEvents(commands.Cog):
     try:
       prompt = prepare_prompt(message)
       server_id = self._get_server_id(message)
-      self._load_server_lore(server_id)
+      self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
         await self._reset_chat(message, server_id)
         return
-
-      # if message.guild is not None and not self._is_valid_channel(message):
-      #   await self._send_channel_redirect(message)
-      #   return
 
       analysis = await self._handle_image_input(message, prompt, server_id)
       full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
@@ -92,52 +87,45 @@ class BotEvents(commands.Cog):
     except Exception as e:
       logger.error(f"Error loading custom emojis: {str(e)}")
 
-  # def _should_ignore_message(self, message: discord.Message) -> bool:
-  #   if message.author.bot:
-  #     return True
-
-  #   ### Always respond to DMs
-  #   if message.guild is None:
-  #     return False
-
-  #   is_correct_channel = message.channel.name == self.channel_name
-  #   is_mentioned = self.bot.user in message.mentions
-  #   is_reply = is_direct_reply(message, self.bot)
-  #   return not (is_correct_channel and (is_mentioned or is_reply))
-  
   def _should_ignore_message(self, message: discord.Message) -> bool:
     if message.author.bot:
-        return True
+      return True
 
-    # Always respond to DMs
     if message.guild is None:
-        return False
+      return False
 
     is_mentioned = self.bot.user in message.mentions
     is_reply = is_direct_reply(message, self.bot)
-
-    # Respond only if it's a mention or a reply (ignore everything else)
     return not (is_mentioned or is_reply)
 
   def _get_server_id(self, message: discord.Message) -> str:
     return f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
 
-  def _load_server_lore(self, server_id: str) -> None:
+  def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
+    # Get server lore
     lore = self.db_service.fetch_prompt(server_id)
-    server_lore[server_id] = (
-      lore["system_prompt"] if lore is not None else "You are a helpful assistant"
-    )
+    server_lore[server_id] = lore["system_prompt"] if lore is not None else "You are a helpful assistant"
 
-    ist = datetime.timezone(
-      datetime.timedelta(hours=5, minutes=30)
-    )  # Indian Standard Time
+    # Get current date time
+    ist = datetime.timezone(datetime.timedelta(hours=5, minutes=30))  # Indian Standard Time
     now = datetime.datetime.now(ist)
-    server_lore[server_id] += (
-      f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
-    )
-    server_lore[server_id] += (
-      f"You have the following emojis at your disposal, use them: {' '.join(list(self.custom_emojis.keys()))}"
-    )
+    server_lore[server_id] += f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
+    
+    # Get all emojis
+    server_lore[server_id] += f"You have the following emojis at your disposal, use them: {' '.join(list(self.custom_emojis.keys()))}"
+
+    # Get online members
+    if guild is not None and guild.chunked: # Ensure members are available
+      online_members = [
+        f"{member}, aka {member.display_name}" for member in guild.members
+        if not member.bot and member.status != discord.Status.offline
+      ]
+
+      if online_members:
+        member_list = ", ".join(online_members)
+        server_lore[server_id] += f"\n\nCurrently online members: {member_list}"
+      else:
+        server_lore[server_id] += "\n\nNo members are currently online"
 
   async def _reset_chat(self, message: discord.Message, server_id: str) -> None:
     prompt = message.content.strip()
@@ -150,18 +138,6 @@ class BotEvents(commands.Cog):
 
   def _is_valid_channel(self, message: discord.Message) -> bool:
     return message.channel.name == self.channel_name
-
-  async def _send_channel_redirect(self, message: discord.Message) -> None:
-    ctx = await self.bot.get_context(message)
-
-    try:
-      await ctx.send(
-        "Ping me in <#1272840978277072918> to talk",
-        ephemeral=True,
-        reference=message,
-      )
-    except discord.errors.HTTPException:
-      logger.info("Error occurred while sending message")
 
   async def _handle_image_input(
     self, message: discord.Message, prompt: str, server_id: str
@@ -183,7 +159,14 @@ class BotEvents(commands.Cog):
             if prompt
             else "Generate a caption for this image {idx + 1}"
           )
-          analysis = self.workers_service.analyze_image(image_url, image_prompt) if len(analysis) == 0 else analysis + self.workers_service.analyze_image(image_url, image_prompt)
+          result = self.workers_service.chat_completions(
+            image=image_url,
+            prompt=image_prompt
+          )
+          if len(analysis) == 0:
+            analysis = result
+          else:
+            analysis += "\n" + result
           await self._send_message(message, f"-# Analyzed {idx + 1}/{len(message.attachments)} images!")
     return analysis
 
@@ -191,17 +174,20 @@ class BotEvents(commands.Cog):
     self, message: discord.Message, prompt: str, server_id: str
   ) -> None:
     self._add_user_context(message, prompt, server_id)
+    
+    # Fix: Don't nest the messages array inside another message
     messages = [
-      {"role": "system", "content": server_lore[server_id]}
+        {"role": "system", "content": server_lore[server_id]}
     ] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response = self.workers_service.chat_completions(messages)
-      bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
-      bot_response_with_stickers, sticker_ids = replace_stickers(
-        bot_response_with_emojis
-      )
-      sticker_list = await self._fetch_stickers(sticker_ids)
+        # Pass the messages directly, not as a nested structure
+        bot_response = self.workers_service.chat_completions(messages=messages)
+        bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
+        bot_response_with_stickers, sticker_ids = replace_stickers(
+            bot_response_with_emojis
+        )
+        sticker_list = await self._fetch_stickers(sticker_ids)
 
     await self._send_response(message, bot_response_with_stickers, sticker_list)
     self._add_assistant_context(bot_response, server_id)

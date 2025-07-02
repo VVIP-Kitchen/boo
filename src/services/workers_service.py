@@ -28,6 +28,10 @@ class WorkersService:
     self.image_generation_model_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_GENERATION_MODEL}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
     self.timeout = 30  ### Timeout of 30s
+  
+  def _image_bytes_to_data_uri(self, image_bytes, mime_type="image/jpeg"):
+    base64_str = base64.b64encode(image_bytes).decode("utf-8")
+    return f"data:{mime_type};base64,{base64_str}"
 
   def _make_request(self, method: str, url: str, **kwargs) -> requests.Response:
     try:
@@ -66,37 +70,6 @@ class WorkersService:
       output.truncate()
 
     return output.getvalue()
-
-  def chat_completions(
-    self, messages: Union[str, List[Dict[str, str]]], temperature=0.55
-  ) -> str:
-    json = (
-      {"prompt": messages}
-      if isinstance(messages, str)
-      else {"messages": messages, "temperature": temperature}
-    )
-
-    try:
-      response = self._make_request(
-        "POST", self.vision_language_model_endpoint, headers=self.headers, json=json
-      )
-      result = response.json()
-      bot_response = str(result["result"]["response"])
-      return (
-        bot_response
-        if len(bot_response) != 0
-        else "⚠️ Cloudflare Workers AI returned empty string."
-      )
-    except ConnectionError:
-      return (
-        "😔 Sorry, I'm having trouble connecting right now. Can you try again later?"
-      )
-    except KeyError as ke:
-      logger.error("Unexpected API response format", ke)
-      return "🤔 I'm a bit confused. Can you rephrase that?"
-    except Exception as e:
-      logger.error(f"Unexpected error in chat_completions: {e}")
-      return "😵 Oops! Something unexpected happened."
 
   def generate_image(self, prompt: str, num_steps: int = 4) -> Union[io.BytesIO, str]:
     json_data = {
@@ -140,27 +113,88 @@ class WorkersService:
       return []
 
   def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
-    try:
+    return self.chat_completions(image, prompt)
+
+  def chat_completions(
+    self,
+    prompt: str = None,
+    image: Union[io.BytesIO, bytes, str] = None,
+    messages: Union[str, List[Dict[str, str]]] = None,
+    temperature: float = 0.55,
+    max_tokens: int = 512,
+  ) -> str:
+    """
+    Unified function for both text and image+prompt requests.
+    """
+    # If image is provided, use image+prompt format
+    if image is not None:
       image_data = self._download_image(image)
       image_data = self._compress_image(image_data)
-
-      input_data = {
-        "image": np.frombuffer(image_data, dtype=np.uint8).tolist(),
-        "prompt": prompt,
-        "max_tokens": 512,
+      data_uri = self._image_bytes_to_data_uri(image_data, mime_type="image/jpeg")
+      
+      messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {
+          "role": "user",
+          "content": [
+            {"type": "text", "text": prompt or "Describe this image."},
+            {
+              "type": "image_url", 
+              "image_url": {"url": data_uri}
+            }
+          ]
+        }
+      ]
+      json_payload = {
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature
       }
+    # For regular chat messages
+    elif messages is not None:
+      if isinstance(messages, str):
+        # Convert string to proper messages format
+        json_payload = {
+          "messages": [{"role": "user", "content": messages}],
+          "temperature": temperature,
+          "max_tokens": max_tokens
+        }
+      else:
+        json_payload = {
+          "messages": messages, 
+          "temperature": temperature,
+          "max_tokens": max_tokens
+        }
+    # For simple prompt
+    elif prompt is not None:
+      json_payload = {
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature,
+        "max_tokens": max_tokens
+      }
+    else:
+      return "⚠️ No input provided for completion."
 
+    try:
       response = self._make_request(
-        "POST", self.vision_language_model_endpoint, headers=self.headers, json=input_data
+        "POST",
+        self.vision_language_model_endpoint,
+        headers=self.headers,
+        json=json_payload,
       )
       result = response.json()
-
-      description = result.get("result", {}).get("response", "")
+      bot_response = str(result.get("result", {}).get("response", ""))
       return (
-        description
-        if description
-        else "I couldn't analyze the image. Could you try uploading it again?"
+        bot_response
+        if len(bot_response) != 0
+        else "⚠️ Cloudflare Workers AI returned empty string."
       )
+    except ConnectionError:
+      return "😔 Sorry, I'm having trouble connecting right now. Can you try again later?"
+    except KeyError as ke:
+      logger.error(f"Unexpected API response format: {ke}")
+      return "🤔 I'm a bit confused. Can you rephrase that?"
     except Exception as e:
-      logger.error(f"Unexpected error in analyze_image: {e}")
-      return "😵 Oops! Something unexpected happened while analyzing the image."
+      logger.error(f"Unexpected error in chat_completions: {e}")
+      logger.error(f"Request payload: {json_payload}")
+      return "😵 Oops! Something unexpected happened."
