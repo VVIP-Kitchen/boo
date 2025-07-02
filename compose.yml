@@ -36,7 +36,6 @@ services:
   discord-bot:
     depends_on:
       - manager
-      - qdrant
     build: .
     container_name: boo
     command: sh -c "python src/main.py"
@@ -55,17 +54,8 @@ services:
       - CF_WORKERS_IMAGE_MODEL_NAME=${CF_WORKERS_IMAGE_MODEL_NAME}
       - CLOUDFLARE_WORKERS_AI_API_KEY=${CLOUDFLARE_WORKERS_AI_API_KEY}
       - CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME=${CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}
-      - QDRANT_HOST=qdrant
-      - QDRANT_PORT=6333
-      - QDRANT_COLLECTION=grading-doc-sep-2024
       - DISCOURSE_COOKIE=${DISCOURSE_COOKIE}
       - DISCOURSE_CSRF_TOKEN=${DISCOURSE_CSRF_TOKEN}
 
 volumes:
   postgres_data:
-  qdrant_data:
-
-configs:
-  qdrant_config:
-    content: |
-      log_level: INFO
