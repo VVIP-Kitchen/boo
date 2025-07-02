@@ -338,7 +338,7 @@ class GeneralCommands(commands.Cog):
 Please keep the summary brief but informative, highlighting the most important aspects of the conversation."""
         
         # Generate summary using the AI function
-        summary = self.chat_completions(
+        summary = self.llm_service.chat_completions(
             prompt=summary_prompt,
             temperature=0.3,
             max_tokens=800

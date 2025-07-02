@@ -2,10 +2,10 @@ import io
 import json
 import redis
 import logging
+from typing import List
 from discord.ext import commands
-from typing import List, Optional
-from datetime import datetime, timedelta, timezone
 from discord import Message, Member, File
+from datetime import datetime, timedelta, timezone
 
 CHANNEL_NAME = "chat"
 
