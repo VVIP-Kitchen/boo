@@ -1,11 +1,15 @@
 import io
-from typing import List
+import json
+import redis
 from discord.ext import commands
+from typing import List, Optional
+from datetime import datetime, timedelta
 from discord import Message, Member, File
-
 
 CHANNEL_NAME = "chat"
 
+# Initialize Redis connection
+redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
 
 def handle_user_mentions(message: Message) -> str:
   """
@@ -54,22 +58,54 @@ def prepare_prompt(message: Message) -> str:
   return prompt
 
 def log_message(message: Message) -> None:
-  # Message Content
-  print("Content:", message.content)
+  # Skip messages with attachments (files)
+  if message.attachments:
+    return
+  
+  # Create message object for Redis storage
+  message_data = {
+    "server_name": message.guild.name if message.guild else "Direct Message",
+    "server_id": str(message.guild.id) if message.guild else "DM",
+    "author_name": message.author.name,
+    "content": message.content,
+    "timestamp": message.created_at.isoformat()
+  }
+  
+  # Use channel ID as Redis key
+  channel_key = str(message.channel.id)
+  
+  # Store in Redis as JSON string in a list
+  redis_client.lpush(channel_key, json.dumps(message_data))
+  
+  # Clean up old messages (older than 15 minutes)
+  cleanup_old_messages(channel_key)
 
-  # Author Info
-  print("Author:", message.author)               # discord.Member or discord.User object
-  print("Author Name:", message.author.name)     # Just the username
-
-  # Server (Guild) Name
-  if message.guild:
-    print("Server Name:", message.guild.name)
-    # Channel Name (for server text channels)
-    print("Channel Name:", message.channel.name)
+def cleanup_old_messages(channel_key: str) -> None:
+  """Remove messages older than 15 minutes from Redis"""
+  cutoff_time = datetime.now() - timedelta(minutes=15)
+  
+  # Get all messages from the list
+  messages = redis_client.lrange(channel_key, 0, -1)
+  
+  # Filter out old messages
+  valid_messages = []
+  for msg_json in messages:
+    try:
+      msg_data = json.loads(msg_json)
+      msg_time = datetime.fromisoformat(msg_data['timestamp'])
+      if msg_time > cutoff_time:
+        valid_messages.append(msg_json)
+    except (json.JSONDecodeError, KeyError, ValueError):
+      continue
+  
+  # Replace the list with filtered messages
+  if valid_messages:
+    redis_client.delete(channel_key)
+    redis_client.lpush(channel_key, *valid_messages)
   else:
-    print("This message is from a DM.")
-    print("Channel: Direct Message")
+    redis_client.delete(channel_key)
 
-  # Timestamp
-  print("Timestamp:", message.created_at)
-  print()
+def get_channel_messages(channel_id: str) -> list:
+  """Retrieve all messages for a channel from Redis"""
+  messages = redis_client.lrange(str(channel_id), 0, -1)
+  return [json.loads(msg) for msg in messages if msg]

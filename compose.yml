@@ -17,6 +17,21 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   manager:
     depends_on:
       postgres:
@@ -32,10 +47,11 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
-  
+
   discord-bot:
     depends_on:
       - manager
+      - redis
     build: .
     container_name: boo
     command: sh -c "python src/main.py"
@@ -56,6 +72,9 @@ services:
       - CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME=${CF_WORKERS_IMAGE_DESCRIPTION_MODEL_NAME}
       - DISCOURSE_COOKIE=${DISCOURSE_COOKIE}
       - DISCOURSE_CSRF_TOKEN=${DISCOURSE_CSRF_TOKEN}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
 volumes:
   postgres_data:
+  redis_data:

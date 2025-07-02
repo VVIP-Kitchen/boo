@@ -57,7 +57,7 @@ class BotEvents(commands.Cog):
     Args:
       message (discord.Message): The incoming Discord message.
     """
-    # log_message(message)
+    log_message(message)
 
     if self._should_ignore_message(message):
       return
