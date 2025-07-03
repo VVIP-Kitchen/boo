@@ -73,8 +73,7 @@ def store_persistent_messages(message: Message):
     "message_content": message.content,
     "timestamp": message.created_at.isoformat()
   }
-  print(message_data)
-  print()
+  logger.info(f"{message_data}\n")
 
 def log_message(message: Message) -> None:
   # Skip messages with attachments (files)
