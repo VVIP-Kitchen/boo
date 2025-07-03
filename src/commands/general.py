@@ -6,6 +6,7 @@ import discord
 from typing import List
 from discord import File
 from datetime import datetime
+from utils.logger import logger
 from discord.ext import commands
 from utils.config import server_contexts
 from services.db_service import DBService
@@ -367,7 +368,7 @@ class GeneralCommands(commands.Cog):
     
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
-      print(result)
+      logger.info(f"System prompt: {result}")
       if result is None or not result.get("system_prompt"):
         desc = "No custom system prompt is set for this server"
       else:
