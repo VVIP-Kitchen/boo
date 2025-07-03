@@ -25,6 +25,9 @@ func main() {
 	promptService := service.NewPromptService(db)
 	promptHandler := handler.NewPromptHandler(promptService)
 
+	messageService := service.NewMessageService(db)
+	messageHandler := handler.NewMessageHandler(messageService)
+
 	r := gin.Default()
 
 	r.Static("/static", "./static")
@@ -32,10 +35,14 @@ func main() {
 		c.File("./static/index.html")
 	})
 
+	// Prompt endpoints
 	r.GET("/prompts", promptHandler.ReadAllPrompts)
 	r.GET("/prompt", promptHandler.ReadPrompt)
 	r.POST("/prompt", promptHandler.AddPrompt)
 	r.PUT("/prompt", promptHandler.UpdatePrompt)
+
+	// Message endpoints
+	r.POST("/message", messageHandler.AddMessage)
 
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))

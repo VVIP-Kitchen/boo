@@ -35,11 +35,23 @@ func InitializeSchema(db *sql.DB) error {
 		guild_id TEXT PRIMARY KEY,
 		system_prompt TEXT NOT NULL
 	);
+
+	CREATE TABLE IF NOT EXISTS discord_messages (
+		message_id TEXT PRIMARY KEY,
+		server_name TEXT NOT NULL,
+		channel_name TEXT NOT NULL,
+		channel_id TEXT NOT NULL,
+		author_name TEXT NOT NULL,
+		author_nickname TEXT,
+		author_id TEXT NOT NULL,
+		message_content TEXT NOT NULL,
+		timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(query)
 	if err != nil {
-		log.Printf("Error creating table: %v", err)
+		log.Printf("Error creating tables: %v", err)
 		return err
 	}
 
