@@ -47,6 +47,13 @@ func InitializeSchema(db *sql.DB) error {
 		message_content TEXT NOT NULL,
 		timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE INDEX IF NOT EXISTS idx_discord_server_name ON discord_messages(server_name);
+	CREATE INDEX IF NOT EXISTS idx_discord_channel_name ON discord_messages(channel_name);
+	CREATE INDEX IF NOT EXISTS idx_discord_channel_id ON discord_messages(channel_id);
+	CREATE INDEX IF NOT EXISTS idx_discord_author_name ON discord_messages(author_name);
+	CREATE INDEX IF NOT EXISTS idx_discord_author_nickname ON discord_messages(author_nickname);
+	CREATE INDEX IF NOT EXISTS idx_discord_author_id ON discord_messages(author_id);
 	`
 
 	_, err := db.Exec(query)
