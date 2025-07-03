@@ -40,7 +40,7 @@ services:
     container_name: manager
     restart: always
     ports:
-      - "8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
