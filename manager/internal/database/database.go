@@ -45,7 +45,7 @@ func InitializeSchema(db *sql.DB) error {
 		author_nickname TEXT,
 		author_id TEXT NOT NULL,
 		message_content TEXT NOT NULL,
-		timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 	`
 
