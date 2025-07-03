@@ -14,7 +14,6 @@ ist = pytz.timezone("Asia/Kolkata")
 
 ### Environment Variables
 ADMIN_LIST = os.getenv("ADMIN_LIST")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TENOR_API_KEY = os.getenv("TENOR_API_KEY")
 CONTEXT_LIMIT = os.getenv("CONTEXT_LIMIT", 15)
@@ -40,7 +39,6 @@ except ValueError:
   CONTEXT_LIMIT = 30
 
 for var_name in [
-  "GITHUB_TOKEN",
   "DISCORD_TOKEN",
   "TENOR_API_KEY",
   "DB_SERVICE_BASE_URL",

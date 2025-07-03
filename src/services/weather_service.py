@@ -16,10 +16,10 @@ class WeatherService:
     Fetch weather information for a given location.
 
     Args:
-        location (str): The location for weather information.
+      location (str): The location for weather information.
 
     Returns:
-        str: The weather information or error message.
+      str: The weather information or error message.
     """
     try:
       response = self.session.get(self.BASE_URL, params={"location": location})
@@ -35,14 +35,14 @@ class WeatherService:
     Format the weather data into a readable string.
 
     Args:
-        location (str): The location of the weather data.
-        values (Dict[str, Any]): The weather data values.
+      location (str): The location of the weather data.
+      values (Dict[str, Any]): The weather data values.
 
     Returns:
-        str: Formatted weather information.
+      str: Formatted weather information.
     """
     weather_info = [
-      f"## Weather in {location}:",
+      f"### **Weather in {location}:**",
       f"Temperature: {values.get('temperature', 'N/A')}°C",
       f"Humidity: {values.get('humidity', 'N/A')}%",
       f"Wind Speed: {values.get('windSpeed', 'N/A')} km/h",

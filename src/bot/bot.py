@@ -4,10 +4,6 @@ from utils.config import DISCORD_TOKEN, PREFIX, ADMIN_LIST
 
 
 class DiscordBot(commands.Bot):
-  """
-  Custom Discord bot class that extends commands.Bot.
-  """
-
   def __init__(self) -> None:
     """
     Initialize the DiscordBot with custom intents and command prefix.

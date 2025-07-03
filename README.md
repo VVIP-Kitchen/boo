@@ -1,9 +1,7 @@
 ## **Boo** 👻
 A discord bot who talks to you! Boo supports natural language input like ChatGPT or Claude. It also understands images, give it a try! 
 
-Powered by Meta's LLaMa 3.1
-
-#### **Invite Boo to your server**
+### **Invite Boo to your server**
 [Click here to invite](https://discord.com/oauth2/authorize?client_id=1272810273119535195&scope=bot&permissions=66560)
 
 ## **Tech stack**
@@ -21,7 +19,7 @@ git clone https://github.com/VVIP-Kitchen/boo;
 3. Store the API keys and account ID provided by Cloudflare in your environment variables (check [config.py](./utils/config.py) code for reference)
 4. Login to [Discord's developer portal](https://discord.dev) and create a new application with bot enabled on it.
 5. Create a `DISCORD_TOKEN` and store it in your environment variables of the same name (check [config.py](./utils/config.py) code for reference)
-  6. Register for [Tenor API](https://tenor.com/gifapi/documentation) and [Tomorrow.IO](https://www.tomorrow.io/) and put their respective API keys in [config.py](./utils/config.py) too!
+6. Register for [Tenor API](https://tenor.com/gifapi/documentation) and [Tomorrow.IO](https://www.tomorrow.io/) and put their respective API keys in [config.py](./utils/config.py) too!
 7. Install dependencies and run
 
 ```sh

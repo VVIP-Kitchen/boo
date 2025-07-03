@@ -22,14 +22,7 @@ class TenorService:
       self.search_query = query
 
     try:
-      api_url = (
-        self.base_search_url
-        + self.search_query
-        + "&key="
-        + TENOR_API_KEY
-        + "&limit="
-        + str(self.search_results_limit)
-      )
+      api_url = self.base_search_url + self.search_query + "&key=" + TENOR_API_KEY + "&limit=" + str(self.search_results_limit)
       response = requests.get(api_url)
       result = response.json()
       return list(result["results"])

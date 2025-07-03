@@ -12,11 +12,11 @@ def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
   corresponding custom emoji if it exists in the dictionary.
 
   Args:
-      text (str): The input text containing emoji placeholders.
-      custom_emojis (Dict[str, Emoji]): A dictionary of custom Discord emojis.
+    text (str): The input text containing emoji placeholders.
+    custom_emojis (Dict[str, Emoji]): A dictionary of custom Discord emojis.
 
   Returns:
-      str: The text with emoji placeholders replaced by custom emojis.
+    str: The text with emoji placeholders replaced by custom emojis.
   """
 
   def replace_match(match):
@@ -34,10 +34,10 @@ def replace_stickers(text: str) -> Tuple[str, List[str]]:
   The original formatting of the text is preserved.
 
   Args:
-      text (str): The input text containing sticker placeholders.
+    text (str): The input text containing sticker placeholders.
 
   Returns:
-      Tuple[str, List[str]]: A tuple with the modified text and a list of sticker IDs.
+    Tuple[str, List[str]]: A tuple with the modified text and a list of sticker IDs.
   """
 
   sticker_list = []

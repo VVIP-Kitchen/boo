@@ -21,11 +21,10 @@ class DBService:
     Fetch a prompt for a given guild ID.
 
     Args:
-        guild_id (str): The ID of the guild to fetch the prompt for.
+      guild_id (str): The ID of the guild to fetch the prompt for.
 
     Returns:
-        Optional[Dict[str, str]]: A dictionary containing the guild_id and system_prompt,
-                                  or None if the request fails.
+      Optional[Dict[str, str]]: A dictionary containing the guild_id and system_prompt, or None if the request fails.
     """
     endpoint = f"http://{self.base_url}/prompt"
     params = {"guild_id": guild_id}

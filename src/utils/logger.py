@@ -10,7 +10,7 @@ def setup_logger() -> logging.Logger:
   level to INFO, and adds a StreamHandler with a specific format.
 
   Returns:
-      logging.Logger: A configured logger instance.
+    logging.Logger: A configured logger instance.
   """
 
   logger = logging.getLogger("discord_bot")

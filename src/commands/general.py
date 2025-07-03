@@ -6,7 +6,6 @@ import discord
 from typing import List
 from discord import File
 from datetime import datetime
-from utils.logger import logger
 from discord.ext import commands
 from utils.config import server_contexts
 from services.db_service import DBService

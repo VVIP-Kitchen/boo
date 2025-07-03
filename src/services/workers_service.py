@@ -1,7 +1,6 @@
 import io
 import base64
 import requests
-import numpy as np
 from PIL import Image
 from utils.logger import logger
 from typing import List, Dict, Union
