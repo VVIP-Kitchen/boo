@@ -15,6 +15,8 @@ from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from utils.message_utils import get_channel_messages
 
+def split_text(text, max_length=4096):
+  return [text[i:i+max_length] for i in range(0, len(text), max_length)]
 
 class ModelPaginator(discord.ui.View):
   def __init__(self, models: List[str], timeout=180):
@@ -369,14 +371,13 @@ class GeneralCommands(commands.Cog):
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
       desc = result.get("system_prompt", "No system prompt set")
-      
-      embed = discord.Embed(
-        title=f"📝 System prompt for {guild.name}",
-        description=desc,
-        color=0x7615D1
-      )
-      embed.add_field(name="Guild ID", value=guild.id)
-      await ctx.send(embed=embed)
+      chunks = split_text(desc)
+      for i, chunk in enumerate(chunks):
+        embed = discord.Embed(
+          title=f"System Prompt (Part {i+1}/{len(chunks)})",
+          description=chunk
+        )
+        await ctx.send(embed=embed)
     except Exception as e:
       await ctx.send(
         embed=discord.Embed(
