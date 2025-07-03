@@ -8,6 +8,7 @@ from discord import File
 from datetime import datetime
 from discord.ext import commands
 from utils.config import server_contexts
+from services.db_service import DBService
 from services.tenor_service import TenorService
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
@@ -68,6 +69,7 @@ class GeneralCommands(commands.Cog):
     self.llm_service = WorkersService()
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
+    self.db_service = DBService()
 
   async def _defer_response(self, ctx: commands.Context) -> None:
     if ctx.interaction:
@@ -374,6 +376,80 @@ class GeneralCommands(commands.Cog):
         color=0xff0000
       )
       await ctx.send(embed=embed)
+  
+  @commands.hybrid_command(name="get_prompt", description="Get the current system prompt for this server")
+  async def get_system_prompt(self, ctx):
+    """Fetch and display the current system prompt for this guild"""
+    
+    # Defer the response to prevent timeout
+    await ctx.defer()
+    
+    try:
+      # Get the guild ID
+      guild_id = ctx.guild.id if ctx.guild else None
+      
+      if not guild_id:
+        embed = discord.Embed(
+          title="❌ Error",
+          description="This command can only be used in a server, not in DMs.",
+          color=0xff0000
+        )
+        await ctx.followup.send(embed=embed)
+        return
+      
+      # Fetch the system prompt from the database
+      system_prompt = self.db_service.fetch_prompt(guild_id)
+      
+      if not system_prompt:
+        embed = discord.Embed(
+          title="📝 System Prompt",
+          description="No custom system prompt is set for this server. Using default prompt.",
+          color=0xffa500
+        )
+      else:
+        # Truncate if too long for embed (Discord embed description limit is 4096 chars)
+        if len(system_prompt) > 3900:
+          truncated_prompt = system_prompt[:3900] + "..."
+          embed = discord.Embed(
+            title="📝 System Prompt",
+            description=f"``````",
+            color=0x7615D1
+          )
+          embed.add_field(
+            name="⚠️ Note",
+            value="Prompt was truncated due to length limits",
+            inline=False
+          )
+        else:
+          embed = discord.Embed(
+            title="📝 System Prompt",
+            description=f"``````",
+            color=0x7615D1
+          )
+      
+      embed.add_field(
+        name="🏷️ Server",
+        value=ctx.guild.name,
+        inline=True
+      )
+      
+      embed.add_field(
+        name="🆔 Guild ID",
+        value=str(guild_id),
+        inline=True
+      )
+      
+      embed.set_footer(text="System prompt retrieved from database")
+      
+      await ctx.followup.send(embed=embed)
+        
+    except Exception as e:
+      embed = discord.Embed(
+        title="❌ Error",
+        description=f"Failed to fetch system prompt: {str(e)}",
+        color=0xff0000
+      )
+      await ctx.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
