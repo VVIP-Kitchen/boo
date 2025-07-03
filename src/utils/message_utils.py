@@ -61,11 +61,29 @@ def prepare_prompt(message: Message) -> str:
 def text_to_file(bot_response):
   return File(io.BytesIO(str.encode(bot_response, "utf-8")), filename="output.txt")
 
+def store_persistent_messages(message: Message):
+  message_data = {
+    "message_id": str(message.id),
+    "server_name": message.guild.name if message.guild else "Direct Message",
+    "channel_name": message.channel.name if hasattr(message.channel, "name") else "DM",
+    "channel_id": str(message.channel.id),
+    "author_name": message.author.name,
+    "author_nickname": message.author.nick if hasattr(message.author, "nick") and message.author.nick else "",
+    "author_id": str(message.author.id),
+    "message_content": message.content,
+    "timestamp": message.created_at.isoformat()
+  }
+  print(message_data)
+  print()
+
 def log_message(message: Message) -> None:
   # Skip messages with attachments (files)
   if message.attachments:
     return
   
+  # Store in persistent DB
+  store_persistent_messages(message)
+
   # Create message object for Redis storage
   message_data = {
     "server_name": message.guild.name if message.guild else "Direct Message",
