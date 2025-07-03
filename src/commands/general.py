@@ -183,25 +183,6 @@ class GeneralCommands(commands.Cog):
       ]
       await reaction.message.channel.send(random.choice(spooky_messages))
 
-  @commands.hybrid_command(name="greet", description="Greets the user")
-  async def greet(self, ctx: commands.Context) -> None:
-    """
-    Greet the user who invoked the command.
-
-    Args:
-      ctx (commands.Context): The invocation context.
-    """
-    if ctx.guild is not None:
-      if ctx.channel.name == "chat":
-        await ctx.send(f"{ctx.author} How can I assist you today? 👀")
-      else:
-        await ctx.send(
-          f"{ctx.author} How can I assist you today? 👀\nBut ping me in <#1272840978277072918> to talk",
-          ephemeral=True,
-        )
-    else:
-      await ctx.send(f"{ctx.author} How can I assist you today? 👀")
-
   @commands.hybrid_command(name="ping", description="Pings the bot")
   async def respond_with_ping(self, ctx):
     ping = self.bot.latency * 1000
@@ -229,10 +210,6 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
       prompt (str): The prompt for image generation.
     """
-    if ctx.guild is not None and ctx.channel.name != "chat":
-      await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
-      return
-
     if ctx.interaction:
       await ctx.defer()
     else:
@@ -295,10 +272,6 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
       location (str): The location for which to get the weather.
     """
-    if ctx.guild is not None and ctx.channel.name != "chat":
-      await ctx.send("Ping me in <#1272840978277072918> to talk", ephemeral=True)
-      return
-
     location = location.strip()
     if ctx.interaction:
       await ctx.defer()
@@ -380,11 +353,10 @@ class GeneralCommands(commands.Cog):
   @commands.hybrid_command(name="get_prompt", description="Get the current system prompt for this server")
   async def get_system_prompt(self, ctx):
     """Fetch and display the current system prompt for this guild"""
-    
     await ctx.defer() # Defer the response to prevent timeout
 
-    guild_id = getattr(ctx.guild, "id", None)
-    if not guild_id:
+    guild = ctx.guild
+    if not guild:
       return await ctx.send(
         embed=discord.Embed(
           title="❌ Error",
@@ -394,18 +366,18 @@ class GeneralCommands(commands.Cog):
       )
     
     try:
-      result = self.db_service.fetch_prompt(str(guild_id))
+      result = self.db_service.fetch_prompt(str(guild.id))
       if result is None or not result.get("system_prompt"):
         desc = "No custom system prompt is set for this server"
       else:
         desc = "``````"
       
       embed = discord.Embed(
-        title=f"📝 System prompt for {ctx.guild_name}",
+        title=f"📝 System prompt for {guild.name}",
         description=desc,
         color=0x7615D1
       )
-      embed.add_field(name="Guild ID", value=guild_id)
+      embed.add_field(name="Guild ID", value=guild.id)
       await ctx.send(embed=embed)
     except Exception as e:
       await ctx.send(
