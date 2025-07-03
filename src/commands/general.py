@@ -368,7 +368,8 @@ class GeneralCommands(commands.Cog):
     
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
-      logger.info(f"Keys: {result.keys()}")
+      logger.info(f"Keys: {result.get('system_prompt')}")
+      logger.info(f"Bracket: {result['system_prompt']}")
       if result is None or not result.get("system_prompt"):
         desc = "No custom system prompt is set for this server"
       else:
