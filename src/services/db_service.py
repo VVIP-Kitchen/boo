@@ -45,3 +45,21 @@ class DBService:
       logger.error(f"Error parsing JSON response for guild {guild_id}: {e}")
 
     return None
+
+  def store_message(self, msg_payload: dict) -> Optional[Dict[str, str]]:
+    endpoint = f"http://{self.base_url}/message"
+
+    try:
+      response = requests.post(endpoint, json=msg_payload, timeout=self.timeout)
+      response.raise_for_status()
+      return response.json()
+    except requests.Timeout:
+      logger.error("Timeout occurred while adding message")
+    except requests.ConnectionError:
+      logger.error("Connection error occurred while adding message")
+    except requests.RequestException as e:
+      logger.error(f"Error adding message: {e}")
+    except ValueError as e:
+      logger.error(f"Error parsing JSON response after adding message: {e}")
+
+    return None

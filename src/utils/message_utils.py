@@ -4,6 +4,7 @@ import redis
 import logging
 from typing import List
 from discord.ext import commands
+from services.db_service import DBService
 from discord import Message, Member, File
 from datetime import datetime, timedelta, timezone
 
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 # Initialize Redis connection
 redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+
+# Initialize DB Service
+db_service = DBService()
 
 def should_ignore(message: Message, bot: commands.Bot) -> bool:
   ### Ignore bots
@@ -68,12 +72,13 @@ def store_persistent_messages(message: Message):
     "channel_name": message.channel.name if hasattr(message.channel, "name") else "DM",
     "channel_id": str(message.channel.id),
     "author_name": message.author.name,
-    "author_nickname": message.author.nick if hasattr(message.author, "nick") and message.author.nick else "",
+    "author_nickname": message.author.nick if hasattr(message.author, "nick") and message.author.nick else message.author.name,
     "author_id": str(message.author.id),
     "message_content": message.content,
     "timestamp": message.created_at.isoformat()
   }
-  logger.info(f"{message_data}\n")
+  response = db_service.store_message(message_data)
+  logger.info(f"Response of adding message: {response}")
 
 def log_message(message: Message) -> None:
   # Skip messages with attachments (files)
