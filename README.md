@@ -1,14 +1,14 @@
 ## **Boo** 👻
 A discord bot who talks to you! Boo supports natural language input like ChatGPT or Claude. It also understands images, give it a try! 
 
-### **Invite Boo to your server**
-[Click here to invite](https://discord.com/oauth2/authorize?client_id=1272810273119535195&scope=bot&permissions=66560)
+### **We collect data for processing, invite at your risk**
+### **~~Invite Boo to your server~~**
+~~[Click here to invite](https://discord.com/oauth2/authorize?client_id=1272810273119535195&scope=bot&permissions=66560)~~
 
 ## **Tech stack**
-- Python
 - Discord.py
-- Cloudflare
-- Linode
+- LLM powered by Cloudflare Workers AI
+- Running on Hetzner VM
 
 ## **Dev setup**
 1. Clone this repo.
