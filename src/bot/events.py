@@ -85,7 +85,7 @@ class BotEvents(commands.Cog):
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     ### Get system prompt
     lore = self.db_service.fetch_prompt(server_id)
-    server_lore[server_id] = lore["system_prompt"] if lore is not None else "You are a helpful assistant"
+    server_lore[server_id] = lore.get("system_prompt", "You are a helpful assistant")
 
     ### Get current date and time
     ist = datetime.timezone(datetime.timedelta(hours=5, minutes=30))  # Indian Standard Time

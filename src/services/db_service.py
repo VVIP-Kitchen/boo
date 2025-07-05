@@ -31,14 +31,17 @@ class DBService:
 
     try:
       response = requests.get(endpoint, params=params, timeout=self.timeout)
+
+      if response.status_code == 404:
+        logger.warning(f"No prompt found for guild {guild_id} (404)")
+        return {"system_prompt": None}
+      
       response.raise_for_status()
       return response.json()
     except requests.Timeout:
       logger.error(f"Timeout occurred while fetching prompt for guild {guild_id}")
     except requests.ConnectionError:
-      logger.error(
-        f"Connection error occurred while fetching prompt for guild {guild_id}"
-      )
+      logger.error(f"Connection error occurred while fetching prompt for guild {guild_id}")
     except requests.RequestException as e:
       logger.error(f"Error fetching prompt for guild {guild_id}: {e}")
     except ValueError as e:
