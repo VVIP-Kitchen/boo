@@ -369,7 +369,7 @@ class GeneralCommands(commands.Cog):
     
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
-      desc = result.get("system_prompt", "No system prompt set")
+      desc = result.get("system_prompt") if result else "No system prompt set"
       chunks = split_text(desc)
       for i, chunk in enumerate(chunks):
         embed = discord.Embed(
