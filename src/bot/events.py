@@ -63,10 +63,9 @@ class BotEvents(commands.Cog):
     """
     log_message(message)
 
+    await self._guys_check(message)
     if should_ignore(message, self.bot):
       return
-    
-    self._guys_check(message)
 
     try:
       prompt = prepare_prompt(message)
