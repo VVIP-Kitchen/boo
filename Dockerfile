@@ -1,10 +1,8 @@
-FROM python:3.10-slim
+FROM ghcr.io/astral-sh/uv:python3.12-alpine
 
 WORKDIR /boo
-RUN apt-get update
-RUN apt-get install -y gcc
 
 COPY requirements.txt /boo
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 COPY . /boo
