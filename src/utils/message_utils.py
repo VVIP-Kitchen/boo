@@ -1,3 +1,4 @@
+import re
 import io
 import json
 import redis
@@ -66,6 +67,19 @@ def text_to_file(bot_response):
   return File(io.BytesIO(str.encode(bot_response, "utf-8")), filename="output.txt")
 
 def store_persistent_messages(message: Message):
+  # 💡 1. Skip bot messages
+  if message.author.bot or message.webhook_id:
+    return
+  
+  # 💡 2. Filter low-content messages
+  content = message.content.strip()
+  if (not content or len(content) < 1 or content.startswith(("!", ".", "/", "~", "-", "$")) or re.fullmatch(r'(@\S+\s?)+', content)):
+    return
+  
+  # 💡 3. Media-only messages (no text)
+  if not content and message.attachments:
+    return
+
   message_data = {
     "message_id": str(message.id),
     "server_name": message.guild.name if message.guild else "Direct Message",
