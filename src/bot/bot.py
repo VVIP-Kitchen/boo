@@ -30,7 +30,6 @@ class DiscordBot(commands.Bot):
     await self.load_extension("bot.events")
     await self.load_extension("commands.general")
     await self.load_extension("commands.admin")
-    await self.load_extension("jishaku")
 
   def run(self) -> None:
     """
