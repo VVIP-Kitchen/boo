@@ -65,6 +65,8 @@ class BotEvents(commands.Cog):
 
     if should_ignore(message, self.bot):
       return
+    
+    self._guys_check(message)
 
     try:
       prompt = prepare_prompt(message)
@@ -116,6 +118,12 @@ class BotEvents(commands.Cog):
       return
     server_contexts[server_id] = []
     await message.channel.send(self.context_reset_message)
+  
+  async def _guys_check(self, message: discord.Message) -> None:
+    msg = message.content.strip().lower()
+    if "guys" in msg:
+      await message.channel.send("Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y\'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP.")
+      return
 
   async def _handle_image_input(self, message: discord.Message, prompt: str, server_id: str) -> str:
     analysis = ""
