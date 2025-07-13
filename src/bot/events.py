@@ -1,3 +1,4 @@
+import random
 import discord
 import datetime
 from utils.logger import logger
@@ -120,7 +121,7 @@ class BotEvents(commands.Cog):
   
   async def _guys_check(self, message: discord.Message) -> None:
     msg = message.content.strip().lower()
-    if "guys" in msg and not message.author.bot:
+    if "guys" in msg and not message.author.bot and random.random() < 0.2:
       await message.channel.send("Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y\'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP.")
       return
 
