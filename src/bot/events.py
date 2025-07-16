@@ -55,44 +55,46 @@ class BotEvents(commands.Cog):
     except Exception as e:
       logger.error(f"Error loading custom emojis: {str(e)}")
 
-@commands.Cog.listener()
-async def on_message(self, message: discord.Message) -> None:
-  """
-  Event listener for incoming messages.
+  @commands.Cog.listener()
+  async def on_message(self, message: discord.Message) -> None:
+    """
+    Event listener for incoming messages.
 
-  Args:
-    message (discord.Message): The incoming Discord message.
-  """
-  log_message(message)
+    Args:
+      message (discord.Message): The incoming Discord message.
+    """
+    log_message(message)
 
-  await self._guys_check(message)
-  should_ignore_result = should_ignore(message, self.bot)
-  
-  # If should_ignore_result is True (bot message) or None (regular message), ignore it
-  if should_ignore_result is True or should_ignore_result is None:
-    return
-
-  try:
-    print(f"Type of reply context: {should_ignore_result}")
-    if should_ignore_result == "reply":
-      # adding the reply context to the prompt
-      reply_context = get_reply_context(message)
-      message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
-      print(f"Reply context added: {reply_context}")
-    prompt = prepare_prompt(message)
-    server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
-    self._load_server_lore(server_id, message.guild)
-
-    if "reset" in prompt.lower():
-      await self._reset_chat(message, server_id)
+    await self._guys_check(message)
+    should_ignore_result = should_ignore(message, self.bot)
+    
+    # Only ignore bot messages and general messages (not mentioned/replied to)
+    if should_ignore_result is True:
       return
 
-    analysis = await self._handle_image_input(message, prompt, server_id)
-    full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
-    await self._process_message(message, full_prompt, server_id)
-  except Exception as e:
-    logger.error(f"Error processing message: {str(e)}")
-    await self._send_error_message(message)
+    try:
+      print(f"Type of message: {should_ignore_result}")
+      # Handle replies, mentions, and DMs
+      if should_ignore_result in ["reply", "mentioned_reply_other"]:
+        reply_context = get_reply_context(message)
+        if reply_context:
+          message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
+          print(f"Reply context added: {reply_context}")
+      
+      prompt = prepare_prompt(message)
+      server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      self._load_server_lore(server_id, message.guild)
+
+      if "reset" in prompt.lower():
+        await self._reset_chat(message, server_id)
+        return
+
+      analysis = await self._handle_image_input(message, prompt, server_id)
+      full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
+      await self._process_message(message, full_prompt, server_id)
+    except Exception as e:
+      logger.error(f"Error processing message: {str(e)}")
+      await self._send_error_message(message)
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     ### Get system prompt

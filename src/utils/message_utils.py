@@ -20,24 +20,28 @@ redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
 # Initialize DB Service
 db_service = DBService()
 
-def should_ignore(message: Message, bot: commands.Bot) -> str | None:
-  ### Ignore bots
+def should_ignore(message: Message, bot: commands.Bot) -> str | bool:
+  ### Ignore bots - this should always return True to ignore
   if message.author.bot:
     return True
   
   ### Don't ignore DMs
   if message.guild is None:
-    return None
+    return "dm"
   
   is_mentioned = bot.user in message.mentions
-  is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == bot.user
+  is_reply_to_bot = message.reference and message.reference.resolved and message.reference.resolved.author == bot.user
+  is_reply_to_other = message.reference and message.reference.resolved and message.reference.resolved.author != bot.user
   
-  if is_mentioned:
+  # Handle different combinations
+  if is_mentioned and is_reply_to_other:
+    return "mentioned_reply_other"
+  elif is_mentioned:
     return "mentioned"
-  elif is_reply:
+  elif is_reply_to_bot:
     return "reply"
   else:
-    return None
+    return True  # Ignore general messages (not mentioned or replied to)
 
 def handle_user_mentions(message: Message) -> str:
   """
@@ -195,7 +199,6 @@ def get_reply_context(message: Message) -> str:
   Returns:
     str: The content of the replied-to message, or empty string if not a reply.
   """
-
   if message.reference and message.reference.resolved:
     replied_to_message = message.reference.resolved
     return f"[Replying to {replied_to_message.author.name}]: {replied_to_message.content}"
