@@ -37,3 +37,5 @@ git clone https://github.com/VVIP-Kitchen/boo.git;
 cd boo;
 docker compose up --build -d;
 ```
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/VVIP-Kitchen/boo)
