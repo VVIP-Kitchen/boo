@@ -20,18 +20,24 @@ redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
 # Initialize DB Service
 db_service = DBService()
 
-def should_ignore(message: Message, bot: commands.Bot) -> bool:
+def should_ignore(message: Message, bot: commands.Bot) -> str | None:
   ### Ignore bots
   if message.author.bot:
     return True
   
   ### Don't ignore DMs
   if message.guild is None:
-    return False
+    return None
   
   is_mentioned = bot.user in message.mentions
   is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == bot.user
-  return not (is_mentioned or is_reply)
+  
+  if is_mentioned:
+    return "mentioned"
+  elif is_reply:
+    return "reply"
+  else:
+    return None
 
 def handle_user_mentions(message: Message) -> str:
   """
@@ -178,3 +184,19 @@ def get_channel_messages(channel_id: str) -> list:
   except Exception as e:
     logger.error(f"❌ Failed to retrieve messages for channel {channel_id}: {e}")
     return []
+
+def get_reply_context(message: Message) -> str:
+  """
+  Extract the context from a replied-to message.
+  
+  Args:
+    message (Message): The Discord message object that might be a reply.
+    
+  Returns:
+    str: The content of the replied-to message, or empty string if not a reply.
+  """
+
+  if message.reference and message.reference.resolved:
+    replied_to_message = message.reference.resolved
+    return f"[Replying to {replied_to_message.author.name}]: {replied_to_message.content}"
+  return ""
