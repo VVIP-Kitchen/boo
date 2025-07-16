@@ -191,15 +191,55 @@ def get_channel_messages(channel_id: str) -> list:
 
 def get_reply_context(message: Message) -> str:
   """
-  Extract the context from a replied-to message.
+  Extract the context from a replied-to message, including embed content.
   
   Args:
     message (Message): The Discord message object that might be a reply.
     
   Returns:
-    str: The content of the replied-to message, or empty string if not a reply.
+    str: The content of the replied-to message including embeds, or empty string if not a reply.
   """
   if message.reference and message.reference.resolved:
     replied_to_message = message.reference.resolved
-    return f"[Replying to {replied_to_message.author.name}]: {replied_to_message.content}"
+    context = f"[Replying to {replied_to_message.author.name}]: {replied_to_message.content}"
+    
+    # Add embed content if present
+    if replied_to_message.embeds:
+      embed_content = []
+      for embed in replied_to_message.embeds:
+        embed_parts = []
+        
+        # Add embed title
+        if embed.title:
+          embed_parts.append(f"Title: {embed.title}")
+        
+        # Add embed description
+        if embed.description:
+          embed_parts.append(f"Description: {embed.description}")
+        
+        # Add embed fields
+        if embed.fields:
+          for field in embed.fields:
+            field_text = f"{field.name}: {field.value}"
+            embed_parts.append(field_text)
+        
+        # Add embed footer
+        if embed.footer:
+          embed_parts.append(f"Footer: {embed.footer.text}")
+        
+        # Add embed author
+        if embed.author:
+          embed_parts.append(f"Author: {embed.author.name}")
+        
+        # Add embed URL
+        if embed.url:
+          embed_parts.append(f"URL: {embed.url}")
+        
+        if embed_parts:
+          embed_content.append("Embed: " + " | ".join(embed_parts))
+      
+      if embed_content:
+        context += "\n" + "\n".join(embed_content)
+    
+    return context
   return ""
