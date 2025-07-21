@@ -17,11 +17,11 @@ then Boo might haunt your server next! 👻
 
 | Category | What Boo does |
 |----------|---------------|
-| AI chat  | • Conversational replies powered by **Cloudflare Workers AI** (default: llama-3)• Per-server “system prompt” that you can edit in the web UI• Mentions, replies & DM handling with 15-minute rolling context (Redis) |
-| Vision   | • Automatic image caption / analysis when users drop images• `/imagine ` – multi-step image generation (returns PNG) |
-| Utilities| • `/weather ` realtime weather (Tomorrow.io)• `/bonk @user` – random Tenor GIF• `/ping`, `/models`, `/skibidi`, `/get_prompt`, `/summary` |
-| Moderation/UX | • “Guys-check” – politely suggests inclusive language• Oversize answers sent as txt attachment• Stickers & custom server emojis are supported |
-| Admin     | • `!@sync` (or `/sync`) to refresh slash commands• Editable prompts UI served at **http://localhost:8080** (Go/GIN) |
+| AI chat  | • Conversational replies powered by **Cloudflare Workers AI** (default: llama-3)<br />• Per-server “system prompt” that you can edit in the web UI<br />• Mentions, replies & DM handling with 15-minute rolling context (Redis) |
+| Vision   | • Automatic image caption / analysis when users drop images<br />• `/imagine` – multi-step image generation (returns PNG) |
+| Utilities| • `/weather` realtime weather (Tomorrow.io)<br />• `/bonk @user` – random Tenor GIF<br />• `/ping`<br />, `/models`<br />, `/skibidi`<br />, `/get_prompt`<br />, `/summary` |
+| Moderation/UX | • “Guys-check” – politely suggests inclusive language<br />• Oversize answers sent as txt attachment<br />• Stickers & custom server emojis are supported |
+| Admin     | • `!@sync` (or `/sync`) to refresh slash commands<br />• Editable prompts UI served at **http://localhost:8080** (Go/GIN) |
 
 ---
 
@@ -52,14 +52,14 @@ then Boo might haunt your server next! 👻
 
 1. Clone & enter the repo  
    ```
-   git clone https://github.com/your-org/boo.git
+   git clone https://github.com/VVIP-Kitchen/boo.git
    cd boo
    ```
 
 2. Create a **.env** file (see sample below).  
 3. Run:  
    ```
-   docker compose up -d        # launches postgres, redis, manager, bot
+   docker compose up -d    # launches postgres, redis, manager, bot
    ```
 
 The bot will appear online once Discord’s gateway is connected.  
