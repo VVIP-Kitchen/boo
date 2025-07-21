@@ -40,19 +40,7 @@ then Boo might haunt your server next! 👻
 
 ## ⚙️  Architecture
 
-```
-+---------+      REST (8080)       +-----------+
-| Discord | | Postgres  |
-|  Bot    |        (Go)            +-----------+
-| (Python)|                           ▲
-|         |  Redis (6379)             │
-+----┬----+──────────────┐            │
-     │                   │            │
-     │ CF Workers AI     │            │
-     ▼                   │            │
- Cloudflare ------------ +------------+
-```
-
+![](./assets/architecture.png)
 * **discord-bot** – Python 3.12 container, runs all cogs & commands  
 * **manager** – tiny Go API (CRUD for prompts, write-only endpoint for message archive) + static Tailwind UI  
 * **redis** – short-term cache for the last 15 minutes / 100 msgs per channel  
