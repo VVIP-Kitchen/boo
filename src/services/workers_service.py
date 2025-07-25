@@ -1,17 +1,12 @@
 import io
+import time
 import base64
 from typing import List, Dict, Union
-from PIL import Image
-from openai import OpenAI
-from utils.logger import logger
+from openai import OpenAI, RateLimitError
 from utils.config import OPENROUTER_API_KEY
 
 
 class WorkersService:
-  """
-  Service using OpenRouter-hosted LLMs via OpenAI-compatible SDK.
-  """
-
   def __init__(
     self,
     model: str = "mistralai/mistral-small-3.1-24b-instruct:free"
@@ -41,10 +36,8 @@ class WorkersService:
     try:
       if image:
         if isinstance(image, str):
-          # Image is a URL
           image_url = image
         else:
-          # Image is bytes or BytesIO
           image_url = self._to_base64_data_uri(image)
 
         content = [
@@ -70,10 +63,31 @@ class WorkersService:
         temperature=temperature,
       )
       return response.choices[0].message.content.strip()
+    except RateLimitError as _e:
+      ### Clean RateLimitError handler
+      return "🚫 You've hit the rate limit for this model. Please wait a bit and try again."
 
     except Exception as e:
-      logger.error(f"OpenRouter chat_completions error: {e}")
-      return "😵 Something went wrong while talking to the LLM."
+      ### 429 + Retry time
+      if hasattr(e, "response") and getattr(e.response, "status_code", None) == 429:
+        headers = getattr(e.response, "headers", {})
+        reset_ts = int(headers.get("X-RateLimit-Reset", "0"))
+        current_ts = int(time.time())
+        wait_sec = max(0, reset_ts - current_ts)
+
+        mins = wait_sec // 60
+        secs = wait_sec % 60
+        formatted = f"{mins}m {secs}s" if mins else f"{secs}s"
+
+        return (
+          f"⏳ You've hit the rate limit for this model. Try again in {formatted}.\n"
+          "You can also consider switching to a paid model on OpenRouter to avoid this."
+        )
+
+      ### Catch all
+      from utils.logger import logger
+      logger.error(f"Unexpected error in chat_completions: {e}")
+      return "😵 Something went wrong while generating a response."
 
   def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
     return self.chat_completions(image=image, prompt=prompt)
