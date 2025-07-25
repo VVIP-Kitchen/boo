@@ -136,6 +136,14 @@ class BotEvents(commands.Cog):
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
       stickers = await self._fetch_stickers(sticker_ids)
+    
+    self.db_service.store_token_usage({
+      "message_id": str(message.id),
+      "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
+      "author_id": str(message.author.id),
+      "input_tokens": usage["prompt_tokens"],
+      "output_tokens": usage["total_tokens"]
+    })
 
     await self._send_response(message, bot_response, stickers)
     self._add_assistant_context(bot_response, server_id)
