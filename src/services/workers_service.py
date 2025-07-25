@@ -153,6 +153,8 @@ class WorkersService:
       })
       
       result = await queue_service.get_result(req_id, timeout=60)
+      print("chat_completions")
+      print(result)
       
       if result["status"] == "success":
         return result["result"]
@@ -223,6 +225,8 @@ class WorkersService:
         json=json_payload,
       )
       result = response.json()
+      print("_direct_chat_completions")
+      print(result)
       bot_response = str(result.get("result", {}).get("response", ""))
       return (
         bot_response
