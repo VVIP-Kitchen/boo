@@ -120,8 +120,8 @@ class BotEvents(commands.Cog):
       "message_id": str(message.id),
       "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
       "author_id": str(message.author.id),
-      "input_tokens": usage["prompt_tokens"],
-      "output_tokens": usage["total_tokens"]
+      "input_tokens": usage.prompt_tokens,
+      "output_tokens": usage.total_tokens
     })
 
     return analysis.strip()
@@ -141,8 +141,8 @@ class BotEvents(commands.Cog):
       "message_id": str(message.id),
       "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
       "author_id": str(message.author.id),
-      "input_tokens": usage["prompt_tokens"],
-      "output_tokens": usage["total_tokens"]
+      "input_tokens": usage.prompt_tokens,
+      "output_tokens": usage.total_tokens
     })
 
     await self._send_response(message, bot_response, stickers)

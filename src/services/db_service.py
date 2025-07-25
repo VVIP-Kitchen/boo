@@ -74,7 +74,7 @@ class DBService:
     try:
       response = requests.post(endpoint, json=usage, timeout=self.timeout)
       response.raise_for_status()
-      print(response)
+      print(response.json())
       return response.json()
     except requests.Timeout:
       logger.error("Timeout occurred while storing token usage")
