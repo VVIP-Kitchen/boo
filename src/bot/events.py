@@ -183,7 +183,7 @@ class BotEvents(commands.Cog):
       if status["queue_length"] > 0:
         await message.channel.send(f'-# 📋 Queue: {status["queue_length"]} requests in queue')
       
-      bot_response = self.workers_service.chat_completions(messages=messages)
+      bot_response = await self.workers_service.chat_completions(messages=messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, sticker_ids = replace_stickers(bot_response_with_emojis)
       sticker_list = await self._fetch_stickers(sticker_ids)
