@@ -1,8 +1,8 @@
 import io
 import time
 import base64
+from openai import OpenAI
 from typing import List, Dict, Union
-from openai import OpenAI, RateLimitError
 from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 
 
@@ -60,10 +60,6 @@ class WorkersService:
         temperature=temperature,
       )
       return response.choices[0].message.content.strip()
-    except RateLimitError as _e:
-      ### Clean RateLimitError handler
-      return "🚫 You've hit the rate limit for this model. Please wait a bit and try again."
-
     except Exception as e:
       ### 429 + Retry time
       if hasattr(e, "response") and getattr(e.response, "status_code", None) == 429:
