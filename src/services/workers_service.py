@@ -136,7 +136,6 @@ class WorkersService:
       # Prepare request parameters
       params = {
         "prompt": prompt,
-        "image": None,  # We'll handle image separately
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_tokens
