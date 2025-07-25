@@ -119,8 +119,8 @@ class WorkersService:
     prompt: str = None,
     image: Union[io.BytesIO, bytes, str] = None,
     messages: Union[str, List[Dict[str, str]]] = None,
-    temperature: float = 0.55,
-    max_tokens: int = 512,
+    temperature: float = 0.6,
+    max_tokens: int = 2048,
   ) -> str:
     """
     Unified function for both text and image+prompt requests.

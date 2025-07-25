@@ -316,7 +316,7 @@ class GeneralCommands(commands.Cog):
       summary = self.llm_service.chat_completions(
         prompt=summary_prompt,
         temperature=0.3,
-        max_tokens=800
+        max_tokens=1024
       )
       
       # Create embed with summary
