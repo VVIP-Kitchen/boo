@@ -10,6 +10,7 @@ from discord.ext import commands
 from utils.config import server_contexts
 from services.db_service import DBService
 from services.tenor_service import TenorService
+from services.queue_service import queue_service
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from utils.message_utils import get_channel_messages
@@ -85,12 +86,6 @@ class GeneralCommands(commands.Cog):
       if ctx.bot.user.avatar
       else ctx.bot.user.default_avatar.url
     )
-
-  @commands.hybrid_command(name="models", description="List of available models")
-  async def show_available_models(self, ctx: commands.Context):
-    models = self.llm_service.fetch_models()
-    paginator = ModelPaginator(models)
-    await ctx.send(embed=paginator.get_embed(), view=paginator)
 
   @commands.hybrid_command(name="info", description="Get to know the spooktacular Boo!")
   async def respond_with_info(self, ctx):
@@ -217,7 +212,7 @@ class GeneralCommands(commands.Cog):
     else:
       await ctx.typing()
 
-    result = self.llm_service.generate_image(prompt)
+    result = self.llm_service.generate_image(prompt, num_steps)
     server_id = f"DM_{ctx.author.id}" if ctx.guild is None else ctx.guild.id
 
     if isinstance(result, io.BytesIO):
@@ -253,6 +248,30 @@ class GeneralCommands(commands.Cog):
           "content": f"There was an error generating the image for the prompt: '{prompt}'. The error message was: {result}",
         }
       )
+
+  @commands.hybrid_command(name="queue", description="Messages in queue to be processed by the LLM")
+  async def queue_status(self, ctx: commands.Context) -> None:
+    """
+    Check current queue status
+    """
+    status = await queue_service.get_queue_status()
+    embed = discord.Embed(title="Queue status", color=0x00ff00)
+    embed.add_field(
+      name="Pending requests",
+      value=status["queue_length"],
+      inline=True
+    )
+    embed.add_field(
+      name="Processing",
+      value=status["processing_count"],
+      inline=True
+    )
+    embed.add_field(
+      name="Rate Limit count",
+      value=status["rate_limit_count"],
+      inline=True
+    )
+    await ctx.send(embed=embed)
 
   @commands.cooldown(10, 60)
   @commands.hybrid_command(name="skibidi", description="You are my skibidi")
@@ -304,7 +323,7 @@ class GeneralCommands(commands.Cog):
       
       # Format messages for AI summary
       formatted_messages = []
-      for msg in reversed(channel_messages):  # Reverse to get chronological order
+      for msg in channel_messages:
         formatted_messages.append(f"**{msg['author_name']}:** {msg['content']}")
       
       messages_text = "\n".join(formatted_messages)

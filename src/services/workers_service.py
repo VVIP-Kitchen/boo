@@ -70,16 +70,40 @@ class WorkersService:
 
     return output.getvalue()
 
-  def generate_image(self, prompt: str, num_steps: int = 4) -> Union[io.BytesIO, str]:
-    json_data = {
-      "prompt": prompt,
-      "num_steps": min(max(num_steps, 1), 8)
-    }
+  async def generate_image(self, prompt: str, num_steps: int = 4) -> Union[io.BytesIO, str]:
+    from services.queue_service import queue_service
+    try:
+      req_id = await queue_service.add_to_queue({
+        "type": "image_generation",
+        "params": {
+          "prompt": prompt,
+          "num_steps": min(max(num_steps, 1), 8)
+        }
+      })
+      result = await queue_service.get_result(req_id, timeout=60)
+
+      if result["status"] == "success":
+        ### Error message
+        if isinstance(result["result"], str):
+          return result["result"]
+        
+        return result["result"] ### Actual image (io.BytesIO object)
+      elif result["status"] == "timeout":
+        return "⏱️ Your request is taking longer than expected. Please try again later."
+      else:
+        return "🤔 I encountered an issue while creating your image. Please try again later."
+    except Exception as e:
+      logger.error(f"Error in queued generate_image: {e}")
+      return "😵 Oops! Something unexpected happened while generating the image."
+
+  def _direct_generate_image(self, prompt: str, num_steps: int = 4) -> Union[io.BytesIO, str]:
+    """
+    Direct image generation (called by queue processor).
+    """
+    json_data = { "prompt": prompt, "num_steps": num_steps }
 
     try:
-      response = self._make_request(
-        "POST", self.image_generation_model_endpoint, headers=self.headers, json=json_data
-      )
+      response = self._make_request("POST", self.image_generation_model_endpoint, headers=self.headers, json=json_data)
       response.raise_for_status()
       data = response.json()
 
@@ -88,33 +112,14 @@ class WorkersService:
         return io.BytesIO(image_data)
       else:
         raise ValueError("No image data in the response")
-    except requests.exceptions.RequestException as e:
-      logger.error(f"Error making request to Cloudflare API: {e}")
-      return "🤔 I encountered an issue while creating your image. Please try a different prompt or try again later."
-    except ValueError as e:
-      logger.error(f"Error processing the response: {e}")
-      return "🤔 I encountered an issue while creating your image. Please try a different prompt or try again later."
     except Exception as e:
-      logger.error(f"Unexpected error in generate_image: {e}")
-      return "😵 Oops! Something unexpected happened while generating the image."
-
-  def fetch_models(self) -> List[str]:
-    try:
-      response = self._make_request("GET", self.search_models_endpoint, headers=self.headers)
-      result = response.json()
-      return [
-        obj["name"]
-        for obj in result["result"]
-        if obj["task"]["name"] == "Text Generation"
-      ]
-    except Exception as e:
-      logger.error(f"Unexpected error in fetch_models: {e}")
-      return []
+      logger.error(f"Error in _direct_generate_image: {e}")
+      return "🤔 I encountered an issue while creating your image."
 
   def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
     return self.chat_completions(image, prompt)
 
-  def chat_completions(
+  async def chat_completions(
     self,
     prompt: str = None,
     image: Union[io.BytesIO, bytes, str] = None,
@@ -123,24 +128,64 @@ class WorkersService:
     max_tokens: int = 2048,
   ) -> str:
     """
-    Unified function for both text and image+prompt requests.
+    Queue-based chat completions.
     """
-    # If image is provided, use image+prompt format
-    if image is not None:
-      image_data = self._download_image(image)
-      image_data = self._compress_image(image_data)
-      data_uri = self._image_bytes_to_data_uri(image_data, mime_type="image/jpeg")
+    from services.queue_service import queue_service
+    
+    try:
+      # Prepare request parameters
+      params = {
+        "prompt": prompt,
+        "image": None,  # We'll handle image separately
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens
+      }
       
+      ### Handle image if provided
+      if image is not None:
+        image_data = self._download_image(image)
+        image_data = self._compress_image(image_data)
+        params["image_data_uri"] = self._image_bytes_to_data_uri(image_data, mime_type="image/jpeg")
+      
+      req_id = await queue_service.add_to_queue({
+        "type": "chat_completion",
+        "params": params
+      })
+      
+      result = await queue_service.get_result(req_id, timeout=60)
+      
+      if result["status"] == "success":
+        return result["result"]
+      elif result["status"] == "timeout":
+        return "⏱️ Your request is taking longer than expected. Please try again later."
+      else:
+        return "🤔 I'm a bit confused. Can you rephrase that?"
+            
+    except Exception as e:
+      logger.error(f"Error in queued chat_completions: {e}")
+      return "😵 Oops! Something unexpected happened."
+
+  def _direct_chat_completions(
+    self,
+    prompt: str = None,
+    image_data_uri: str = None,
+    messages: Union[str, List[Dict[str, str]]] = None,
+    temperature: float = 0.6,
+    max_tokens: int = 2048,
+  ) -> str:
+    """
+    Direct chat completions (called by queue processor).
+    """
+    ### Build request payload
+    if image_data_uri is not None:
       messages = [
         {"role": "system", "content": "You are a helpful assistant."},
         {
           "role": "user",
           "content": [
             {"type": "text", "text": prompt or "Describe this image."},
-            {
-              "type": "image_url", 
-              "image_url": {"url": data_uri}
-            }
+            {"type": "image_url", "image_url": {"url": image_data_uri}}
           ]
         }
       ]
@@ -149,10 +194,8 @@ class WorkersService:
         "max_tokens": max_tokens,
         "temperature": temperature
       }
-    # For regular chat messages
     elif messages is not None:
       if isinstance(messages, str):
-        # Convert string to proper messages format
         json_payload = {
           "messages": [{"role": "user", "content": messages}],
           "temperature": temperature,
@@ -164,7 +207,6 @@ class WorkersService:
           "temperature": temperature,
           "max_tokens": max_tokens
         }
-    # For simple prompt
     elif prompt is not None:
       json_payload = {
         "messages": [{"role": "user", "content": prompt}],
@@ -188,12 +230,6 @@ class WorkersService:
         if len(bot_response) != 0
         else "⚠️ Cloudflare Workers AI returned empty string."
       )
-    except ConnectionError:
-      return "😔 Sorry, I'm having trouble connecting right now. Can you try again later?"
-    except KeyError as ke:
-      logger.error(f"Unexpected API response format: {ke}")
-      return "🤔 I'm a bit confused. Can you rephrase that?"
     except Exception as e:
-      logger.error(f"Unexpected error in chat_completions: {e}")
-      logger.error(f"Request payload: {json_payload}")
-      return "😵 Oops! Something unexpected happened."
+      logger.error(f"Error in _direct_chat_completions: {e}")
+      raise
