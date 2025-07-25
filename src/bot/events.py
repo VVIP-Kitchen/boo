@@ -55,12 +55,13 @@ class BotEvents(commands.Cog):
         await self._reset_chat(message, server_id)
         return
 
-      analysis = await self._handle_image_input(message, prompt, server_id)
-      full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
-      await self._process_message(message, full_prompt, server_id)
+      analysis = await self._analyze_attachments(message, prompt)
+      final_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
+      await self._chat(message, final_prompt, server_id)
+
     except Exception as e:
-      logger.error(f"Error processing message: {str(e)}")
-      await self._send_error_message(message)
+      logger.error(f"Error in on_message: {e}")
+      await self._send_error(message)
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
