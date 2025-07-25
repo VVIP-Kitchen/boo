@@ -26,7 +26,7 @@ class WorkersService:
     self.vision_language_model_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_VISION_LANGUAGE_MODEL}"
     self.image_generation_model_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{CF_WORKERS_IMAGE_GENERATION_MODEL}"
     self.headers = {"Authorization": f"Bearer {CLOUDFLARE_WORKERS_AI_API_KEY}"}
-    self.timeout = 30  ### Timeout of 30s
+    self.timeout = 60  ### Timeout of 60s
   
   def _image_bytes_to_data_uri(self, image_bytes, mime_type="image/jpeg"):
     base64_str = base64.b64encode(image_bytes).decode("utf-8")
@@ -153,8 +153,6 @@ class WorkersService:
       })
       
       result = await queue_service.get_result(req_id, timeout=60)
-      print("chat_completions")
-      print(result)
       
       if result["status"] == "success":
         return result["result"]
@@ -225,8 +223,6 @@ class WorkersService:
         json=json_payload,
       )
       result = response.json()
-      print("_direct_chat_completions")
-      print(result)
       bot_response = str(result.get("result", {}).get("response", ""))
       return (
         bot_response

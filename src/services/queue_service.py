@@ -98,8 +98,6 @@ class QueueService:
 
       if req_type == "chat_completion":
         result = workers_service._direct_chat_completions(**req_data["data"]["params"])
-        print("_process_req")
-        print(result)
       elif req_type == "image_generation":
         result = workers_service._direct_generate_image(**req_data["data"]["params"])
       
