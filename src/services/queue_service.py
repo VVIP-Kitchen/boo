@@ -13,7 +13,7 @@ class QueueService:
     self.queue_name = "cf_requests"
     self.processing_lock = "processing_lock"
     self.rate_limit_key = "cf_rate_limit"
-    self.max_concurrent = 1
+    self.max_concurrent = 3
     self.rate_limit_window = 60   # 60s window
     self.max_requests_per_window = 100
   
