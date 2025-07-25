@@ -134,10 +134,11 @@ class QueueService:
       if result:
         return json.loads(result)
       await asyncio.sleep(0.5)
-      return {
-        "status": "timeout",
-        "error": "Request timed out"
-      }
+    
+    return {
+      "status": "timeout",
+      "error": "Request timed out"
+    }
   
   async def get_queue_status(self) -> Dict[str, int]:
     await self.connect()
