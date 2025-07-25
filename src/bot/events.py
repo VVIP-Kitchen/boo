@@ -110,9 +110,10 @@ class BotEvents(commands.Cog):
     for idx, attachment in enumerate(image_attachments):
       await self._send_message(message, f"-# Analyzing image {idx + 1}/{len(image_attachments)}...")
 
-      image_bytes = await attachment.read()
-      prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
-      result = self.workers_service.chat_completions(image=image_bytes, prompt=prompt)
+      async with message.channel.typing():
+        image_bytes = await attachment.read()
+        prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
+        result = self.workers_service.chat_completions(image=image_bytes, prompt=prompt)
       analysis += (result + "\n")
 
     return analysis.strip()
@@ -122,11 +123,11 @@ class BotEvents(commands.Cog):
 
     messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
 
-    await message.channel.typing().__aenter__()
-    bot_response = self.workers_service.chat_completions(messages=messages)
-    bot_response = replace_emojis(bot_response, self.custom_emojis)
-    bot_response, sticker_ids = replace_stickers(bot_response)
-    stickers = await self._fetch_stickers(sticker_ids)
+    async with message.channel.typing():
+      bot_response = self.workers_service.chat_completions(messages=messages)
+      bot_response = replace_emojis(bot_response, self.custom_emojis)
+      bot_response, sticker_ids = replace_stickers(bot_response)
+      stickers = await self._fetch_stickers(sticker_ids)
 
     await self._send_response(message, bot_response, stickers)
     self._add_assistant_context(bot_response, server_id)
