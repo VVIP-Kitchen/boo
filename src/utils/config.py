@@ -23,8 +23,13 @@ CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 CLOUDFLARE_WORKERS_AI_API_KEY = os.getenv("CLOUDFLARE_WORKERS_AI_API_KEY")
 
 GH_MODEL_NAME = os.getenv("GH_MODEL_NAME", "meta-llama-3.1-8b-instruct")
-CF_WORKERS_VISION_LANGUAGE_MODEL = os.getenv("CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.2-11b-vision-instruct")
-CF_WORKERS_IMAGE_GENERATION_MODEL = os.getenv("CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell")
+CF_WORKERS_VISION_LANGUAGE_MODEL = os.getenv(
+  "CF_WORKERS_MODEL_NAME", "@cf/meta/llama-3.2-11b-vision-instruct"
+)
+CF_WORKERS_IMAGE_GENERATION_MODEL = os.getenv(
+  "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell"
+)
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
@@ -43,7 +48,8 @@ for var_name in [
   "TENOR_API_KEY",
   "DB_SERVICE_BASE_URL",
   "CLOUDFLARE_ACCOUNT_ID",
-  "CLOUDFLARE_WORKERS_AI_API_KEY"
+  "CLOUDFLARE_WORKERS_AI_API_KEY",
+  "OPENROUTER_API_KEY"
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

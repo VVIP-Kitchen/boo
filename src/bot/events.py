@@ -13,8 +13,9 @@ from utils.message_utils import (
   text_to_file,
   prepare_prompt,
   log_message,
-  get_reply_context
+  get_reply_context,
 )
+
 
 class BotEvents(commands.Cog):
   """
@@ -67,7 +68,7 @@ class BotEvents(commands.Cog):
 
     await self._guys_check(message)
     should_ignore_result = should_ignore(message, self.bot)
-    
+
     # Only ignore bot messages and general messages (not mentioned/replied to)
     if should_ignore_result is True:
       return
@@ -80,9 +81,11 @@ class BotEvents(commands.Cog):
         if reply_context:
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
           print(f"Reply context added: {reply_context}")
-      
+
       prompt = prepare_prompt(message)
-      server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      server_id = (
+        f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      )
       self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
@@ -99,20 +102,29 @@ class BotEvents(commands.Cog):
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     ### Get system prompt
     lore = self.db_service.fetch_prompt(server_id)
-    server_lore[server_id] = lore.get("system_prompt") if lore else "You are a helpful assistant"
+    server_lore[server_id] = (
+      lore.get("system_prompt") if lore else "You are a helpful assistant"
+    )
 
     ### Get current date and time
-    ist = datetime.timezone(datetime.timedelta(hours=5, minutes=30))  # Indian Standard Time
+    ist = datetime.timezone(
+      datetime.timedelta(hours=5, minutes=30)
+    )  # Indian Standard Time
     now = datetime.datetime.now(ist)
-    server_lore[server_id] += f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
-    
+    server_lore[server_id] += (
+      f"\n\nCurrent Time: {now.strftime('%H:%M:%S')}\nToday is: {now.strftime('%A')}"
+    )
+
     ### Get all emojis
-    server_lore[server_id] += f"You have the following emojis at your disposal, use them: {' '.join(list(self.custom_emojis.keys()))}"
+    server_lore[server_id] += (
+      f"You have the following emojis at your disposal, use them: {' '.join(list(self.custom_emojis.keys()))}"
+    )
 
     ### Get online members
-    if guild is not None and guild.chunked: # Ensure members are available
+    if guild is not None and guild.chunked:  # Ensure members are available
       online_members = [
-        f"{member}, aka {member.display_name}" for member in guild.members
+        f"{member}, aka {member.display_name}"
+        for member in guild.members
         if not member.bot and member.status != discord.Status.offline
       ]
 
@@ -130,57 +142,76 @@ class BotEvents(commands.Cog):
       return
     server_contexts[server_id] = []
     await message.channel.send(self.context_reset_message)
-  
+
   async def _guys_check(self, message: discord.Message) -> None:
     msg = message.content.strip().lower()
     if "guys" in msg and not message.author.bot and random.random() < 0.2:
-      await message.channel.send("Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y\'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP.")
+      await message.channel.send(
+        "Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP."
+      )
       return
 
-  async def _handle_image_input(self, message: discord.Message, prompt: str, server_id: str) -> str:
+  async def _handle_image_input(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> str:
     analysis = ""
     async with message.channel.typing():
       ### Return if there are no attachments or the file attachments are not image
-      if len(message.attachments) == 0 or not message.attachments[0].content_type.startswith("image"):
+      if len(message.attachments) == 0 or not message.attachments[
+        0
+      ].content_type.startswith("image"):
         return analysis
 
-      await self._send_message(message, '-# Thinking 🤔')
+      await self._send_message(message, "-# Thinking 🤔")
       for idx, attachment in enumerate(message.attachments):
         if attachment.content_type.startswith("image"):
           image_url = attachment.url
-          image_prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}" if prompt else "Caption this image {idx + 1}"
-          result = self.workers_service.chat_completions(image=image_url, prompt=image_prompt)
-          
+          image_prompt = (
+            f"Analyze this image {idx + 1}. Additional context: {prompt}"
+            if prompt
+            else "Caption this image {idx + 1}"
+          )
+          result = self.workers_service.chat_completions(
+            image=image_url, prompt=image_prompt
+          )
+
           if len(analysis) == 0:
             analysis = result
           else:
             analysis += "\n" + result
-          
-          await self._send_message(message, f"-# Analyzed {idx + 1}/{len(message.attachments)} images!")
+
+          await self._send_message(
+            message, f"-# Analyzed {idx + 1}/{len(message.attachments)} images!"
+          )
     return analysis
 
-  async def _process_message(self, message: discord.Message, prompt: str, server_id: str) -> None:
+  async def _process_message(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> None:
     self._add_user_context(message, prompt, server_id)
-    
+
     messages = [
-      {
-        "role": "system",
-        "content": server_lore[server_id]
-      }
+      {"role": "system", "content": server_lore[server_id]}
     ] + server_contexts[server_id]
 
     async with message.channel.typing():
       bot_response = self.workers_service.chat_completions(messages=messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
-      bot_response_with_stickers, sticker_ids = replace_stickers(bot_response_with_emojis)
+      bot_response_with_stickers, sticker_ids = replace_stickers(
+        bot_response_with_emojis
+      )
       sticker_list = await self._fetch_stickers(sticker_ids)
 
     await self._send_response(message, bot_response_with_stickers, sticker_list)
     self._add_assistant_context(bot_response, server_id)
     await self._check_context_limit(server_id)
 
-  def _add_user_context(self, message: discord.Message, prompt: str, server_id: str) -> None:
-    content = f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+  def _add_user_context(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> None:
+    content = (
+      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+    )
     server_contexts[server_id].append({"role": "user", "content": content})
 
   async def _fetch_stickers(self, sticker_ids: list) -> list:
@@ -192,15 +223,21 @@ class BotEvents(commands.Cog):
         logger.info(f"Sticker with ID {sticker_id} not found")
     return sticker_list if sticker_list else None
 
-  async def _send_response(self, message: discord.Message, response: str, stickers: list) -> None:
+  async def _send_response(
+    self, message: discord.Message, response: str, stickers: list
+  ) -> None:
     if len(response) > 1800:
       await message.channel.send(file=text_to_file(response))
     else:
       await message.channel.send(response, reference=message, stickers=stickers)
-  
-  async def _send_message(self, message: discord.Message, response: str, mention_author: bool = False) -> None:
+
+  async def _send_message(
+    self, message: discord.Message, response: str, mention_author: bool = False
+  ) -> None:
     if len(response) > 1800:
-      await message.channel.send(file=text_to_file(response), mention_author=mention_author)
+      await message.channel.send(
+        file=text_to_file(response), mention_author=mention_author
+      )
     else:
       await message.channel.send(response, mention_author=mention_author)
 

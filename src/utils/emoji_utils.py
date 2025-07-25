@@ -22,8 +22,9 @@ def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
   def replace_match(match):
     emoji_name = match.group(1)
     return str(custom_emojis.get(emoji_name, match.group(0)))
-  
+
   return re.sub(r":([a-zA-Z0-9_]+):", replace_match, text)
+
 
 def replace_stickers(text: str) -> Tuple[str, List[str]]:
   """
@@ -41,6 +42,7 @@ def replace_stickers(text: str) -> Tuple[str, List[str]]:
   """
 
   sticker_list = []
+
   def replace_match(match):
     sticker_id = match.group(1)
     sticker_list.append(sticker_id)
