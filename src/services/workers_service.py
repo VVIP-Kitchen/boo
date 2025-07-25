@@ -80,7 +80,7 @@ class WorkersService:
           "num_steps": min(max(num_steps, 1), 8)
         }
       })
-      result = await queue_service.get_result(req_id, timeout=60)
+      result = await queue_service.get_result(req_id, timeout=self.timeout)
 
       if result["status"] == "success":
         ### Error message
@@ -125,7 +125,7 @@ class WorkersService:
     image: Union[io.BytesIO, bytes, str] = None,
     messages: Union[str, List[Dict[str, str]]] = None,
     temperature: float = 0.6,
-    max_tokens: int = 2048,
+    max_tokens: int = 512,
   ) -> str:
     """
     Queue-based chat completions.
@@ -152,7 +152,7 @@ class WorkersService:
         "params": params
       })
       
-      result = await queue_service.get_result(req_id, timeout=60)
+      result = await queue_service.get_result(req_id, timeout=self.timeout)
       
       if result["status"] == "success":
         return result["result"]
@@ -171,7 +171,7 @@ class WorkersService:
     image_data_uri: str = None,
     messages: Union[str, List[Dict[str, str]]] = None,
     temperature: float = 0.6,
-    max_tokens: int = 2048,
+    max_tokens: int = 512,
   ) -> str:
     """
     Direct chat completions (called by queue processor).
