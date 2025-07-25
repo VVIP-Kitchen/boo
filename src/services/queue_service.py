@@ -108,7 +108,7 @@ class QueueService:
         f"result_{req_id}",
         300,  # TTL 5m
         json.dumps({
-          "status": "sucess",
+          "status": "success",
           "result": result
         })
       )
