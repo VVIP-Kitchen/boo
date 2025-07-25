@@ -10,7 +10,6 @@ from discord.ext import commands
 from utils.config import server_contexts
 from services.db_service import DBService
 from services.tenor_service import TenorService
-from services.queue_service import queue_service
 from services.weather_service import WeatherService
 from services.workers_service import WorkersService
 from utils.message_utils import get_channel_messages
@@ -248,30 +247,6 @@ class GeneralCommands(commands.Cog):
           "content": f"There was an error generating the image for the prompt: '{prompt}'. The error message was: {result}",
         }
       )
-
-  @commands.hybrid_command(name="queue", description="Messages in queue to be processed by the LLM")
-  async def queue_status(self, ctx: commands.Context) -> None:
-    """
-    Check current queue status
-    """
-    status = await queue_service.get_queue_status()
-    embed = discord.Embed(title="Queue status", color=0x00ff00)
-    embed.add_field(
-      name="Pending requests",
-      value=status["queue_length"],
-      inline=True
-    )
-    embed.add_field(
-      name="Processing",
-      value=status["processing_count"],
-      inline=True
-    )
-    embed.add_field(
-      name="Rate Limit count",
-      value=status["rate_limit_count"],
-      inline=True
-    )
-    await ctx.send(embed=embed)
 
   @commands.cooldown(10, 60)
   @commands.hybrid_command(name="skibidi", description="You are my skibidi")

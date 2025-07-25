@@ -1,11 +1,9 @@
 import random
-import asyncio
 import discord
 import datetime
 from utils.logger import logger
 from discord.ext import commands
 from services.db_service import DBService
-from services.queue_service import queue_service
 from services.workers_service import WorkersService
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
@@ -39,9 +37,6 @@ class BotEvents(commands.Cog):
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
     self.error_message = "I'm sorry, I encountered an error while processing your message. Please try again later."
 
-    ### Queue processor
-    self.queue_task = None
-
   @commands.Cog.listener()
   async def on_ready(self) -> None:
     """
@@ -49,11 +44,6 @@ class BotEvents(commands.Cog):
     """
     logger.info(f"{self.bot.user} has connected to Discord!")
     self._load_custom_emojis()
-
-    ### Start queue processor
-    if not self.queue_task:
-      self.queue_task = asyncio.create_task(queue_service.process_queue())
-      logger.info("Started queue processor")
 
   ### Load emojis
   def _load_custom_emojis(self) -> None:
@@ -83,11 +73,13 @@ class BotEvents(commands.Cog):
       return
 
     try:
+      print(f"Type of message: {should_ignore_result}")
       # Handle replies, mentions, and DMs
       if should_ignore_result in ["reply", "mentioned_reply_other"]:
         reply_context = get_reply_context(message)
         if reply_context:
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
+          print(f"Reply context added: {reply_context}")
       
       prompt = prepare_prompt(message)
       server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
@@ -97,7 +89,7 @@ class BotEvents(commands.Cog):
         await self._reset_chat(message, server_id)
         return
 
-      analysis = await self._handle_image_input(message, prompt)
+      analysis = await self._handle_image_input(message, prompt, server_id)
       full_prompt = f"{prompt}\n\nImage analysis: {analysis}" if analysis else prompt
       await self._process_message(message, full_prompt, server_id)
     except Exception as e:
@@ -141,11 +133,11 @@ class BotEvents(commands.Cog):
   
   async def _guys_check(self, message: discord.Message) -> None:
     msg = message.content.strip().lower()
-    if "guys" in msg and not message.author.bot and random.random() < 0.05:
+    if "guys" in msg and not message.author.bot and random.random() < 0.2:
       await message.channel.send("Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y\'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP.")
       return
 
-  async def _handle_image_input(self, message: discord.Message, prompt: str) -> str:
+  async def _handle_image_input(self, message: discord.Message, prompt: str, server_id: str) -> str:
     analysis = ""
     async with message.channel.typing():
       ### Return if there are no attachments or the file attachments are not image
@@ -178,12 +170,7 @@ class BotEvents(commands.Cog):
     ] + server_contexts[server_id]
 
     async with message.channel.typing():
-      ### Show queue status for transparency
-      status = await queue_service.get_queue_status()
-      if status["queue_length"] > 0:
-        await message.channel.send(f'-# 📋 Queue: {status["queue_length"]} requests in queue')
-      
-      bot_response = await self.workers_service.chat_completions(messages=messages)
+      bot_response = self.workers_service.chat_completions(messages=messages)
       bot_response_with_emojis = replace_emojis(bot_response, self.custom_emojis)
       bot_response_with_stickers, sticker_ids = replace_stickers(bot_response_with_emojis)
       sticker_list = await self._fetch_stickers(sticker_ids)
