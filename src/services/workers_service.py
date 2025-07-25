@@ -3,19 +3,16 @@ import time
 import base64
 from typing import List, Dict, Union
 from openai import OpenAI, RateLimitError
-from utils.config import OPENROUTER_API_KEY
+from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 
 
 class WorkersService:
-  def __init__(
-    self,
-    model: str = "mistralai/mistral-small-3.1-24b-instruct:free"
-  ):
+  def __init__(self):
     self.client = OpenAI(
       base_url="https://openrouter.ai/api/v1",
       api_key=OPENROUTER_API_KEY,
     )
-    self.model = model
+    self.model = OPENROUTER_MODEL
 
   def _to_base64_data_uri(self, image: Union[io.BytesIO, bytes]) -> str:
     if isinstance(image, io.BytesIO):

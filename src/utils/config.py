@@ -30,6 +30,7 @@ CF_WORKERS_IMAGE_GENERATION_MODEL = os.getenv(
   "CF_WORKERS_IMAGE_MODEL_NAME", "@cf/black-forest-labs/flux-1-schnell"
 )
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
 
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
@@ -49,7 +50,8 @@ for var_name in [
   "DB_SERVICE_BASE_URL",
   "CLOUDFLARE_ACCOUNT_ID",
   "CLOUDFLARE_WORKERS_AI_API_KEY",
-  "OPENROUTER_API_KEY"
+  "OPENROUTER_API_KEY",
+  "OPENROUTER_MODEL"
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")
