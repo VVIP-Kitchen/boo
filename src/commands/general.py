@@ -313,7 +313,7 @@ class GeneralCommands(commands.Cog):
       summary_prompt = f"Generate a snarky summary for the following Discord channel conversation: {messages_text}"
 
       # Generate summary using the AI function
-      summary = self.llm_service.chat_completions(
+      summary, _usage = self.llm_service.chat_completions(
         prompt=summary_prompt, temperature=0.3, max_tokens=512
       )
 

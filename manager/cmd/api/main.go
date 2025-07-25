@@ -28,6 +28,9 @@ func main() {
 	messageService := service.NewMessageService(db)
 	messageHandler := handler.NewMessageHandler(messageService)
 
+	tokenService := service.NewTokenService(db)
+	tokenHandler := handler.NewTokenHandler(tokenService)
+
 	r := gin.Default()
 
 	r.Static("/static", "./static")
@@ -43,6 +46,10 @@ func main() {
 
 	// Message endpoints
 	r.POST("/message", messageHandler.AddMessage)
+
+	// Token endpoints
+	r.POST("/token", tokenHandler.AddTokenUsage)
+	r.GET("/token/stats", tokenHandler.GetTokenStats)
 
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))

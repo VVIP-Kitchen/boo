@@ -68,3 +68,19 @@ class DBService:
       logger.error(f"Error parsing JSON response after adding message: {e}")
 
     return None
+  
+  def store_token_usage(self, usage: dict) -> Optional[Dict[str, str]]:
+    endpoint = f"http://{self.base_url}/token"
+    try:
+      response = requests.post(endpoint, json=usage, timeout=self.timeout)
+      response.raise_for_status()
+      return response.json()
+    except requests.Timeout:
+      logger.error("Timeout occurred while storing token usage")
+    except requests.ConnectionError:
+      logger.error("Connection error occurred while storing token usage")
+    except requests.RequestException as e:
+      logger.error(f"Error storing token usage: {e}")
+    except ValueError as e:
+      logger.error(f"Error parsing response after storing token usage: {e}")
+    return None

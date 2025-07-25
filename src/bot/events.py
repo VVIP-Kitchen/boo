@@ -113,8 +113,16 @@ class BotEvents(commands.Cog):
       async with message.channel.typing():
         image_bytes = await attachment.read()
         prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
-        result = self.workers_service.chat_completions(image=image_bytes, prompt=prompt)
+        result, usage = self.workers_service.chat_completions(image=image_bytes, prompt=prompt)
       analysis += (result + "\n")
+
+    self.db_service.store_token_usage({
+      "message_id": str(message.id),
+      "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
+      "author_id": str(message.author.id),
+      "input_tokens": usage["prompt_tokens"],
+      "output_tokens": usage["total_tokens"]
+    })
 
     return analysis.strip()
   
@@ -124,7 +132,7 @@ class BotEvents(commands.Cog):
     messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response = self.workers_service.chat_completions(messages=messages)
+      bot_response, usage = self.workers_service.chat_completions(messages=messages)
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
       stickers = await self._fetch_stickers(sticker_ids)

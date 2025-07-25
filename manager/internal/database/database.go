@@ -48,12 +48,23 @@ func InitializeSchema(db *sql.DB) error {
 		timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 
+	CREATE TABLE IF NOT EXISTS token_usage (
+		message_id TEXT PRIMARY KEY,
+		guild_id TEXT NOT NULL,
+		author_id TEXT NOT NULL,
+		input_tokens INTEGER DEFAULT 0,
+		output_tokens INTEGER DEFAULT 0,
+		timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
 	CREATE INDEX IF NOT EXISTS idx_discord_server_name ON discord_messages(server_name);
 	CREATE INDEX IF NOT EXISTS idx_discord_channel_name ON discord_messages(channel_name);
 	CREATE INDEX IF NOT EXISTS idx_discord_channel_id ON discord_messages(channel_id);
 	CREATE INDEX IF NOT EXISTS idx_discord_author_name ON discord_messages(author_name);
 	CREATE INDEX IF NOT EXISTS idx_discord_author_nickname ON discord_messages(author_nickname);
 	CREATE INDEX IF NOT EXISTS idx_discord_author_id ON discord_messages(author_id);
+	CREATE INDEX IF NOT EXISTS idx_token_usage_guild_id ON token_usage(guild_id);
+	CREATE INDEX IF NOT EXISTS idx_token_usage_author_id ON token_usage(author_id);
 	`
 
 	_, err := db.Exec(query)

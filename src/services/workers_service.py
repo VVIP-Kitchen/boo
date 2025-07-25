@@ -59,7 +59,7 @@ class WorkersService:
         max_tokens=max_tokens,
         temperature=temperature,
       )
-      return response.choices[0].message.content.strip()
+      return response.choices[0].message.content.strip(), response.usage
     except Exception as e:
       ### 429 + Retry time
       if hasattr(e, "response") and getattr(e.response, "status_code", None) == 429:
