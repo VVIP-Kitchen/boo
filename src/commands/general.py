@@ -6,6 +6,7 @@ from discord.ext import commands
 from services.db_service import DBService
 from services.llm_service import LLMService
 from services.tenor_service import TenorService
+from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
 
@@ -119,9 +120,8 @@ class GeneralCommands(commands.Cog):
       summary_prompt = f"Generate a snarky summary for the following Discord channel conversation: {messages_text}"
 
       # Generate summary using the AI function
-      summary, _usage = self.llm_service.chat_completions(
-        prompt=summary_prompt, temperature=0.3, max_tokens=512
-      )
+      summary, _usage = await to_thread(self.llm_service.chat_completions, prompt=summary_prompt, temperature=0.35, max_tokens=512)
+
 
       # Create embed with summary
       embed = discord.Embed(

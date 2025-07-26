@@ -65,6 +65,3 @@ class LLMService:
       from utils.logger import logger
       logger.error(f"Unexpected error in chat_completions: {e}")
       return "😵 Something went wrong while generating a response.", mock_usage
-
-  def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
-    return self.chat_completions(image=image, prompt=prompt)

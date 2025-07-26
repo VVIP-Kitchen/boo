@@ -4,6 +4,7 @@ import datetime
 from discord.ext import commands
 from services.db_service import DBService
 from services.llm_service import LLMService
+from services.async_caller_service import to_thread
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.logger import logger
@@ -114,7 +115,7 @@ class BotEvents(commands.Cog):
       async with message.channel.typing():
         image_bytes = await attachment.read()
         prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
-        result, usage = self.llm_service.chat_completions(image=image_bytes, prompt=prompt)
+        result, usage = await to_thread(self.llm_service.chat_completions, image=image_bytes, prompt=prompt)
       
       if result is not None:
         analysis += (result + "\n")
@@ -138,7 +139,7 @@ class BotEvents(commands.Cog):
     messages = [{"role": "system", "content": server_lore.get(server_id, "No server lore found!")}] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response, usage = self.llm_service.chat_completions(messages=messages)
+      bot_response, usage = await to_thread(self.llm_service.chat_completions, messages=messages)
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
       stickers = await self._fetch_stickers(sticker_ids)
