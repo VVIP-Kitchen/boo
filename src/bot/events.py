@@ -130,7 +130,7 @@ class BotEvents(commands.Cog):
   async def _chat(self, message: discord.Message, prompt: str, server_id: str) -> None:
     self._add_user_context(message, prompt, server_id)
 
-    messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
+    messages = [{"role": "system", "content": server_lore.get(server_id, "No server lore found!")}] + server_contexts[server_id]
 
     async with message.channel.typing():
       bot_response, usage = self.llm_service.chat_completions(messages=messages)
