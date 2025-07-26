@@ -37,7 +37,8 @@ class LLMService:
       elif prompt:
         chat_messages = [{"role": "user", "content": prompt}]
       else:
-        return "⚠️ No input provided."
+        mock_usage = type('Usage', (), {'prompt_tokens': 0, 'total_tokens': 0})()
+        return "⚠️ No input provided.", mock_usage
 
       response = self.client.chat.completions.create(
         model=self.model,
@@ -58,12 +59,12 @@ class LLMService:
         secs = wait_sec % 60
         formatted = f"{mins}m {secs}s" if mins else f"{secs}s"
 
-        return f"⏳ You've hit the rate limit for this model. Try again in {formatted}.\nYou can also consider switching to a paid model on OpenRouter to avoid this."
+        return f"⏳ You've hit the rate limit for this model. Try again in {formatted}.", mock_usage
       
       ### Catch all
       from utils.logger import logger
       logger.error(f"Unexpected error in chat_completions: {e}")
-      return "😵 Something went wrong while generating a response."
+      return "😵 Something went wrong while generating a response.", mock_usage
 
   def analyze_image(self, image: Union[io.BytesIO, bytes, str], prompt: str) -> str:
     return self.chat_completions(image=image, prompt=prompt)
