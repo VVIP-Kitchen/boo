@@ -36,9 +36,15 @@ class BotEvents(commands.Cog):
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
     log_message(message)
+    print("Message")
+    print(message)
+    print()
 
     await self._guys_check(message)
     reason = should_ignore(message, self.bot)
+    print("Reason")
+    print(reason)
+    print()
     if reason is True:
       return
 
@@ -49,7 +55,13 @@ class BotEvents(commands.Cog):
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
 
       prompt = prepare_prompt(message)
+      print("Prompt")
+      print(prompt)
+      print()
       server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      print("Server ID")
+      print(server_id)
+      print()
       self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
@@ -67,7 +79,6 @@ class BotEvents(commands.Cog):
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
     lore = prompt.get("system_prompt") if prompt else "You are a helpful assistant"
-    print(lore)
 
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5, minutes=30)))
     lore += f"\n\nCurrent Time: {now.strftime('%H:%M:%S')} | Day: {now.strftime('%A')}"
