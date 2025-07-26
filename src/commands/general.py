@@ -4,7 +4,7 @@ import discord
 from datetime import datetime
 from discord.ext import commands
 from services.db_service import DBService
-from src.services.llm_service import LLMService
+from services.llm_service import LLMService
 from services.tenor_service import TenorService
 from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
