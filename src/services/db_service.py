@@ -68,6 +68,34 @@ class DBService:
       logger.error(f"Error parsing JSON response after adding message: {e}")
 
     return None
+
+  def get_token_stats(self, guild_id: str, author_id: str, period: str = "daily") -> Optional[list]:
+    endpoint = f"http://{self.base_url}/token/stats"
+    params = {
+      "guild_id": guild_id,
+      "author_id": author_id,
+      "period": period
+    }
+    
+    try:
+      response = requests.get(endpoint, params=params, timeout=self.timeout)
+      
+      if response.status_code == 404:
+        logger.warning(f"No token stats found for user {author_id} in guild {guild_id}")
+        return []
+      
+      response.raise_for_status()
+      return response.json()
+    except requests.Timeout:
+      logger.error(f"Timeout occurred while fetching token stats for user {author_id}")
+    except requests.ConnectionError:
+      logger.error(f"Connection error occurred while fetching token stats for user {author_id}")
+    except requests.RequestException as e:
+      logger.error(f"Error fetching token stats for user {author_id}: {e}")
+    except ValueError as e:
+      logger.error(f"Error parsing JSON response for token stats: {e}")
+    
+    return None
   
   def store_token_usage(self, usage: dict) -> Optional[Dict[str, str]]:
     endpoint = f"http://{self.base_url}/token"

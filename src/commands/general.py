@@ -99,7 +99,134 @@ class GeneralCommands(commands.Cog):
     
     result = self.openrouter_service.get_status()
     await ctx.send(result)
+
+  @commands.hybrid_command(name="token_stats", description="Show LLM token usage stats for this server (and/or specific user)")
+  async def get_token_stats(
+    self,
+    ctx: commands.Context,
+    user: discord.Member = None,
+    period: str = "daily"
+  ) -> None:
+    await ctx.defer()
+    guild = ctx.guild
+    if not guild:
+      embed = discord.Embed(
+        title="❌ Error",
+        description="This command can only be used in a server",
+        color=0xFF0000,
+      )
+      return await ctx.send(embed=embed)
     
+    target_user = user or ctx.author
+    valid_periods = ["daily", "weekly", "monthly", "yearly"]
+    if period.lower() not in valid_periods:
+      embed = discord.Embed(
+        title="❌ Invalid Period",
+        description=f"Period must be one of: {', '.join(valid_periods)}",
+        color=0xFF0000,
+      )
+      return await ctx.send(embed=embed)
+    
+    try:
+      stats = self.db_service.get_token_stats(
+        guild_id=str(guild.id),
+        author_id=str(target_user.id),
+        period=period.lower()
+      )
+
+      if not stats:
+        embed = discord.Embed(
+          title="📊 Token Usage Statistics",
+          description=f"No token usage data found for {target_user.display_name} in the {period} period.",
+          color=0x7615D1,
+          timestamp=datetime.now(),
+        )
+        embed.set_thumbnail(url=target_user.display_avatar.url)
+        return await ctx.send(embed=embed)
+      
+      total_input = sum(usage.get('input_tokens', 0) for usage in stats)
+      total_output = sum(usage.get('output_tokens', 0) for usage in stats)
+      total_tokens = total_input + total_output
+      total_messages = len(stats)
+
+      avg_input = total_input / total_messages if total_messages > 0 else 0
+      avg_output = total_output / total_messages if total_messages > 0 else 0
+      avg_total = total_tokens / total_messages if total_messages > 0 else 0
+
+      embed = discord.Embed(
+        title="📊 Token Usage Statistics",
+        description=f"Token usage for **{target_user.display_name}** ({period} period)",
+        color=0x7615D1,
+        timestamp=datetime.now(),
+      )
+      embed.set_thumbnail(url=target_user.display_avatar.url)
+
+      embed.add_field(
+        name="📥 Input Tokens",
+        value=f"**Total:** {total_input:,}\n**Average:** {avg_input:.1f} per message",
+        inline=True,
+      )
+
+      embed.add_field(
+        name="📤 Output Tokens",
+        value=f"**Total:** {total_output:,}\n**Average:** {avg_output:.1f} per message",
+        inline=True,
+      )
+
+      embed.add_field(
+        name="🔢 Combined",
+        value=f"**Total:** {total_tokens:,}\n**Average:** {avg_total:.1f} per message",
+        inline=True,
+      )
+      
+      embed.add_field(
+        name="💬 Messages",
+        value=f"{total_messages:,}",
+        inline=True,
+      )
+      
+      embed.add_field(
+        name="📅 Period",
+        value=period.capitalize(),
+        inline=True,
+      )
+
+      if total_input > 0:
+        efficiency_ratio = total_output / total_input
+        embed.add_field(
+          name="⚡ Output/Input Ratio",
+          value=f"{efficiency_ratio:.2f}",
+          inline=True,
+        )
+
+      if stats:
+        most_recent = max(stats, key=lambda x: x.get('timestamp', ''))
+        if most_recent.get('timestamp'):
+          # Parse timestamp and format it nicely
+          try:
+            from dateutil import parser
+            timestamp_dt = parser.parse(most_recent['timestamp'])
+            embed.add_field(
+              name="🕒 Last Activity",
+              value=f"<t:{int(timestamp_dt.timestamp())}:R>",
+              inline=False,
+            )
+          except Exception as _e:
+            pass
+      
+      embed.set_footer(
+        text=f"Requested by {ctx.author.display_name}",
+        icon_url=ctx.author.display_avatar.url
+      )
+        
+      await ctx.send(embed=embed)
+    except Exception as e:
+      embed = discord.Embed(
+        title="❌ Error",
+        description=f"Failed to fetch token statistics: {str(e)}",
+        color=0xFF0000,
+      )
+      await ctx.send(embed=embed)
 
   @commands.hybrid_command(name="summary", description="Generate a summary of recent messages in this channel")
   async def generate_summary(self, ctx):

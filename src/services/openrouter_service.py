@@ -35,7 +35,7 @@ class OpenRouterService:
     rl = info.get("rate_limit", {"requests": "?", "interval": "?"})
 
     # Formatting numbers to two decimals
-    usd = lambda x: f"${x:,.2f}"
+    usd = lambda x: f"${x:,.4f}"
     embed = [
       "__**OpenRouter API Key Status**__",
       f"**Key:** `{label}`",
