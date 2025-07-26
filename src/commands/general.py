@@ -8,6 +8,7 @@ from services.llm_service import LLMService
 from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
+from services.openrouter_service import OpenRouterService
 from utils.message_utils import get_channel_messages
 
 
@@ -33,6 +34,7 @@ class GeneralCommands(commands.Cog):
     self.llm_service = LLMService()
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
+    self.openrouter_service = OpenRouterService()
 
   async def _defer_response(self, ctx: commands.Context) -> None:
     if ctx.interaction:
@@ -87,6 +89,17 @@ class GeneralCommands(commands.Cog):
 
     result = self.weather_service.weather_info(location)
     await ctx.send(result)
+  
+  @commands.hybrid_command(name="openrouter", description="OpenRouter stats")
+  async def get_openrouter_status(self, ctx: commands.Context) -> None:
+    if ctx.interaction:
+      await ctx.defer()
+    else:
+      await ctx.typing()
+    
+    result = self.openrouter_service.get_status()
+    await ctx.send(result)
+    
 
   @commands.hybrid_command(name="summary", description="Generate a summary of recent messages in this channel")
   async def generate_summary(self, ctx):
