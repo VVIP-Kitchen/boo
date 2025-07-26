@@ -36,15 +36,9 @@ class BotEvents(commands.Cog):
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
     log_message(message)
-    print("Message")
-    print(message)
-    print()
 
     await self._guys_check(message)
     reason = should_ignore(message, self.bot)
-    print("Reason")
-    print(reason)
-    print()
     if reason is True:
       return
 
@@ -55,13 +49,7 @@ class BotEvents(commands.Cog):
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
 
       prompt = prepare_prompt(message)
-      print("Prompt")
-      print(prompt)
-      print()
       server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
-      print("Server ID")
-      print(server_id)
-      print()
       self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
@@ -127,7 +115,12 @@ class BotEvents(commands.Cog):
         image_bytes = await attachment.read()
         prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
         result, usage = self.llm_service.chat_completions(image=image_bytes, prompt=prompt)
-      analysis += (result + "\n")
+      
+      if result is not None:
+        analysis += (result + "\n")
+      else:
+        logger.warning(f"LLM Service returned None for image analysis {idx + 1}")
+        analysis += "Image analysis failed\n"
 
     self.db_service.store_token_usage({
       "message_id": str(message.id),
