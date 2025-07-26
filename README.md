@@ -75,10 +75,6 @@ CONTEXT_LIMIT=30        # max chat turns kept in memory
 # APIs
 TENOR_API_KEY=XXXXXXXXXXXX
 TOMORROW_IO_API_KEY=XXXXXXXXXXXX
-CLOUDFLARE_ACCOUNT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-CLOUDFLARE_WORKERS_AI_API_KEY=XXXXXXXXXXXX
-CF_WORKERS_MODEL_NAME=@cf/meta/llama-3.1-8b-instruct
-CF_WORKERS_IMAGE_MODEL_NAME=@cf/black-forest-labs/flux-1-schnell
 ```
 
 The **docker compose** file already wires:
