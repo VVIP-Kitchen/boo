@@ -67,6 +67,7 @@ class BotEvents(commands.Cog):
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
     lore = prompt.get("system_prompt") if prompt else "You are a helpful assistant"
+    print(lore)
 
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5, minutes=30)))
     lore += f"\n\nCurrent Time: {now.strftime('%H:%M:%S')} | Day: {now.strftime('%A')}"
