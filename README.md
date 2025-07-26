@@ -17,7 +17,7 @@ then Boo might haunt your server next! 👻
 
 | Category | What Boo does |
 |----------|---------------|
-| AI chat  | • Conversational replies powered by **Cloudflare Workers AI** (default: llama-3)<br />• Per-server “system prompt” that you can edit in the web UI<br />• Mentions, replies & DM handling with 15-minute rolling context (Redis) |
+| AI chat  | • Conversational replies powered by **OpenRouter** (default: Mistral Small 3.2 24B)<br />• Per-server “system prompt” that you can edit in the web UI<br />• Mentions, replies & DM handling with 15-minute rolling context (Redis) |
 | Vision   | • Automatic image caption / analysis when users drop images<br />• `/imagine` – multi-step image generation (returns PNG) |
 | Utilities| • `/weather` realtime weather (Tomorrow.io)<br />• `/bonk @user` – random Tenor GIF<br />• `/ping`<br />, `/models`<br />, `/skibidi`<br />, `/get_prompt`<br />, `/summary` |
 | Moderation/UX | • “Guys-check” – politely suggests inclusive language<br />• Oversize answers sent as txt attachment<br />• Stickers & custom server emojis are supported |
@@ -152,7 +152,7 @@ MIT – do whatever spooky things you want, but don’t blame us if Boo haunts y
 ## ⚙️ Tech Stack
 
 - Discord.py
-- LLM powered by Cloudflare Workers AI
+- LLM powered by OpenRouter
 - Running on a Hetzner VPS
 
 ---

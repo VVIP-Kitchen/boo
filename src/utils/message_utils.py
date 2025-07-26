@@ -2,6 +2,7 @@ import re
 import io
 import json
 import redis
+import discord
 import logging
 from typing import List
 from discord.ext import commands
@@ -42,7 +43,7 @@ def should_ignore(message: Message, bot: commands.Bot) -> str | bool:
     and message.reference.resolved.author != bot.user
   )
 
-  # Handle different combinations
+  ### Handle different combinations
   if is_mentioned and is_reply_to_other:
     return "mentioned_reply_other"
   elif is_mentioned:
@@ -271,3 +272,21 @@ def get_reply_context(message: Message) -> str:
 
     return context
   return ""
+
+async def send_error_message(message: Message) -> None:
+  try:
+    await message.channel.send(
+      "I encountered an error while processing your message. Please try again later!",
+      reference=message
+    )
+  except discord.errors.HTTPException:
+    logger.error("Failed to send error message")
+
+async def send_message(message: Message, response: str) -> None:
+  await message.channel.send(response if len(response) < 1800 else text_to_file(response))
+
+async def send_response(message: Message, response: str, stickers: list) -> None:
+  if len(response) > 1800:
+    await message.channel.send(file=text_to_file(response))
+  else:
+    await message.channel.send(response, reference=message, stickers=stickers)

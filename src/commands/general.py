@@ -1,59 +1,17 @@
-import io
-import math
 import random
 import discord
 
-from typing import List
-from discord import File
 from datetime import datetime
 from discord.ext import commands
-from utils.config import server_contexts
 from services.db_service import DBService
+from src.services.llm_service import LLMService
 from services.tenor_service import TenorService
 from services.weather_service import WeatherService
-from services.workers_service import WorkersService
 from utils.message_utils import get_channel_messages
 
 
 def split_text(text, max_length=4096):
   return [text[i : i + max_length] for i in range(0, len(text), max_length)]
-
-
-class ModelPaginator(discord.ui.View):
-  def __init__(self, models: List[str], timeout=180):
-    super().__init__(timeout=timeout)
-    self.models = models
-    self.current_page = 1
-    self.items_per_page = 5
-
-  @discord.ui.button(label="Previous", style=discord.ButtonStyle.grey)
-  async def previous_button(
-    self, interaction: discord.Interaction, button: discord.ui.Button
-  ):
-    if self.current_page > 1:
-      self.current_page -= 1
-      await interaction.response.edit_message(embed=self.get_embed())
-
-  @discord.ui.button(label="Next", style=discord.ButtonStyle.grey)
-  async def next_button(
-    self, interaction: discord.Interaction, button: discord.ui.Button
-  ):
-    if self.current_page < math.ceil(len(self.models) / self.items_per_page):
-      self.current_page += 1
-      await interaction.response.edit_message(embed=self.get_embed())
-
-  def get_embed(self):
-    start_idx = (self.current_page - 1) * self.items_per_page
-    end_idx = start_idx + self.items_per_page
-    current_models = self.models[start_idx:end_idx]
-
-    embed = discord.Embed(title="Available Models", color=discord.Color.blue())
-    for i, model in enumerate(current_models, start=start_idx + 1):
-      embed.add_field(name=f"{i}. {model}", value="\u200b", inline=False)
-
-    total_pages = math.ceil(len(self.models) / self.items_per_page)
-    embed.set_footer(text=f"Page {self.current_page}/{total_pages}")
-    return embed
 
 
 class GeneralCommands(commands.Cog):
@@ -70,10 +28,10 @@ class GeneralCommands(commands.Cog):
     """
 
     self.bot = bot
-    self.llm_service = WorkersService()
+    self.db_service = DBService()
+    self.llm_service = LLMService()
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
-    self.db_service = DBService()
 
   async def _defer_response(self, ctx: commands.Context) -> None:
     if ctx.interaction:
@@ -88,169 +46,17 @@ class GeneralCommands(commands.Cog):
       else ctx.bot.user.default_avatar.url
     )
 
-  @commands.hybrid_command(name="info", description="Get to know the spooktacular Boo!")
-  async def respond_with_info(self, ctx):
-    bot_avatar = (
-      ctx.bot.user.avatar.url
-      if ctx.bot.user.avatar
-      else ctx.bot.user.default_avatar.url
-    )
-
-    # Create the main embed
-    embed = discord.Embed(
-      title="Boo's Haunted House of Info :ghost:", color=discord.Color.purple()
-    )
-    embed.set_author(name="Boo", icon_url=bot_avatar)
-    embed.set_footer(
-      text="Crafted with :cosy: by enderboi | React with 👻 for a spooky surprise!"
-    )
-
-    # Randomize greeting
-    greetings = [
-      "BOO! Did I scare ya? :evil:",
-      "Welcome to my crib! :cosy:",
-      "Sup, mere mortal? Ready to get spooked? :kekfast:",
-      "Greetings, human! Let's get :derp:y!",
-    ]
-    embed.description = random.choice(greetings)
-
-    # Fun facts about Boo
-    fun_facts = [
-      "I'm a :ghost:, but I'm scared of :mouse: mice!",
-      "I can speak in :regional_indicator_e: :regional_indicator_m: :regional_indicator_o: :regional_indicator_j: :regional_indicator_i:!",
-      "I once tried to haunt a :computer:, but it ghosted me first!",
-      "My favorite food is :spaghetti: boo-sta!",
-      "I'm fluent in :scroll: JavaScript, Python, and Boo-lean logic!",
-    ]
-    embed.add_field(name="Boo-tiful Facts", value="\n".join(fun_facts), inline=False)
-
-    # Boo's capabilities
-    capabilities = (
-      ":joystick: Drop sick gaming knowledge\n"
-      ":computer: Debug your code (and add bugs for fun)\n"
-      ":movie_camera: Quote every movie ever (even the bad ones)\n"
-      ":cook: Share recipes that are to die for\n"
-      ":soccer: Ref your sports arguments\n"
-      ":nerd: Engage in 3 AM philosophical debates\n"
-      ":zany_face: Troll you when you least expect it :kekpoint:"
-    )
-    embed.add_field(name="What I Can Boo For You", value=capabilities, inline=False)
-
-    # Bot info with a twist
-    bot_info = (
-      f"Bot ID: ||{ctx.bot.user.id}|| (Shhh, it's a secret!)\n"
-      f"Bot Owner: <@345546510013825033> :crown: (AKA 'The Exorcist')\n"
-      f"Prefix: `{ctx.prefix}` (Use it wisely, or I'll :angy:)\n"
-      "Source: [GitHub](https://github.com/VVIP-Kitchen/boo) :evil: (Warning: May contain traces of ectoplasm)"
-    )
-    embed.add_field(name="The Ghostly Deets", value=bot_info, inline=False)
-
-    # Interactive challenge
-    challenges = [
-      "Quick! Tell me a joke that'll make a ghost laugh!",
-      "If you can solve this riddle, I'll give you a virtual cookie: What has keys but no locks, space but no room, and you can enter but not go in?",
-      "I bet you can't type 'Boo is the coolest bot' backwards in 10 seconds!",
-      "Let's play rock-paper-scissors! Reply with your choice!",
-    ]
-    embed.add_field(
-      name="Spooky Challenge", value=random.choice(challenges), inline=False
-    )
-
-    # Easter egg
-    embed.add_field(
-      name="P.S.",
-      value="||Did you know that if you say 'deez nuts' three times in front of a mirror, I'll appear and... actually, nevermind. :hmmge:||",
-      inline=False,
-    )
-
-    message = await ctx.send(embed=embed)
-    await message.add_reaction("👻")
-
-  @commands.Cog.listener()
-  async def on_reaction_add(self, reaction, user):
-    if user.bot:
-      return
-
-    if str(reaction.emoji) == "👻" and reaction.message.author == self.bot.user:
-      spooky_messages = [
-        "BOO! Did I getcha? :evil:",
-        "You've awakened the great Boo! Prepare for... a dad joke!",
-        "A ghost appeared! Oh wait, it's just me. :kekfast:",
-        "You summoned me? I was in the middle of haunting my keyboard!",
-        ":deez: :nuts: (I couldn't resist, sorry not sorry)",
-      ]
-      await reaction.message.channel.send(random.choice(spooky_messages))
-
   @commands.hybrid_command(name="ping", description="Pings the bot")
   async def respond_with_ping(self, ctx):
     ping = self.bot.latency * 1000
-    embed = discord.Embed(
-      title="Ping", description=f"The ping of the bot is {ping:.2f}ms", color=0x7615D1
-    )
+    embed = discord.Embed(title="Pong", description=f"Pong response: {ping:.2f}ms", color=0x7615D1)
     await ctx.send(embed=embed)
 
   @commands.hybrid_command(name="bonk", description="Bonks a user")
   async def bonk(self, ctx: commands.Context, member: discord.Member) -> None:
     async with ctx.typing():
       bonk_gif = random.choice(self.tenor_service.search())
-      await ctx.send(
-        content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}"
-      )
-
-  @commands.hybrid_command(
-    name="imagine", description="Generates an image from a prompt"
-  )
-  async def imagine(
-    self, ctx: commands.Context, *, prompt: str, num_steps: int = 4
-  ) -> None:
-    """
-    Generate an image based on the given prompt.
-
-    Args:
-      ctx (commands.Context): The invocation context.
-      prompt (str): The prompt for image generation.
-    """
-    if ctx.interaction:
-      await ctx.defer()
-    else:
-      await ctx.typing()
-
-    result = self.llm_service.generate_image(prompt, num_steps)
-    server_id = f"DM_{ctx.author.id}" if ctx.guild is None else ctx.guild.id
-
-    if isinstance(result, io.BytesIO):
-      file = File(result, "output.png")
-      await ctx.send(file=file)
-
-      ### Add that to user's context
-      server_contexts[server_id].append(
-        {
-          "role": "user",
-          "content": f"{ctx.author.name} (aka {ctx.author.display_name}) used the /imagine command to generate an image with the prompt: {prompt}",
-        }
-      )
-      server_contexts[server_id].append(
-        {
-          "role": "assistant",
-          "content": f"I generated an image based on the prompt: '{prompt}'. The image was successfully created and sent to the chat.",
-        }
-      )
-    else:
-      await ctx.send(result)
-
-      ### Add to context
-      server_contexts[server_id].append(
-        {
-          "role": "user",
-          "content": f"{ctx.author.name} (aka {ctx.author.display_name}) attempted to use the /imagine command with the prompt: {prompt}, but there was an error.",
-        }
-      )
-      server_contexts[server_id].append(
-        {
-          "role": "assistant",
-          "content": f"There was an error generating the image for the prompt: '{prompt}'. The error message was: {result}",
-        }
-      )
+      await ctx.send(content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}")
 
   @commands.cooldown(10, 60)
   @commands.hybrid_command(name="skibidi", description="You are my skibidi")
@@ -281,11 +87,11 @@ class GeneralCommands(commands.Cog):
     result = self.weather_service.weather_info(location)
     await ctx.send(result)
 
-  @commands.hybrid_command(
-    name="summary", description="Generate a summary of recent messages in this channel"
-  )
+  @commands.hybrid_command(name="summary", description="Generate a summary of recent messages in this channel")
   async def generate_summary(self, ctx):
-    """Generate a summary of recent messages from Redis for the current channel"""
+    """
+    Generate a summary of recent messages from Redis for the current channel
+    """
 
     await ctx.defer()  # Defer to avoid timeout
 
@@ -350,11 +156,11 @@ class GeneralCommands(commands.Cog):
       )
       await ctx.send(embed=embed)
 
-  @commands.hybrid_command(
-    name="get_prompt", description="Get the current system prompt for this server"
-  )
+  @commands.hybrid_command(name="get_prompt", description="Get the current system prompt for this server")
   async def get_system_prompt(self, ctx):
-    """Fetch and display the current system prompt for this guild"""
+    """
+    Fetch and display the current system prompt for this guild
+    """
     await ctx.defer()  # Defer the response to prevent timeout
 
     guild = ctx.guild

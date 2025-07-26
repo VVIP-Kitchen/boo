@@ -3,17 +3,19 @@ import discord
 import datetime
 from discord.ext import commands
 from services.db_service import DBService
-from services.workers_service import WorkersService
+from services.llm_service import LLMService
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.emoji_utils import replace_emojis, replace_stickers
 from utils.logger import logger
 from utils.message_utils import (
   CHANNEL_NAME,
   should_ignore,
-  text_to_file,
   prepare_prompt,
   log_message,
   get_reply_context,
+  send_error_message,
+  send_message,
+  send_response
 )
 
 
@@ -23,9 +25,8 @@ class BotEvents(commands.Cog):
     self.custom_emojis = {}
     self.db_service = DBService()
     self.channel_name = CHANNEL_NAME
-    self.workers_service = WorkersService()
+    self.llm_service = LLMService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
-    self.error_message = "I'm sorry, I encountered an error while processing your message. Please try again later."
 
   @commands.Cog.listener()
   async def on_ready(self) -> None:
@@ -61,7 +62,7 @@ class BotEvents(commands.Cog):
 
     except Exception as e:
       logger.error(f"Error in on_message: {e}")
-      await self._send_error(message)
+      await send_error_message(message)
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
@@ -90,7 +91,7 @@ class BotEvents(commands.Cog):
     msg = message.content.strip().lower()
     if "guys" in msg and not message.author.bot and random.random() < 0.2:
       await message.channel.send(
-        "Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP."
+        ">>> Hi! 'Guys' is a gendered pronoun. We recommend alternatives like 'folks', 'all', 'everyone', 'y'all', 'team', 'crew' etc. We appreciate your help in building an inclusive workplace at VVIP."
       )
       return
 
@@ -104,16 +105,16 @@ class BotEvents(commands.Cog):
     if not image_attachments:
       return ""
 
-    await self._send_message(message, "-# Thinking 🤔")
+    await send_message(message, "-# Thinking 🤔💭")
     analysis = ""
 
     for idx, attachment in enumerate(image_attachments):
-      await self._send_message(message, f"-# Analyzing image {idx + 1}/{len(image_attachments)}...")
+      await send_message(message, f"-# Analyzing image {idx + 1}/{len(image_attachments)} ...")
 
       async with message.channel.typing():
         image_bytes = await attachment.read()
         prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
-        result, usage = self.workers_service.chat_completions(image=image_bytes, prompt=prompt)
+        result, usage = self.llm_service.chat_completions(image=image_bytes, prompt=prompt)
       analysis += (result + "\n")
 
     self.db_service.store_token_usage({
@@ -132,7 +133,7 @@ class BotEvents(commands.Cog):
     messages = [{"role": "system", "content": server_lore[server_id]}] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response, usage = self.workers_service.chat_completions(messages=messages)
+      bot_response, usage = self.llm_service.chat_completions(messages=messages)
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
       stickers = await self._fetch_stickers(sticker_ids)
@@ -145,7 +146,7 @@ class BotEvents(commands.Cog):
       "output_tokens": usage.total_tokens
     })
 
-    await self._send_response(message, bot_response, stickers)
+    await send_response(message, bot_response, stickers)
     self._add_assistant_context(bot_response, server_id)
     await self._trim_context(server_id)
 
@@ -168,21 +169,6 @@ class BotEvents(commands.Cog):
       except discord.errors.NotFound:
         logger.info(f"Sticker not found: {sid}")
     return stickers
-
-  async def _send_response(self, message: discord.Message, response: str, stickers: list) -> None:
-    if len(response) > 1800:
-      await message.channel.send(file=text_to_file(response))
-    else:
-      await message.channel.send(response, reference=message, stickers=stickers)
-
-  async def _send_message(self, message: discord.Message, response: str) -> None:
-    await message.channel.send(response if len(response) < 1800 else text_to_file(response))
-
-  async def _send_error(self, message: discord.Message) -> None:
-    try:
-      await message.channel.send(self.error_message, reference=message)
-    except discord.errors.HTTPException:
-      logger.error("Could not send error message.")
 
 
 async def setup(bot: commands.Bot) -> None:
