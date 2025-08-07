@@ -90,6 +90,8 @@ class LLMService:
         
       
       response = self.client.chat.completions.create(**api_params)
+      from pprint import pprint
+      pprint(response)
       message = response.choices[0].message
 
       if hasattr(message, 'tool_calls') and message.tool_calls:
