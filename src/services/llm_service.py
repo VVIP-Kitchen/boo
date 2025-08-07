@@ -4,6 +4,7 @@ import time
 import base64
 from openai import OpenAI
 from typing import List, Dict, Union, Optional
+from utils.logger import logger
 from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 from services.tool_calling_service import hackernews_tool, get_top_hn_stories
 
@@ -90,8 +91,7 @@ class LLMService:
         
       
       response = self.client.chat.completions.create(**api_params)
-      from pprint import pprint
-      pprint(response)
+      logger.info(response)
       message = response.choices[0].message
 
       if hasattr(message, 'tool_calls') and message.tool_calls:
@@ -142,6 +142,5 @@ class LLMService:
         return f"⏳ You've hit the rate limit for this model. Try again in {formatted}.", mock_usage
       
       ### Catch all
-      from utils.logger import logger
       logger.error(f"Unexpected error in chat_completions: {e}")
       return "😵 Something went wrong while generating a response.", mock_usage
