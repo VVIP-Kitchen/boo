@@ -75,9 +75,6 @@ class LLMService:
         "messages": chat_messages,
         "max_tokens": max_tokens,
         "temperature": temperature,
-        "chat_template_kwargs": {
-          "enable_thinking": False
-        }
       }
 
       if enable_tools:
