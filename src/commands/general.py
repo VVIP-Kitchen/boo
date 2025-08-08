@@ -89,67 +89,112 @@ class GeneralCommands(commands.Cog):
     else:
       await ctx.typing()
     
-    result = get_tavily_usage()
-    embed = discord.Embed(
-      title="🔍 Tavily API Usage Statistics",
-      color=0x00ff88,
-      timestamp=discord.utils.utcnow()
-    )
-    
-    key_usage = result["key"]["usage"]
-    key_limit = result["key"]["limit"]
-    key_percentage = (key_usage / key_limit) * 100
-    
-    embed.add_field(
-      name="🔑 Key Usage",
-      value=f"**{key_usage:,}** / **{key_limit:,}** requests\n"
-            f"**{key_percentage:.1f}%** used",
-      inline=True
-    )
-    
-    current_plan = result["account"]["current_plan"]
-    plan_usage = result["account"]["plan_usage"]
-    plan_limit = result["account"]["plan_limit"]
-    plan_percentage = (plan_usage / plan_limit) * 100
-    
-    embed.add_field(
-      name="📋 Plan Usage",
-      value=f"**Plan:** {current_plan}\n"
-            f"**{plan_usage:,}** / **{plan_limit:,}** requests\n"
-            f"**{plan_percentage:.1f}%** used",
-      inline=True
-    )
-    
-    paygo_usage = result["account"]["paygo_usage"]
-    paygo_limit = result["account"]["paygo_limit"]
-    paygo_percentage = (paygo_usage / paygo_limit) * 100
-    
-    embed.add_field(
-      name="💳 Pay-as-you-go",
-      value=f"**{paygo_usage:,}** / **{paygo_limit:,}** requests\n"
-            f"**{paygo_percentage:.1f}%** used",
-      inline=True
-    )
-    
-    def create_progress_bar(percentage, length=10):
-      filled = int(percentage / 100 * length)
-      bar = "█" * filled + "░" * (length - filled)
-      return f"`{bar}` {percentage:.1f}%"
-    
-    embed.add_field(
-      name="📊 Usage Overview",
-      value=f"**Key:** {create_progress_bar(key_percentage)}\n"
-            f"**Plan:** {create_progress_bar(plan_percentage)}\n"
-            f"**PayGo:** {create_progress_bar(paygo_percentage)}",
-      inline=False
-    )
-    
-    embed.set_footer(text="Tavily API Statistics")
-    
-    if ctx.interaction:
-      await ctx.followup.send(embed=embed)
-    else:
-      await ctx.send(embed=embed)
+    try:
+      result = get_tavily_usage()
+      
+      # Create embed
+      embed = discord.Embed(
+        title="🔍 Tavily API Usage Statistics",
+        color=0x00ff88,  # Green color
+        timestamp=discord.utils.utcnow()
+      )
+      
+      # Helper function to safely calculate percentage
+      def safe_percentage(usage, limit):
+        if limit is None or limit == 0:
+          return 0.0
+        return (usage / limit) * 100
+      
+      # Helper function to format usage display
+      def format_usage(usage, limit):
+        if limit is None:
+          return f"**{usage:,}** / **Unlimited**"
+        return f"**{usage:,}** / **{limit:,}**"
+      
+      # Key usage field
+      key_usage = result.get("key", {}).get("usage", 0)
+      key_limit = result.get("key", {}).get("limit")
+      key_percentage = safe_percentage(key_usage, key_limit)
+      
+      embed.add_field(
+        name="🔑 Key Usage",
+        value=f"{format_usage(key_usage, key_limit)} requests\n"
+              f"**{key_percentage:.1f}%** used" if key_limit else "**Unlimited**",
+        inline=True
+      )
+      
+      # Account plan info
+      account_data = result.get("account", {})
+      current_plan = account_data.get("current_plan", "Unknown")
+      plan_usage = account_data.get("plan_usage", 0)
+      plan_limit = account_data.get("plan_limit")
+      plan_percentage = safe_percentage(plan_usage, plan_limit)
+      
+      embed.add_field(
+        name="📋 Plan Usage",
+        value=f"**Plan:** {current_plan}\n"
+              f"{format_usage(plan_usage, plan_limit)} requests\n"
+              f"**{plan_percentage:.1f}%** used" if plan_limit else "**Unlimited**",
+        inline=True
+      )
+      
+      # Pay-as-you-go usage
+      paygo_usage = account_data.get("paygo_usage", 0)
+      paygo_limit = account_data.get("paygo_limit")
+      paygo_percentage = safe_percentage(paygo_usage, paygo_limit)
+      
+      embed.add_field(
+        name="💳 Pay-as-you-go",
+        value=f"{format_usage(paygo_usage, paygo_limit)} requests\n"
+              f"**{paygo_percentage:.1f}%** used" if paygo_limit else "**Unlimited**",
+        inline=True
+      )
+      
+      # Add usage bars for visual representation
+      def create_progress_bar(percentage, length=10):
+        if percentage == 0:
+          return "`░░░░░░░░░░` 0.0%"
+        filled = int(percentage / 100 * length)
+        bar = "█" * filled + "░" * (length - filled)
+        return f"`{bar}` {percentage:.1f}%"
+      
+      # Only add progress bars if we have valid limits
+      progress_fields = []
+      if key_limit is not None:
+        progress_fields.append(f"**Key:** {create_progress_bar(key_percentage)}")
+      if plan_limit is not None:
+        progress_fields.append(f"**Plan:** {create_progress_bar(plan_percentage)}")
+      if paygo_limit is not None:
+        progress_fields.append(f"**PayGo:** {create_progress_bar(paygo_percentage)}")
+      
+      if progress_fields:
+        embed.add_field(
+          name="📊 Usage Overview",
+          value="\n".join(progress_fields),
+          inline=False
+        )
+      
+      # Set footer
+      embed.set_footer(text="Tavily API Statistics")
+      
+      # Send the embed
+      if ctx.interaction:
+        await ctx.followup.send(embed=embed)
+      else:
+        await ctx.send(embed=embed)
+
+    except Exception as e:
+      # Error handling
+      error_embed = discord.Embed(
+        title="❌ Error",
+        description="Failed to fetch Tavily usage statistics:\n",
+        color=0xff0000
+      )
+      
+      if ctx.interaction:
+        await ctx.followup.send(embed=error_embed)
+      else:
+        await ctx.send(embed=error_embed)
 
   @commands.hybrid_command(name="token_stats", description="Show LLM token usage stats for this server (and/or specific user)")
   async def get_token_stats(
