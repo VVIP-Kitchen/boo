@@ -8,8 +8,9 @@ from services.llm_service import LLMService
 from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
-from services.openrouter_service import OpenRouterService
 from utils.message_utils import get_channel_messages
+from services.openrouter_service import OpenRouterService
+from services.tool_calling_service import get_tavily_usage
 
 
 def split_text(text, max_length=4096):
@@ -35,25 +36,6 @@ class GeneralCommands(commands.Cog):
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
     self.openrouter_service = OpenRouterService()
-
-  async def _defer_response(self, ctx: commands.Context) -> None:
-    if ctx.interaction:
-      await ctx.defer()
-    else:
-      await ctx.typing()
-
-  def _get_bot_avatar(self, ctx: commands.Context):
-    return (
-      ctx.bot.user.avatar.url
-      if ctx.bot.user.avatar
-      else ctx.bot.user.default_avatar.url
-    )
-
-  @commands.hybrid_command(name="ping", description="Pings the bot")
-  async def respond_with_ping(self, ctx):
-    ping = self.bot.latency * 1000
-    embed = discord.Embed(title="Pong", description=f"Pong response: {ping:.2f}ms", color=0x7615D1)
-    await ctx.send(embed=embed)
 
   @commands.hybrid_command(name="bonk", description="Bonks a user")
   async def bonk(self, ctx: commands.Context, member: discord.Member) -> None:
@@ -99,6 +81,75 @@ class GeneralCommands(commands.Cog):
     
     result = self.openrouter_service.get_status()
     await ctx.send(result)
+  
+  @commands.hybrid_comand(name="tavily", description="Tavily stats")
+  async def get_tavily_status(self, ctx: commands.Context) -> None:
+    if ctx.interaction:
+      await ctx.defer()
+    else:
+      await ctx.typing()
+    
+    result = get_tavily_usage()
+    embed = discord.Embed(
+      title="🔍 Tavily API Usage Statistics",
+      color=0x00ff88,
+      timestamp=discord.utils.utcnow()
+    )
+    
+    key_usage = result["key"]["usage"]
+    key_limit = result["key"]["limit"]
+    key_percentage = (key_usage / key_limit) * 100
+    
+    embed.add_field(
+      name="🔑 Key Usage",
+      value=f"**{key_usage:,}** / **{key_limit:,}** requests\n"
+            f"**{key_percentage:.1f}%** used",
+      inline=True
+    )
+    
+    current_plan = result["account"]["current_plan"]
+    plan_usage = result["account"]["plan_usage"]
+    plan_limit = result["account"]["plan_limit"]
+    plan_percentage = (plan_usage / plan_limit) * 100
+    
+    embed.add_field(
+      name="📋 Plan Usage",
+      value=f"**Plan:** {current_plan}\n"
+            f"**{plan_usage:,}** / **{plan_limit:,}** requests\n"
+            f"**{plan_percentage:.1f}%** used",
+      inline=True
+    )
+    
+    paygo_usage = result["account"]["paygo_usage"]
+    paygo_limit = result["account"]["paygo_limit"]
+    paygo_percentage = (paygo_usage / paygo_limit) * 100
+    
+    embed.add_field(
+      name="💳 Pay-as-you-go",
+      value=f"**{paygo_usage:,}** / **{paygo_limit:,}** requests\n"
+            f"**{paygo_percentage:.1f}%** used",
+      inline=True
+    )
+    
+    def create_progress_bar(percentage, length=10):
+      filled = int(percentage / 100 * length)
+      bar = "█" * filled + "░" * (length - filled)
+      return f"`{bar}` {percentage:.1f}%"
+    
+    embed.add_field(
+      name="📊 Usage Overview",
+      value=f"**Key:** {create_progress_bar(key_percentage)}\n"
+            f"**Plan:** {create_progress_bar(plan_percentage)}\n"
+            f"**PayGo:** {create_progress_bar(paygo_percentage)}",
+      inline=False
+    )
+    
+    embed.set_footer(text="Tavily API Statistics")
+    
+    if ctx.interaction:
+      await ctx.followup.send(embed=embed)
+    else:
+      await ctx.send(embed=embed)
 
   @commands.hybrid_command(name="token_stats", description="Show LLM token usage stats for this server (and/or specific user)")
   async def get_token_stats(

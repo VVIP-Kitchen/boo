@@ -3,6 +3,7 @@ from tavily import TavilyClient
 from utils.config import TAVILY_API_KEY
 from datetime import datetime, timedelta
 
+### Hackernews
 hackernews_tool = {
   "type": "function",
   "function": {
@@ -17,31 +18,6 @@ hackernews_tool = {
           "default": 20
         }
       }
-    }
-  }
-}
-
-### Tavily
-tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
-tavily_search_tool = {
-  "type": "function",
-  "function": {
-    "name": "search_web",
-    "description": "Search the web using Tavily API for current information, news, and general queries.",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": "The search query to find information about"
-        },
-        "max_results": {
-          "type": "integer",
-          "description": "Maximum number of results to return (default: 5, max: 10)",
-          "default": 5
-        }
-      },
-      "required": ["query"]
     }
   }
 }
@@ -97,6 +73,31 @@ def get_top_hn_stories(limit=20):
   stories.sort(key=lambda x: x["score"], reverse=True)
   return stories[:limit]
 
+### Tavily
+tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+tavily_search_tool = {
+  "type": "function",
+  "function": {
+    "name": "search_web",
+    "description": "Search the web using Tavily API for current information, news, and general queries.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The search query to find information about"
+        },
+        "max_results": {
+          "type": "integer",
+          "description": "Maximum number of results to return (default: 5, max: 10)",
+          "default": 5
+        }
+      },
+      "required": ["query"]
+    }
+  }
+}
+
 def search_web(query, max_results=5):
   if not tavily_client:
     return {
@@ -126,3 +127,12 @@ def search_web(query, max_results=5):
     return {
       "error": f"Failed to search web: {str(e)}"
     }
+
+def get_tavily_usage():
+  url = "https://api.tavily.com/usage"
+  headers = {
+    "Authorization": f"Bearer {TAVILY_API_KEY}"
+  }
+
+  response = requests.get(url, headers=headers)
+  return response.json()
