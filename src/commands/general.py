@@ -82,7 +82,7 @@ class GeneralCommands(commands.Cog):
     result = self.openrouter_service.get_status()
     await ctx.send(result)
   
-  @commands.hybrid_comand(name="tavily", description="Tavily stats")
+  @commands.hybrid_command(name="tavily", description="Tavily stats")
   async def get_tavily_status(self, ctx: commands.Context) -> None:
     if ctx.interaction:
       await ctx.defer()
