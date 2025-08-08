@@ -62,8 +62,8 @@ class DBService:
       logger.error("Timeout occurred while adding message")
     except requests.ConnectionError:
       logger.error("Connection error occurred while adding message")
-    except requests.RequestException as e:
-      logger.error(f"Error adding message: {e}")
+    except requests.RequestException as _e:
+      pass
     except ValueError as e:
       logger.error(f"Error parsing JSON response after adding message: {e}")
 
@@ -108,8 +108,8 @@ class DBService:
       logger.error("Timeout occurred while storing token usage")
     except requests.ConnectionError:
       logger.error("Connection error occurred while storing token usage")
-    except requests.RequestException as e:
-      logger.error(f"Error storing token usage: {e}")
+    except requests.RequestException as _e:
+      pass
     except ValueError as e:
       logger.error(f"Error parsing response after storing token usage: {e}")
     return None
