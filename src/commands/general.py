@@ -113,7 +113,7 @@ class GeneralCommands(commands.Cog):
       plan = account.get("current_plan", "Unknown")
       embed.add_field(
         name="Plan", 
-        value=f"Plan: {plan}", 
+        value=f"{plan}", 
         inline=True
       )
       
