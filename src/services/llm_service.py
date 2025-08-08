@@ -91,13 +91,11 @@ class LLMService:
         
       
       response = self.client.chat.completions.create(**api_params)
-      logger.info(response)
       message = response.choices[0].message
 
       if hasattr(message, 'tool_calls') and message.tool_calls:
         for tool_call in message.tool_calls:
           tool_result = self._execute_tool_call(tool_call)
-          print(tool_result)
 
           chat_messages.append({
             "role": "assistant",
