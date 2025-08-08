@@ -75,8 +75,8 @@ class LLMService:
         "messages": chat_messages,
         "max_tokens": max_tokens,
         "temperature": temperature,
-        "reasoning": {
-          "max_tokens": 0
+        "chat_template_kwargs": {
+          "enable_thinking": False
         }
       }
 
