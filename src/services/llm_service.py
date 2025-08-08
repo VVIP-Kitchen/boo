@@ -6,7 +6,12 @@ from openai import OpenAI
 from typing import List, Dict, Union, Optional
 from utils.logger import logger
 from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
-from services.tool_calling_service import hackernews_tool, get_top_hn_stories
+from services.tool_calling_service import (
+  hackernews_tool, 
+  get_top_hn_stories,
+  tavily_search_tool,
+  search_web
+)
 
 
 class LLMService:
@@ -17,6 +22,10 @@ class LLMService:
       "get_hackernews_stories": {
         "tool_definition": hackernews_tool,
         "function": get_top_hn_stories
+      },
+      "search_web": {
+        "tool_definition": tavily_search_tool,
+        "function": search_web
       }
     }
 

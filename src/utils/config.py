@@ -23,6 +23,8 @@ TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
 
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
 except ValueError:
@@ -40,7 +42,8 @@ for var_name in [
   "TENOR_API_KEY",
   "DB_SERVICE_BASE_URL",
   "OPENROUTER_API_KEY",
-  "OPENROUTER_MODEL"
+  "OPENROUTER_MODEL",
+  "TAVILY_API_KEY"
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

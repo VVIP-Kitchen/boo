@@ -1,4 +1,6 @@
 import requests
+from tavily import TavilyClient
+from utils.config import TAVILY_API_KEY
 from datetime import datetime, timedelta
 
 hackernews_tool = {
@@ -15,6 +17,31 @@ hackernews_tool = {
           "default": 20
         }
       }
+    }
+  }
+}
+
+### Tavily
+tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+tavily_search_tool = {
+  "type": "function",
+  "function": {
+    "name": "search_web",
+    "description": "Search the web using Tavily API for current information, news, and general queries.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The search query to find information about"
+        },
+        "max_results": {
+          "type": "integer",
+          "description": "Maximum number of results to return (default: 5, max: 10)",
+          "default": 5
+        }
+      },
+      "required": ["query"]
     }
   }
 }
@@ -69,3 +96,33 @@ def get_top_hn_stories(limit=20):
   
   stories.sort(key=lambda x: x["score"], reverse=True)
   return stories[:limit]
+
+def search_web(query, max_results=5):
+  if not tavily_client:
+    return {
+      "error": "Tavily API key not configured. Please set TAVILY_API_KEY environment variable."
+    }
+  
+  try:
+    max_results = min(max(1, max_results), 10)
+    response = tavily_client.search(query, max_results=max_results)
+    
+    formatted_results = []
+    for result in response.get("results", []):
+      formatted_results.append({
+        "title": result.get("title", ""),
+        "url": result.get("url", ""),
+        "content": result.get("content", ""),
+        "score": result.get("score", 0)
+      })
+    
+    return {
+      "query": query,
+      "results": formatted_results,
+      "total_results": len(formatted_results)
+    }
+    
+  except Exception as e:
+    return {
+      "error": f"Failed to search web: {str(e)}"
+    }
