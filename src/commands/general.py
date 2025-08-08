@@ -102,30 +102,26 @@ class GeneralCommands(commands.Cog):
       # Key usage
       key_data = result.get("key", {})
       key_usage = key_data.get("usage", 0)
-      key_limit = key_data.get("limit", "N/A")
       embed.add_field(
-        name="Key Usage", 
-        value=f"{key_usage} / {key_limit}", 
+        name="Search queries", 
+        value=f"{key_usage} searches", 
         inline=True
       )
       
       # Account info
       account = result.get("account", {})
       plan = account.get("current_plan", "Unknown")
-      plan_usage = account.get("plan_usage", 0)
-      plan_limit = account.get("plan_limit", "N/A")
       embed.add_field(
         name="Plan", 
-        value=f"{plan}\n{plan_usage} / {plan_limit}", 
+        value=f"Plan: {plan}", 
         inline=True
       )
       
-      # PayGo
-      paygo_usage = account.get("paygo_usage", 0)
-      paygo_limit = account.get("paygo_limit", "N/A")
+      plan_usage = account.get("plan_usage", 0)
+      plan_limit = account.get("plan_limit", "N/A")
       embed.add_field(
-        name="Pay-as-you-go", 
-        value=f"{paygo_usage} / {paygo_limit}", 
+        name="Total usage", 
+        value=f"{plan_usage} / {plan_limit}", 
         inline=True
       )
       
