@@ -90,7 +90,7 @@ class BotEvents(commands.Cog):
 
   async def _guys_check(self, message: discord.Message) -> None:
     msg = message.content.strip().lower()
-    if "guys" in msg and not message.author.bot and random.random() < 0.03:
+    if "guys" in msg and not message.author.bot and random.random() < 0.5:
       await message.channel.send(
         ">>> Hi! `'Guys'` is a gendered pronoun. We recommend alternatives like `'folks'`, `'all'`, `'everyone'`, `'y'all'`, `'team'`, `'crew'` etc. We appreciate your help in building an inclusive workplace at VVIP."
       )
