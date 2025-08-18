@@ -359,7 +359,55 @@ class GeneralCommands(commands.Cog):
       await ctx.send(content=f"📄 Here's the system prompt for **{guild.name}**:", file=file)
     except Exception as e:
       await ctx.send(f"❌ Failed to fetch system prompt: {e}")
-
+  
+  @commands.hybrid_command(name="set_prompt", description="Set the system prompt for this server from a file")
+  async def set_system_prompt(self, ctx, file: discord.Attachment):
+    """
+    Update the system prompt for this guild from an uploaded file
+    
+    Args:
+      file: A text file containing the new system prompt
+    """
+    await ctx.defer()  # Defer the response to prevent timeout
+    guild = ctx.guild
+    if not guild:
+      return await ctx.send("❌ This command can only be used in a server, no DMs")
+    
+    # Check if user has appropriate permissions (adjust as needed)
+    if not ctx.author.guild_permissions.manage_guild:
+      return await ctx.send("❌ You need 'Manage Server' permissions to update the system prompt")
+    
+    try:
+      # Validate file type and size
+      if not file.filename.endswith(('.txt', '.md')):
+        return await ctx.send("❌ Please upload a text file (.txt or .md)")
+      
+      if file.size > 1024 * 1024:  # 1MB limit
+        return await ctx.send("❌ File size must be less than 1MB")
+      
+      # Read file content
+      file_content = await file.read()
+      try:
+        system_prompt = file_content.decode('utf-8').strip()
+      except UnicodeDecodeError:
+        return await ctx.send("❌ File must be valid UTF-8 text")
+      
+      if not system_prompt:
+        return await ctx.send("❌ File appears to be empty")
+      
+      if len(system_prompt) > 50000:  # Reasonable limit for system prompts
+        return await ctx.send("❌ System prompt is too long (max 50,000 characters)")
+      
+      # Update the prompt using the db service
+      success = self.db_service.update_prompt(str(guild.id), system_prompt)
+      
+      if success:
+        await ctx.send(f"✅ System prompt updated successfully for **{guild.name}**!")
+      else:
+        await ctx.send("❌ Failed to update system prompt. Please try again later.")
+            
+    except Exception as e:
+      await ctx.send(f"❌ An error occurred while processing the file: {str(e)}")
 
 async def setup(bot: commands.Bot) -> None:
   """
