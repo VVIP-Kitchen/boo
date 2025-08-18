@@ -43,7 +43,7 @@ for var_name in [
   "DB_SERVICE_BASE_URL",
   "OPENROUTER_API_KEY",
   "OPENROUTER_MODEL",
-  "TAVILY_API_KEY"
+  "TAVILY_API_KEY",
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

@@ -50,56 +50,62 @@ class DBService:
       logger.error(f"Error parsing JSON response for guild {guild_id}: {e}")
 
     return None
-  
+
   def update_prompt(self, guild_id: str, system_prompt: str) -> bool:
     """
     Update the system prompt for a given guild ID.
-    
+
     Args:
       guild_id (str): The ID of the guild to update the prompt for.
       system_prompt (str): The new system prompt content.
-    
+
     Returns:
       bool: True if the update was successful, False otherwise.
     """
     endpoint = f"http://{self.base_url}/prompt"
     params = {"guild_id": guild_id}
     payload = {"system_prompt": system_prompt}
-    
+
     try:
-      response = requests.put(endpoint, params=params, json=payload, timeout=self.timeout)
+      response = requests.put(
+        endpoint, params=params, json=payload, timeout=self.timeout
+      )
       if response.status_code == 404:
         logger.warning(f"No prompt found to update for guild {guild_id} (404)")
         return False
       response.raise_for_status()
       logger.info(f"Successfully updated prompt for guild {guild_id}")
-      
+
       return True
     except requests.Timeout:
       logger.error(f"Timeout occurred while updating prompt for guild {guild_id}")
     except requests.ConnectionError:
-      logger.error(f"Connection error occurred while updating prompt for guild {guild_id}")
+      logger.error(
+        f"Connection error occurred while updating prompt for guild {guild_id}"
+      )
     except requests.RequestException as e:
       logger.error(f"Error updating prompt for guild {guild_id}: {e}")
     except ValueError as e:
-      logger.error(f"Error parsing JSON response while updating prompt for guild {guild_id}: {e}")
-    
+      logger.error(
+        f"Error parsing JSON response while updating prompt for guild {guild_id}: {e}"
+      )
+
     return False
 
   def add_prompt(self, guild_id: str, system_prompt: str) -> bool:
     """
     Add a new system prompt for a given guild ID.
-    
+
     Args:
       guild_id (str): The ID of the guild to add the prompt for.
       system_prompt (str): The system prompt content to add.
-    
+
     Returns:
       bool: True if the addition was successful, False otherwise.
     """
     endpoint = f"http://{self.base_url}/prompt"
     payload = {"guild_id": guild_id, "system_prompt": system_prompt}
-    
+
     try:
       response = requests.post(endpoint, json=payload, timeout=self.timeout)
       if response.status_code == 409:
@@ -107,17 +113,21 @@ class DBService:
         return False
       response.raise_for_status()
       logger.info(f"Successfully added prompt for guild {guild_id}")
-      
+
       return True
     except requests.Timeout:
       logger.error(f"Timeout occurred while adding prompt for guild {guild_id}")
     except requests.ConnectionError:
-      logger.error(f"Connection error occurred while adding prompt for guild {guild_id}")
+      logger.error(
+        f"Connection error occurred while adding prompt for guild {guild_id}"
+      )
     except requests.RequestException as e:
       logger.error(f"Error adding prompt for guild {guild_id}: {e}")
     except ValueError as e:
-      logger.error(f"Error parsing JSON response while adding prompt for guild {guild_id}: {e}")
-    
+      logger.error(
+        f"Error parsing JSON response while adding prompt for guild {guild_id}: {e}"
+      )
+
     return False
 
   def store_message(self, msg_payload: dict) -> Optional[Dict[str, str]]:
@@ -138,34 +148,34 @@ class DBService:
 
     return None
 
-  def get_token_stats(self, guild_id: str, author_id: str, period: str = "daily") -> Optional[list]:
+  def get_token_stats(
+    self, guild_id: str, author_id: str, period: str = "daily"
+  ) -> Optional[list]:
     endpoint = f"http://{self.base_url}/token/stats"
-    params = {
-      "guild_id": guild_id,
-      "author_id": author_id,
-      "period": period
-    }
-    
+    params = {"guild_id": guild_id, "author_id": author_id, "period": period}
+
     try:
       response = requests.get(endpoint, params=params, timeout=self.timeout)
-      
+
       if response.status_code == 404:
         logger.warning(f"No token stats found for user {author_id} in guild {guild_id}")
         return []
-      
+
       response.raise_for_status()
       return response.json()
     except requests.Timeout:
       logger.error(f"Timeout occurred while fetching token stats for user {author_id}")
     except requests.ConnectionError:
-      logger.error(f"Connection error occurred while fetching token stats for user {author_id}")
+      logger.error(
+        f"Connection error occurred while fetching token stats for user {author_id}"
+      )
     except requests.RequestException as e:
       logger.error(f"Error fetching token stats for user {author_id}: {e}")
     except ValueError as e:
       logger.error(f"Error parsing JSON response for token stats: {e}")
-    
+
     return None
-  
+
   def store_token_usage(self, usage: dict) -> Optional[Dict[str, str]]:
     endpoint = f"http://{self.base_url}/token"
     try:

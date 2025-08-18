@@ -15,12 +15,13 @@ hackernews_tool = {
         "limit": {
           "type": "integer",
           "description": "Number of stories to return (default: 20, max: 50)",
-          "default": 20
+          "default": 20,
         }
-      }
-    }
-  }
+      },
+    },
+  },
 }
+
 
 def fetch_top_stories():
   try:
@@ -29,9 +30,8 @@ def fetch_top_stories():
 
     return response.json()
   except requests.RequestException as e:
-    return {
-      "error": f"Failed to fetch top stories: {str(e)}"
-    }
+    return {"error": f"Failed to fetch top stories: {str(e)}"}
+
 
 def fetch_story(story_id):
   try:
@@ -41,15 +41,14 @@ def fetch_story(story_id):
 
     return response.json()
   except requests.RequestException as e:
-    return {
-      "error": f"Failed to fetch story {story_id}: {str(e)}"
-    }
+    return {"error": f"Failed to fetch story {story_id}: {str(e)}"}
+
 
 def get_top_hn_stories(limit=20):
   story_ids = fetch_top_stories()
   if isinstance(story_ids, dict) and "error" in story_ids:
     return story_ids
-  
+
   stories = []
   last_week = int((datetime.now() - timedelta(days=7)).timestamp())
 
@@ -60,18 +59,21 @@ def get_top_hn_stories(limit=20):
     story = fetch_story(story_id)
     if isinstance(story, dict) and "error" not in story:
       if story.get("time", 0) >= last_week and story.get("type") == "story":
-        stories.append({
-          "id": story.get("id"),
-          "title": story.get("title", ""),
-          "url": story.get("url", ""),
-          "score": story.get("score", 0),
-          "by": story.get("by", ""),
-          "time": story.get("time", 0),
-          "descendants": story.get("descendants", 0)
-        })
-  
+        stories.append(
+          {
+            "id": story.get("id"),
+            "title": story.get("title", ""),
+            "url": story.get("url", ""),
+            "score": story.get("score", 0),
+            "by": story.get("by", ""),
+            "time": story.get("time", 0),
+            "descendants": story.get("descendants", 0),
+          }
+        )
+
   stories.sort(key=lambda x: x["score"], reverse=True)
   return stories[:limit]
+
 
 ### Tavily
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
@@ -85,54 +87,54 @@ tavily_search_tool = {
       "properties": {
         "query": {
           "type": "string",
-          "description": "The search query to find information about"
+          "description": "The search query to find information about",
         },
         "max_results": {
           "type": "integer",
           "description": "Maximum number of results to return (default: 5, max: 10)",
-          "default": 5
-        }
+          "default": 5,
+        },
       },
-      "required": ["query"]
-    }
-  }
+      "required": ["query"],
+    },
+  },
 }
+
 
 def search_web(query, max_results=5):
   if not tavily_client:
     return {
       "error": "Tavily API key not configured. Please set TAVILY_API_KEY environment variable."
     }
-  
+
   try:
     max_results = min(max(1, max_results), 10)
     response = tavily_client.search(query, max_results=max_results)
-    
+
     formatted_results = []
     for result in response.get("results", []):
-      formatted_results.append({
-        "title": result.get("title", ""),
-        "url": result.get("url", ""),
-        "content": result.get("content", ""),
-        "score": result.get("score", 0)
-      })
-    
+      formatted_results.append(
+        {
+          "title": result.get("title", ""),
+          "url": result.get("url", ""),
+          "content": result.get("content", ""),
+          "score": result.get("score", 0),
+        }
+      )
+
     return {
       "query": query,
       "results": formatted_results,
-      "total_results": len(formatted_results)
+      "total_results": len(formatted_results),
     }
-    
+
   except Exception as e:
-    return {
-      "error": f"Failed to search web: {str(e)}"
-    }
+    return {"error": f"Failed to search web: {str(e)}"}
+
 
 def get_tavily_usage():
   url = "https://api.tavily.com/usage"
-  headers = {
-    "Authorization": f"Bearer {TAVILY_API_KEY}"
-  }
+  headers = {"Authorization": f"Bearer {TAVILY_API_KEY}"}
 
   response = requests.get(url, headers=headers)
   return response.json()

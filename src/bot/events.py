@@ -16,7 +16,7 @@ from utils.message_utils import (
   get_reply_context,
   send_error_message,
   send_message,
-  send_response
+  send_response,
 )
 
 
@@ -32,7 +32,9 @@ class BotEvents(commands.Cog):
   @commands.Cog.listener()
   async def on_ready(self) -> None:
     logger.info(f"{self.bot.user} has connected to Discord!")
-    self.custom_emojis = { emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis }
+    self.custom_emojis = {
+      emoji.name: emoji for guild in self.bot.guilds for emoji in guild.emojis
+    }
 
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
@@ -50,7 +52,9 @@ class BotEvents(commands.Cog):
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
 
       prompt = prepare_prompt(message)
-      server_id = f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      server_id = (
+        f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
+      )
       self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
@@ -69,12 +73,18 @@ class BotEvents(commands.Cog):
     prompt = self.db_service.fetch_prompt(server_id)
     lore = prompt.get("system_prompt") if prompt else "You are a helpful assistant"
 
-    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5, minutes=30)))
+    now = datetime.datetime.now(
+      datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+    )
     lore += f"\n\nCurrent Time: {now.strftime('%H:%M:%S')} | Day: {now.strftime('%A')}"
     lore += f"\nAvailable emojis: {' '.join(list(self.custom_emojis.keys()))}"
 
     if guild and guild.chunked:
-      online = [f"{m}, aka {m.display_name}" for m in guild.members if not m.bot and m.status != discord.Status.offline]
+      online = [
+        f"{m}, aka {m.display_name}"
+        for m in guild.members
+        if not m.bot and m.status != discord.Status.offline
+      ]
       lore += f"\n\nOnline members: {', '.join(online) if online else 'None'}"
 
     server_lore[server_id] = lore
@@ -101,7 +111,9 @@ class BotEvents(commands.Cog):
       return ""
 
     image_attachments = [
-      att for att in message.attachments if att.content_type and att.content_type.startswith("image")
+      att
+      for att in message.attachments
+      if att.content_type and att.content_type.startswith("image")
     ]
     if not image_attachments:
       return ""
@@ -110,54 +122,74 @@ class BotEvents(commands.Cog):
     analysis = ""
 
     for idx, attachment in enumerate(image_attachments):
-      await send_message(message, f"-# Analyzing image {idx + 1}/{len(image_attachments)} ...")
+      await send_message(
+        message, f"-# Analyzing image {idx + 1}/{len(image_attachments)} ..."
+      )
 
       async with message.channel.typing():
         image_bytes = await attachment.read()
         prompt = f"Analyze this image {idx + 1}. Additional context: {prompt}"
-        result, usage = await to_thread(self.llm_service.chat_completions, image=image_bytes, prompt=prompt)
-      
+        result, usage = await to_thread(
+          self.llm_service.chat_completions, image=image_bytes, prompt=prompt
+        )
+
       if result is not None:
-        analysis += (result + "\n")
+        analysis += result + "\n"
       else:
         logger.warning(f"LLM Service returned None for image analysis {idx + 1}")
         analysis += "Image analysis failed\n"
 
-    self.db_service.store_token_usage({
-      "message_id": str(message.id),
-      "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
-      "author_id": str(message.author.id),
-      "input_tokens": usage.prompt_tokens,
-      "output_tokens": usage.total_tokens
-    })
+    self.db_service.store_token_usage(
+      {
+        "message_id": str(message.id),
+        "guild_id": str(message.guild.id)
+        if message.guild
+        else f"DM_{message.author.id}",
+        "author_id": str(message.author.id),
+        "input_tokens": usage.prompt_tokens,
+        "output_tokens": usage.total_tokens,
+      }
+    )
 
     return analysis.strip()
-  
+
   async def _chat(self, message: discord.Message, prompt: str, server_id: str) -> None:
     self._add_user_context(message, prompt, server_id)
 
-    messages = [{"role": "system", "content": server_lore.get(server_id, "No server lore found!")}] + server_contexts[server_id]
+    messages = [
+      {"role": "system", "content": server_lore.get(server_id, "No server lore found!")}
+    ] + server_contexts[server_id]
 
     async with message.channel.typing():
-      bot_response, usage = await to_thread(self.llm_service.chat_completions, messages=messages)
+      bot_response, usage = await to_thread(
+        self.llm_service.chat_completions, messages=messages
+      )
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
       stickers = await self._fetch_stickers(sticker_ids)
-    
-    self.db_service.store_token_usage({
-      "message_id": str(message.id),
-      "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
-      "author_id": str(message.author.id),
-      "input_tokens": usage.prompt_tokens,
-      "output_tokens": usage.total_tokens
-    })
+
+    self.db_service.store_token_usage(
+      {
+        "message_id": str(message.id),
+        "guild_id": str(message.guild.id)
+        if message.guild
+        else f"DM_{message.author.id}",
+        "author_id": str(message.author.id),
+        "input_tokens": usage.prompt_tokens,
+        "output_tokens": usage.total_tokens,
+      }
+    )
 
     await send_response(message, bot_response, stickers)
     self._add_assistant_context(bot_response, server_id)
     await self._trim_context(server_id)
 
-  def _add_user_context(self, message: discord.Message, prompt: str, server_id: str) -> None:
-    content = f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+  def _add_user_context(
+    self, message: discord.Message, prompt: str, server_id: str
+  ) -> None:
+    content = (
+      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+    )
     server_contexts[server_id].append({"role": "user", "content": content})
 
   def _add_assistant_context(self, response: str, server_id: str) -> None:

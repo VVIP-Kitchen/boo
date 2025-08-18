@@ -273,17 +273,22 @@ def get_reply_context(message: Message) -> str:
     return context
   return ""
 
+
 async def send_error_message(message: Message) -> None:
   try:
     await message.channel.send(
       "I encountered an error while processing your message. Please try again later!",
-      reference=message
+      reference=message,
     )
   except discord.errors.HTTPException:
     logger.error("Failed to send error message")
 
+
 async def send_message(message: Message, response: str) -> None:
-  await message.channel.send(response if len(response) < 1800 else text_to_file(response))
+  await message.channel.send(
+    response if len(response) < 1800 else text_to_file(response)
+  )
+
 
 async def send_response(message: Message, response: str, stickers: list) -> None:
   if len(response) > 1800:
