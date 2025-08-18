@@ -27,17 +27,24 @@ class OpenRouterService:
   def _format_key_status_as_markdown(self, info: dict) -> str:
     # Defensive defaults
     label = info.get("label", "N/A")
-    usd_limit = info.get("limit", 0)
-    usage = info.get("usage", 0)
-    remaining = info.get("limit_remaining", 0)
+    usd_limit   = info.get("limit")
+    usage      = info.get("usage", 0)
+    remaining  = info.get("limit_remaining")
     is_provisioning = info.get("is_provisioning_key", False)
-    is_free = info.get("is_free_tier", False)
+    is_free        = info.get("is_free_tier", False)
     rl = info.get("rate_limit", {"requests": "?", "interval": "?"})
 
-    # Formatting numbers to two decimals
-    usd = lambda x: f"${x:,.4f}"
+    def usd(x):
+      # Format only if it's not None, else show a placeholder
+      if x is None:
+        return "Unlimited"  # or "N/A" if you prefer
+      try:
+        return f"${float(x):,.4f}"
+      except Exception:
+        return "N/A"
+
     embed = [
-      "__**OpenRouter API Key Status**__",
+      "**OpenRouter API Key Status**",
       f"**Key:** `{label}`",
       f"**Provisioning Key:** {'✅' if is_provisioning else '❌'}",
       f"**Free Tier:** {'✅' if is_free else '❌'}",
