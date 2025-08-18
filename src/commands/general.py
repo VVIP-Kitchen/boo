@@ -445,7 +445,7 @@ class GeneralCommands(commands.Cog):
       if success:
         await ctx.send(f"✅ System prompt added successfully for **{guild.name}**!")
       else:
-        await ctx.send("❌ Failed to add system prompt. Please try again later.")
+        await ctx.send("❌ Failed to add system prompt, might not exist. Try '/add_prompt'")
             
     except Exception as e:
       await ctx.send(f"❌ An error occurred while processing the file: {str(e)}")
