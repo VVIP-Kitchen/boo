@@ -54,7 +54,7 @@ services:
       - redis
     build: .
     container_name: boo
-    command: sh -c "python src/main.py"
+    command: uv run src/main.py
     restart: always
     environment:
       - ADMIN_LIST=${ADMIN_LIST}
