@@ -34,7 +34,7 @@ class DBService:
 
       if response.status_code == 404:
         logger.warning(f"No prompt found for guild {guild_id} (404)")
-        return {"system_prompt": None}
+        return {"system_prompt": ""}
 
       response.raise_for_status()
       return response.json()
@@ -56,11 +56,11 @@ class DBService:
     Update the system prompt for a given guild ID.
     
     Args:
-        guild_id (str): The ID of the guild to update the prompt for.
-        system_prompt (str): The new system prompt content.
+      guild_id (str): The ID of the guild to update the prompt for.
+      system_prompt (str): The new system prompt content.
     
     Returns:
-        bool: True if the update was successful, False otherwise.
+      bool: True if the update was successful, False otherwise.
     """
     endpoint = f"http://{self.base_url}/prompt"
     params = {"guild_id": guild_id}
@@ -83,6 +83,40 @@ class DBService:
       logger.error(f"Error updating prompt for guild {guild_id}: {e}")
     except ValueError as e:
       logger.error(f"Error parsing JSON response while updating prompt for guild {guild_id}: {e}")
+    
+    return False
+
+  def add_prompt(self, guild_id: str, system_prompt: str) -> bool:
+    """
+    Add a new system prompt for a given guild ID.
+    
+    Args:
+      guild_id (str): The ID of the guild to add the prompt for.
+      system_prompt (str): The system prompt content to add.
+    
+    Returns:
+      bool: True if the addition was successful, False otherwise.
+    """
+    endpoint = f"http://{self.base_url}/prompt"
+    payload = {"guild_id": guild_id, "system_prompt": system_prompt}
+    
+    try:
+      response = requests.post(endpoint, json=payload, timeout=self.timeout)
+      if response.status_code == 409:
+        logger.warning(f"Prompt already exists for guild {guild_id} (409)")
+        return False
+      response.raise_for_status()
+      logger.info(f"Successfully added prompt for guild {guild_id}")
+      
+      return True
+    except requests.Timeout:
+      logger.error(f"Timeout occurred while adding prompt for guild {guild_id}")
+    except requests.ConnectionError:
+      logger.error(f"Connection error occurred while adding prompt for guild {guild_id}")
+    except requests.RequestException as e:
+      logger.error(f"Error adding prompt for guild {guild_id}: {e}")
+    except ValueError as e:
+      logger.error(f"Error parsing JSON response while adding prompt for guild {guild_id}: {e}")
     
     return False
 
