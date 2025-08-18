@@ -1,7 +1,7 @@
-.venv/
+**/.venv/
 .git/
 .ruff_cache/
-__pycache__/
+**/__pycache__/
 .dockerignore
 Dockerfile
 compose.yml

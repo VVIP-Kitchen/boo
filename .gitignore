@@ -1,5 +1,5 @@
-.env
 **/.venv/
-.ruff_cache/
-__pycache__/
 **/__pycache__/
+.ruff_cache/
+
+.env
