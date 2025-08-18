@@ -1,3 +1,4 @@
+import io
 import random
 import discord
 
@@ -334,38 +335,30 @@ class GeneralCommands(commands.Cog):
 
   @commands.hybrid_command(name="get_prompt", description="Get the current system prompt for this server")
   async def get_system_prompt(self, ctx):
-    """
-    Fetch and display the current system prompt for this guild
-    """
+    """Fetch the current system prompt for this server"""
     await ctx.defer()  # Defer the response to prevent timeout
 
     guild = ctx.guild
     if not guild:
-      return await ctx.send(
-        embed=discord.Embed(
-          title="❌ Error",
-          description="This command can only be used in a server, no DMs",
-          color=0xFF0000,
-        )
-      )
+      return await ctx.send("❌ This command can only be used in a server, no DMs")
 
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
-      desc = result.get("system_prompt") if result else "No system prompt set"
-      chunks = split_text(desc)
-      for i, chunk in enumerate(chunks):
-        embed = discord.Embed(
-          title=f"System Prompt (Part {i + 1}/{len(chunks)})", description=chunk
-        )
-        await ctx.send(embed=embed)
+      system_prompt = result.get("system_prompt") if result else "No system prompt set"
+      
+      markdown_content = f"# System Prompt for {guild.name}\n\n"
+      markdown_content += f"**Server ID:** {guild.id}\n"
+      markdown_content += f"**Generated on:** {discord.utils.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n"
+      markdown_content += "## Prompt Content\n\n"
+      markdown_content += system_prompt
+      
+      file_content = markdown_content.encode('utf-8')
+      filename = f"system_prompt_{guild.id}.md"
+      file = discord.File(fp=io.BytesIO(file_content), filename=filename)
+      
+      await ctx.send(content=f"📄 Here's the system prompt for **{guild.name}**:", file=file)
     except Exception as e:
-      await ctx.send(
-        embed=discord.Embed(
-          title="❌ Error",
-          description=f"Failed to fetch system prompt: {e}",
-          color=0xFF0000,
-        )
-      )
+      await ctx.send(f"❌ Failed to fetch system prompt: {e}")
 
 
 async def setup(bot: commands.Bot) -> None:
