@@ -1,4 +1,4 @@
-# 👻 Boo — the (un)friendly Discord AI bot
+# <img src="./assets/boo.png" alt="Boo" width="40" height="40" style="border-radius:50%; vertical-align:text-top;" /> Boo — the (un)friendly Discord AI bot
 
 Boo is a snark-powered Discord bot that blends LLM chat, image understanding, and handy utilities into a single docker-compose stack. It’s built for discord servers that want a fast, context-aware assistant with guardrails, a tiny admin API, and a smooth UX.
 
