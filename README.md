@@ -1,13 +1,13 @@
-# 👻  Boo – the (un)friendly Discord AI bot  
+# 👻  Boo – the (un)friendly Discord AI bot
 
-Boo is a snark-powered Discord bot that mixes Large-Language-Models, image magic and classic utility commands – all wrapped in a single **docker compose up**.  
+Boo is a snark-powered Discord bot that mixes Large-Language-Models, image magic and classic utility commands – all wrapped in a single **docker compose up**.
 If you need a conversational AI that can:
 
-* chat with natural-language context per-guild  
-* caption / analyse images **and** generate new ones (`/imagine`)  
-* keep short-term chat history in Redis for AI summaries (`/summary`)  
-* store long-term history & editable *system prompts* in Postgres (via a tiny Go API + web UI)  
-* throw GIFs, tell you the weather, ping, bonk & more …  
+* chat with natural-language context per-guild
+* caption / analyse images **and** generate new ones (`/imagine`)
+* keep short-term chat history in Redis for AI summaries (`/summary`)
+* store long-term history & editable *system prompts* in Postgres (via a tiny Go API + web UI)
+* throw GIFs, tell you the weather, ping, bonk & more …
 
 then Boo might haunt your server next! 👻
 
@@ -41,28 +41,28 @@ then Boo might haunt your server next! 👻
 ## ⚙️  Architecture
 
 ![](./assets/architecture.png)
-* **discord-bot** – Python 3.12 container, runs all cogs & commands  
-* **manager** – tiny Go API (CRUD for prompts, write-only endpoint for message archive) + static Tailwind UI  
-* **redis** – short-term cache for the last 15 minutes / 100 msgs per channel  
+* **discord-bot** – Python 3.12 container, runs all cogs & commands
+* **manager** – tiny Go API (CRUD for prompts, write-only endpoint for message archive) + static Tailwind UI
+* **redis** – short-term cache for the last 15 minutes / 100 msgs per channel
 * **postgres** – long-term storage (prompts, full message archive)
 
 ---
 
 ## 🚀  Quick start (Docker)
 
-1. Clone & enter the repo  
+1. Clone & enter the repo
    ```
    git clone https://github.com/VVIP-Kitchen/boo.git
    cd boo
    ```
 
-2. Create a **.env** file (see sample below).  
-3. Run:  
+2. Create a **.env** file (see sample below).
+3. Run:
    ```
    docker compose up -d    # launches postgres, redis, manager, bot
    ```
 
-The bot will appear online once Discord’s gateway is connected.  
+The bot will appear online once Discord’s gateway is connected.
 Visit `http://localhost:8080` to view / edit per-guild system prompts.
 
 ### .env sample
@@ -133,8 +133,8 @@ go run ./cmd/api
 
 ## 🤝  Contributing
 
-1. Fork → feature branch → PR.  
-2. Run `ruff format .` and keep `ruff` happy.  
+1. Fork → feature branch → PR.
+2. Run `ruff format .` and keep `ruff` happy.
 3. Write clear commit messages – Boo will judge you otherwise.
 
 ---
