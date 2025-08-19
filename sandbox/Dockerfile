@@ -4,7 +4,7 @@ RUN apk add --no-cache gcc musl-dev libffi-dev \
     && pip install --no-cache-dir fastapi uvicorn
 
 ### Create non-root user
-RUN useradd -m sandboxuser
+RUN adduser -D sandboxuser
 USER sandboxuser
 
 WORKDIR /app
