@@ -56,6 +56,9 @@ services:
     container_name: boo
     command: uv run src/main.py
     restart: always
+    networks:
+      - default
+      - internal_net
     environment:
       - ADMIN_LIST=${ADMIN_LIST}
       - CONTEXT_LIMIT=${CONTEXT_LIMIT}
@@ -68,7 +71,32 @@ services:
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+  
+  sandbox:
+    build: ./sandbox
+    container_name: sandbox
+    read_only: true
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 64
+    ulimits:
+      nproc: 64           # further enforce process cap
+      nofile: 128         # max open files
+    restart: always
+    networks:
+      - internal_net
+    security_opt:
+      - "no-new-privileges:true"    # prevents privilege escalation
+    cap_drop:             # drop ALL Linux capabilities
+      - ALL
+    tmpfs:                # only writable dir
+      - /tmp:rw,noexec,nosuid,size=64m
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  default: {}
+  internal_net:
+    internal: true
