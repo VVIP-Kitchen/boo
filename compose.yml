@@ -56,6 +56,9 @@ services:
     container_name: boo
     command: uv run src/main.py
     restart: always
+    networks:
+      - default
+      - internal_net
     environment:
       - ADMIN_LIST=${ADMIN_LIST}
       - CONTEXT_LIMIT=${CONTEXT_LIMIT}
@@ -79,11 +82,9 @@ services:
     ulimits:
       nproc: 64           # further enforce process cap
       nofile: 128         # max open files
-    ports:
-      - "127.0.0.1:8081:8081"
     restart: always
-    networks: []          # disable all Docker networks
-    network_mode: none    # block ALL outbound/inbound networking
+    networks:
+      - internal_net
     security_opt:
       - "no-new-privileges:true"    # prevents privilege escalation
     cap_drop:             # drop ALL Linux capabilities
