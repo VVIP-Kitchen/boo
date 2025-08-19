@@ -4,6 +4,7 @@ import discord
 
 from datetime import datetime
 from discord.ext import commands
+from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
 from services.llm_service import LLMService
 from services.tenor_service import TenorService
@@ -56,6 +57,10 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
     """
     await ctx.send("SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
+  
+  @commands.hybrid_command(name="get_model", description="Which is currently powering Boo?")
+  async def get_model(self, ctx: commands.Context) -> None:
+    await ctx.send(f"**Powered by** [{OPENROUTER_MODEL}](<https://openrouter.ai/{OPENROUTER_MODEL}>)")
 
   @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
