@@ -72,11 +72,24 @@ services:
   sandbox:
     build: ./sandbox
     container_name: sandbox
+    read_only: true
     mem_limit: 512m
     cpus: 1.0
+    pids_limit: 64
+    ulimits:
+      nproc: 64           # further enforce process cap
+      nofile: 128         # max open files
     ports:
       - "127.0.0.1:8081:8081"
     restart: always
+    networks: []          # disable all Docker networks
+    network_mode: none    # block ALL outbound/inbound networking
+    security_opt:
+      - "no-new-privileges:true"    # prevents privilege escalation
+    cap_drop:             # drop ALL Linux capabilities
+      - ALL
+    tmpfs:                # only writable dir
+      - /tmp:rw,noexec,nosuid,size=64m
 
 volumes:
   postgres_data:
