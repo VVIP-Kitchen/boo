@@ -1,12 +1,15 @@
 FROM python:3.12-slim
 
-### Install build deps only for packages we need, then cleanup
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc g++ make libffi-dev \
-    && pip install --no-cache-dir fastapi uvicorn numpy pandas matplotlib seaborn scipy sympy scikit-learn pillow \
-    && apt-get purge -y gcc g++ make libffi-dev \
-    && apt-get autoremove -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ gfortran make pkg-config \
+    libopenblas-dev liblapack-dev \
+    libjpeg-dev zlib1g-dev libpng-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    fastapi uvicorn requests \
+    numpy pandas matplotlib seaborn scipy sympy scikit-learn pillow
 
 ### Create non-root user
 RUN useradd -m sandboxuser
