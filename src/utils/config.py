@@ -13,6 +13,7 @@ load_dotenv()
 ist = pytz.timezone("Asia/Kolkata")
 
 ### Environment Variables
+ENVIRONMENT = os.getenv("ENVIRONMENT")
 ADMIN_LIST = os.getenv("ADMIN_LIST")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 TENOR_API_KEY = os.getenv("TENOR_API_KEY")
@@ -38,6 +39,7 @@ except ValueError:
   CONTEXT_LIMIT = 30
 
 for var_name in [
+  "ENVIRONMENT",
   "DISCORD_TOKEN",
   "TENOR_API_KEY",
   "DB_SERVICE_BASE_URL",
