@@ -65,16 +65,17 @@ class BotEvents(commands.Cog):
         att for att in message.attachments
         if att.content_type and att.content_type.startswith("image")
       ]
+      has_imgs = bool(image_attachments)
 
       user_content = [{"type": "text", "text": prompt}]
-      if image_attachments:
+      if has_imgs:
         await send_message(message, f"-# Analyzing {len(image_attachments)} images ... 💭")
         for att in image_attachments:
           img_bytes = await att.read()
           data_uri = self.llm_service._to_base64_data_uri(img_bytes)
           user_content.append({"type": "image_url", "image_url": {"url": data_uri}})
 
-      img_note = f"\n\n[Attached {len(image_attachments)} image(s)]" if image_attachments else ""
+      img_note = f"\n\n[Attached {len(image_attachments)} image(s)]" if has_imgs else ""
       self._add_user_context(message, prompt + img_note, server_id)
 
       messages = (
@@ -86,7 +87,8 @@ class BotEvents(commands.Cog):
       async with message.channel.typing():
         bot_response, usage = await to_thread(
           self.llm_service.chat_completions,
-          messages=messages
+          messages=messages,
+          enable_tools=not has_imgs
         )
         bot_response = replace_emojis(bot_response, self.custom_emojis)
         bot_response, sticker_ids = replace_stickers(bot_response)

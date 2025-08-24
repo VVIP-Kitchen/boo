@@ -36,6 +36,18 @@ class LLMService:
     base64_str = base64.b64encode(image_bytes).decode("utf-8")
     return f"data:image/jpeg;base64,{base64_str}"
 
+  def _has_vision_content(self, messages):
+    try:
+      for m in messages or []:
+        c = m.get("content")
+        if isinstance(c, list):
+          for item in c:
+            if isinstance(item, dict) and item.get("type") == "image_url":
+              return True
+    except Exception:
+      pass
+    return False
+
   def _execute_tool_call(self, tool_call) -> str:
     function_name = tool_call.function.name
 
@@ -88,7 +100,8 @@ class LLMService:
         "temperature": temperature,
       }
 
-      if enable_tools:
+      vision_mode = self._has_vision_content(chat_messages)
+      if enable_tools and not vision_mode:
         tool_definitions = []
         enabled_tools = tools or list(self.available_tools.keys())
 
@@ -99,11 +112,13 @@ class LLMService:
         if tool_definitions:
           api_params["tools"] = tool_definitions
           api_params["tool_choice"] = "auto"
+      else:
+        api_params["tool_choice"] = "none"
 
       response = self.client.chat.completions.create(**api_params)
       message = response.choices[0].message
 
-      if hasattr(message, "tool_calls") and message.tool_calls:
+      if not vision_mode and hasattr(message, "tool_calls") and message.tool_calls:
         for tool_call in message.tool_calls:
           tool_result = self._execute_tool_call(tool_call)
 
