@@ -422,7 +422,8 @@ class GeneralCommands(commands.Cog):
       await ctx.send(f"❌ An error occurred while processing the file: {str(e)}")
 
   @commands.hybrid_command(
-    name="add_prompt", description="Add a system prompt for this server from a file"
+    name="add_prompt",
+    description="Add a system prompt for this server from a file"
   )
   async def add_system_prompt(self, ctx, file: discord.Attachment):
     """
@@ -436,10 +437,17 @@ class GeneralCommands(commands.Cog):
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
 
-    if not ctx.author.guild_permissions.manage_guild:
+    # --- permission gate: manage_guild OR role "boo manager"
+    def has_boo_manager_role(member: discord.Member) -> bool:
+      # case-insensitive name match; replace with role ID check for more robustness
+      return any(r.name.lower() == "boo manager" for r in member.roles)
+
+    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(ctx.author)
+    if not is_manager:
       return await ctx.send(
-        "❌ You need 'Manage Server' permissions to update the system prompt"
+        "❌ You need **Manage Server** or the **boo manager** role to add a system prompt."
       )
+    # --- end gate
 
     try:
       if not file.filename.endswith((".txt", ".md")):
