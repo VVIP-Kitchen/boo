@@ -347,14 +347,7 @@ class GeneralCommands(commands.Cog):
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
       system_prompt = result.get("system_prompt") if result else "No system prompt set"
-
-      markdown_content = f"# System Prompt for {guild.name}\n\n"
-      markdown_content += f"**Server ID:** {guild.id}\n"
-      markdown_content += f"**Generated on:** {discord.utils.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n"
-      markdown_content += "## Prompt Content\n\n"
-      markdown_content += system_prompt
-
-      file_content = markdown_content.encode("utf-8")
+      file_content = system_prompt.encode("utf-8")
       filename = f"system_prompt_{guild.id}.md"
       file = discord.File(fp=io.BytesIO(file_content), filename=filename)
 
