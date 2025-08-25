@@ -380,10 +380,17 @@ class GeneralCommands(commands.Cog):
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
 
-    if not ctx.author.guild_permissions.manage_guild:
+    # --- permission gate: manage_guild OR role "boo manager"
+    def has_boo_manager_role(member: discord.Member) -> bool:
+      # case-insensitive match on role name; consider using role ID for robustness
+      return any(r.name.lower() == "boo manager" for r in member.roles)
+
+    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(ctx.author)
+    if not is_manager:
       return await ctx.send(
-        "❌ You need 'Manage Server' permissions to update the system prompt"
+        "❌ You need **Manage Server** or the **boo manager** role to update the system prompt."
       )
+    # --- end gate
 
     try:
       if not file.filename.endswith((".txt", ".md")):
