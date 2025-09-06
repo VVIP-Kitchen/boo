@@ -3,8 +3,6 @@ name: Deploy Embeddings API to Modal
 on:
   push:
     branches: [main]
-    paths:
-      - 'embeddings/**'
   workflow_dispatch:
 
 jobs:
@@ -24,8 +22,12 @@ jobs:
       uses: astral-sh/setup-uv@v3
 
     - name: Install dependencies
+      working-directory: ./embeddings
       run: |
-        uv sync
+        uv pip install --system modal
+        if [ -f pyproject.toml ]; then
+          uv sync
+        fi
 
     - name: Authenticate with Modal
       env:
