@@ -41,7 +41,7 @@ class BatchEmbeddingResponse(BaseModel):
 
 ### FastAPI setup
 web_app = FastAPI(
-    title="Boo Embeddings API",
+    title="Boo text + image embeddings API",
     description="Text and Image embeddings using CLIP ViT-B-32",
     version="0.1.0"
 )
@@ -53,14 +53,15 @@ def get_model():
     global model
     if model is None:
         print("Loading CLIP model...")
-        model = SentenceTransformer("clip-ViT-B-32", device="cuda" if torch.cuda.is_available() else "cpu")
-        print("CLIP model loaded!")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model = SentenceTransformer("clip-ViT-B-32", device=device)
+        print("CLIP model loaded on device {device}")
     return model
 
 @web_app.get("/")
 async def root():
     return {
-        "message": "CLIP Embeddings API",
+        "message": "Boo text + image embeddings API",
         "model": "clip-ViT-B-32",
         "endpoints": {
             "text": "/embed/text",
@@ -136,9 +137,8 @@ async def embed_image_upload(file: UploadFile = File(...)):
     gpu="T4",
     cpu=2.0,
     memory=2048,
-    timeout=150,
-    scaledown_window=300,  # Keep container warm for 5 minutes
-    startup_timeout=60  # Give enough time for model loading
+    timeout=60,
+    scaledown_window=90  # Keep container warm for 1.5 mins
 )
 
 @modal.asgi_app()
