@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       working-directory: ./embeddings
       run: |
-        uv pip install --system modal
+        uv pip install --system modal torch numpy Pillow torchvision sentence-transformers fastapi[standard]
         if [ -f pyproject.toml ]; then
           uv sync
         fi
