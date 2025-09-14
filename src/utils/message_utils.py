@@ -24,7 +24,7 @@ db_service = DBService()
 
 def should_ignore(message: Message, bot: commands.Bot) -> str | bool:
   ### Ignore bots - this should always return True to ignore
-  if message.author.bot:
+  if message.author.bot and not message.author.id == 1413943952524054550:
     return True
 
   ### Don't ignore DMs
