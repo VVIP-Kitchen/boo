@@ -24,6 +24,9 @@ db_service = DBService()
 
 def should_ignore(message: Message, bot: commands.Bot) -> str | bool:
   ### Ignore bots - this should always return True to ignore
+  if message.author.id == 1413943952524054550:
+    logger.info(f"Booette detected, also bot.user {bot.user}")
+  
   if message.author.bot and not message.author.id == 1413943952524054550:
     return True
 
