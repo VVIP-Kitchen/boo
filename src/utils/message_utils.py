@@ -23,10 +23,7 @@ db_service = DBService()
 
 
 def should_ignore(message: Message, bot: commands.Bot) -> str | bool:
-  ### Ignore bots - this should always return True to ignore
-  if message.author.id == 1413943952524054550:
-    message.channel.send(f"Hi Booette, this is a hardcoded testing message")
-  
+  ### Ignore bots except Booette - this should always return True to ignore
   if message.author.bot and not message.author.id == 1413943952524054550:
     return True
 
