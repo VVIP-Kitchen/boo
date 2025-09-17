@@ -102,7 +102,7 @@ class BotEvents(commands.Cog):
         "output_tokens": usage.total_tokens,
       })
 
-      await send_response(message, bot_response, stickers)
+      await send_response(message, bot_response, stickers, usage)
       self._add_assistant_context(bot_response, server_id)
       await self._trim_context(server_id)
     except Exception as e:
@@ -145,37 +145,6 @@ class BotEvents(commands.Cog):
         ">>> Hi! `'Guys'` is a gendered pronoun. We recommend alternatives like `'folks'`, `'all'`, `'everyone'`, `'y'all'`, `'team'`, `'crew'` etc. We appreciate your help in building an inclusive workplace at VVIP."
       )
       return
-
-  async def _chat(self, message: discord.Message, prompt: str, server_id: str) -> None:
-    self._add_user_context(message, prompt, server_id)
-
-    messages = [
-      {"role": "system", "content": server_lore.get(server_id, "No server lore found!")}
-    ] + server_contexts[server_id]
-
-    async with message.channel.typing():
-      bot_response, usage = await to_thread(
-        self.llm_service.chat_completions, messages=messages
-      )
-      bot_response = replace_emojis(bot_response, self.custom_emojis)
-      bot_response, sticker_ids = replace_stickers(bot_response)
-      stickers = await self._fetch_stickers(sticker_ids)
-
-    self.db_service.store_token_usage(
-      {
-        "message_id": str(message.id),
-        "guild_id": str(message.guild.id)
-        if message.guild
-        else f"DM_{message.author.id}",
-        "author_id": str(message.author.id),
-        "input_tokens": usage.prompt_tokens,
-        "output_tokens": usage.total_tokens,
-      }
-    )
-
-    await send_response(message, bot_response, stickers)
-    self._add_assistant_context(bot_response, server_id)
-    await self._trim_context(server_id)
 
   def _add_user_context(
     self, message: discord.Message, prompt: str, server_id: str
