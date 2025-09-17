@@ -291,7 +291,7 @@ async def send_message(message: Message, response: str) -> None:
 
 
 async def send_response(message: Message, response: str, stickers: list, usage) -> None:
-  response = response + f"\n\n-# || Output tokens: {str(usage.completion_tokens)} ||"
+  response = response + f"\n-# {str(usage.completion_tokens)} tokens."
 
   if len(response) > 1800:
     await message.channel.send(file=text_to_file(response))
