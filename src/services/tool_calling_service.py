@@ -139,6 +139,7 @@ def get_tavily_usage():
   response = requests.get(url, headers=headers)
   return response.json()
 
+
 ### Code running sandbox
 sandbox_tool = {
   "type": "function",
@@ -149,16 +150,23 @@ sandbox_tool = {
       "type": "object",
       "properties": {
         "code": {"type": "string", "description": "Python code to execute"},
-        "timeout": {"type": "integer", "description": "Execution timeout (secs, max=10)", "default": 5}
+        "timeout": {
+          "type": "integer",
+          "description": "Execution timeout (secs, max=10)",
+          "default": 5,
+        },
       },
-      "required": ["code"]
+      "required": ["code"],
     },
   },
 }
 
+
 def run_code(code: str, timeout: int = 5):
   try:
-    resp = requests.post("http://sandbox:8081/run", json={"code": code, "timeout": timeout})
+    resp = requests.post(
+      "http://sandbox:8081/run", json={"code": code, "timeout": timeout}
+    )
     return resp.json()
   except Exception as e:
     return {"error": f"Sandbox service unavailable: {str(e)}"}

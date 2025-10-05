@@ -290,7 +290,9 @@ async def send_message(message: Message, response: str) -> None:
   )
 
 
-async def send_response(message: Message, response: str, stickers: list, _usage) -> None:
+async def send_response(
+  message: Message, response: str, stickers: list, _usage
+) -> None:
   if len(response) > 1800:
     await message.channel.send(file=text_to_file(response))
   else:

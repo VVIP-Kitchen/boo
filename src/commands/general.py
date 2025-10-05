@@ -1,9 +1,12 @@
 import io
 import random
+import asyncio
 import discord
 
 from datetime import datetime
 from discord.ext import commands
+from discord.ext import voice_recv
+from discord.ext.voice_recv import AudioSink
 from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
 from services.llm_service import LLMService
@@ -15,8 +18,37 @@ from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
 
 
-def split_text(text, max_length=4096):
-  return [text[i : i + max_length] for i in range(0, len(text), max_length)]
+class PcmFanoutSink(voice_recv.AudioSink):
+  def __init__(self, loop: asyncio.AbstractEventLoop, queue: asyncio.Queue):
+    super().__init__()
+    self.loop = loop
+    self.queue = queue
+    self._frame_counter = 0
+
+  def wants_opus(self) -> bool:
+    return False  # we want decoded PCM
+
+  def write(self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData):
+    # user can be None until SSRC is mapped; that's fine
+    if not data.pcm:
+      return
+
+    self._frame_counter += 1
+    if self._frame_counter % 50 == 0: # ~1s of audio (20ms/frame => 50 frames)
+      print(f"[voice] ~{self._frame_counter/50:.1f}s captured")
+
+    pkt = getattr(data, "packet", None)  # raw RTP packet
+    ts = getattr(pkt, "timestamp", None)
+    seq = getattr(pkt, "sequence", None)
+    # hand off safely to the asyncio loop
+    self.loop.call_soon_threadsafe(self.queue.put_nowait, (user, data.pcm, ts, seq))
+
+  @AudioSink.listener()
+  def on_voice_member_speaking_state(self, member: discord.Member, ssrc: int, state: int):
+    print(f"[voice] speaking_state: {member} ({ssrc}) -> {state}")  # state '1' is speaking
+
+  def cleanup(self):
+    pass
 
 
 class GeneralCommands(commands.Cog):
@@ -39,6 +71,80 @@ class GeneralCommands(commands.Cog):
     self.weather_service = WeatherService()
     self.openrouter_service = OpenRouterService()
 
+    # a simple queue you can consume elsewhere (e.g., a task that streams to your voice LLM)
+    self.voice_queue: asyncio.Queue[tuple[discord.Member|None, bytes, int|None, int|None]] = asyncio.Queue()
+    self._listening_guild_ids: set[int] = set()
+
+  def _on_pcm(self, user, pcm_bytes: bytes, ts: float):
+    try:
+      self.voice_queue.put_nowait((user, pcm_bytes, ts))
+    except asyncio.QueueFull:
+      pass
+
+  @commands.hybrid_command(
+    name="boo-join",
+    description="Join the voice channel named 'boo' and start capturing.",
+  )
+  async def boo_join(self, ctx: commands.Context):
+    await ctx.defer(ephemeral=True)
+
+    if not ctx.guild:
+      return await ctx.reply("Use this in a server.")
+
+    # find a voice or stage channel named 'boo'
+    def _is_boo(c: discord.abc.GuildChannel):
+      return (
+        isinstance(c, (discord.VoiceChannel, discord.StageChannel))
+        and c.name.lower() == "boo"
+      )
+
+    channel = discord.utils.find(_is_boo, ctx.guild.channels)
+    if channel is None:
+      return await ctx.reply(
+        "Couldn't find a voice/stage channel named **boo** in this server."
+      )
+
+    # already connected?
+    if ctx.guild.voice_client and ctx.guild.voice_client.is_connected():
+      if ctx.guild.voice_client.channel.id == channel.id:
+        return await ctx.reply("I'm already in **boo** and listening.")
+      # move if in another VC
+      await ctx.guild.voice_client.move_to(channel)
+    else:
+      # IMPORTANT: use the receive-capable client
+      vc = await channel.connect(cls=voice_recv.VoiceRecvClient)  # <- key line
+      # start listening with our sink
+      sink = PcmFanoutSink(self.bot.loop, self.voice_queue)
+      vc.listen(sink)  # start receiving into sink
+
+    self._listening_guild_ids.add(ctx.guild.id)
+    await ctx.reply("Joined **boo** and started capturing.")
+
+  # ---- leave and stop capture ----
+  @commands.hybrid_command(
+    name="boo-leave", description="Leave 'boo' and stop capturing."
+  )
+  async def boo_leave(self, ctx: commands.Context):
+    if ctx.guild and ctx.guild.voice_client:
+      await ctx.guild.voice_client.disconnect(force=True)
+      self._listening_guild_ids.discard(ctx.guild.id)
+      await ctx.reply("Left **boo**. Capture stopped.")
+    else:
+      await ctx.reply("I'm not in a voice channel.")
+
+  # optional: lightweight consumer demonstrating how you'd read frames
+  @commands.command(name="boo-debug-drain")
+  async def boo_debug_drain(self, ctx: commands.Context, frames: int = 50):
+    """Pull some frames from the queue just to prove it’s flowing."""
+    grabbed = 0
+    while grabbed < frames:
+      try:
+        user, pcm, ts = await asyncio.wait_for(self.voice_queue.get(), timeout=5)
+        grabbed += 1
+      except asyncio.TimeoutError:
+        break
+    await ctx.reply(f"Drained {grabbed} frames from the capture queue.")
+
   @commands.hybrid_command(name="bonk", description="Bonks a user")
   async def bonk(self, ctx: commands.Context, member: discord.Member) -> None:
     async with ctx.typing():
@@ -57,10 +163,14 @@ class GeneralCommands(commands.Cog):
       ctx (commands.Context): The invocation context.
     """
     await ctx.send("SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
-  
-  @commands.hybrid_command(name="get_model", description="Which is currently powering Boo?")
+
+  @commands.hybrid_command(
+    name="get_model", description="Which is currently powering Boo?"
+  )
   async def get_model(self, ctx: commands.Context) -> None:
-    await ctx.send(f"**Powered by** [{OPENROUTER_MODEL}](<https://openrouter.ai/{OPENROUTER_MODEL}>)")
+    await ctx.send(
+      f"**Powered by** [{OPENROUTER_MODEL}](<https://openrouter.ai/{OPENROUTER_MODEL}>)"
+    )
 
   @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
@@ -378,7 +488,9 @@ class GeneralCommands(commands.Cog):
       # case-insensitive match on role name; consider using role ID for robustness
       return any(r.name.lower() == "boo manager" for r in member.roles)
 
-    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(ctx.author)
+    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
+      ctx.author
+    )
     if not is_manager:
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to update the system prompt."
@@ -415,8 +527,7 @@ class GeneralCommands(commands.Cog):
       await ctx.send(f"❌ An error occurred while processing the file: {str(e)}")
 
   @commands.hybrid_command(
-    name="add_prompt",
-    description="Add a system prompt for this server from a file"
+    name="add_prompt", description="Add a system prompt for this server from a file"
   )
   async def add_system_prompt(self, ctx, file: discord.Attachment):
     """
@@ -435,7 +546,9 @@ class GeneralCommands(commands.Cog):
       # case-insensitive name match; replace with role ID check for more robustness
       return any(r.name.lower() == "boo manager" for r in member.roles)
 
-    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(ctx.author)
+    is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
+      ctx.author
+    )
     if not is_manager:
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to add a system prompt."

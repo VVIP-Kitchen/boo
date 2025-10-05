@@ -7,9 +7,12 @@ from typing import List, Dict, Union, Optional
 from utils.logger import logger
 from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 from services.tool_calling_service import (
-  hackernews_tool, get_top_hn_stories,
-  tavily_search_tool, search_web,
-  sandbox_tool, run_code
+  hackernews_tool,
+  get_top_hn_stories,
+  tavily_search_tool,
+  search_web,
+  sandbox_tool,
+  run_code,
 )
 
 
@@ -25,10 +28,7 @@ class LLMService:
         "function": get_top_hn_stories,
       },
       "search_web": {"tool_definition": tavily_search_tool, "function": search_web},
-      "run_code": {
-        "tool_definition": sandbox_tool,
-        "function": run_code
-      }
+      "run_code": {"tool_definition": sandbox_tool, "function": run_code},
     }
 
   def _to_base64_data_uri(self, image: Union[io.BytesIO, bytes]) -> str:

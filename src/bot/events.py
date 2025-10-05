@@ -61,14 +61,17 @@ class BotEvents(commands.Cog):
         return
 
       image_attachments = [
-        att for att in message.attachments
+        att
+        for att in message.attachments
         if att.content_type and att.content_type.startswith("image")
       ]
       has_imgs = bool(image_attachments)
 
       user_content = [{"type": "text", "text": prompt}]
       if has_imgs:
-        await send_message(message, f"-# Analyzing {len(image_attachments)} images ... 💭")
+        await send_message(
+          message, f"-# Analyzing {len(image_attachments)} images ... 💭"
+        )
         for att in image_attachments:
           img_bytes = await att.read()
           data_uri = self.llm_service._to_base64_data_uri(img_bytes)
@@ -78,7 +81,12 @@ class BotEvents(commands.Cog):
       self._add_user_context(message, prompt + img_note, server_id)
 
       messages = (
-        [{"role": "system", "content": server_lore.get(server_id, "No server lore found!")}]
+        [
+          {
+            "role": "system",
+            "content": server_lore.get(server_id, "No server lore found!"),
+          }
+        ]
         + server_contexts[server_id]
         + [{"role": "user", "content": user_content}]
       )
@@ -87,19 +95,23 @@ class BotEvents(commands.Cog):
         bot_response, usage = await to_thread(
           self.llm_service.chat_completions,
           messages=messages,
-          enable_tools=not has_imgs
+          enable_tools=not has_imgs,
         )
         bot_response = replace_emojis(bot_response, self.custom_emojis)
         bot_response, sticker_ids = replace_stickers(bot_response)
         stickers = await self._fetch_stickers(sticker_ids)
 
-      self.db_service.store_token_usage({
-        "message_id": str(message.id),
-        "guild_id": str(message.guild.id) if message.guild else f"DM_{message.author.id}",
-        "author_id": str(message.author.id),
-        "input_tokens": usage.prompt_tokens,
-        "output_tokens": usage.total_tokens,
-      })
+      self.db_service.store_token_usage(
+        {
+          "message_id": str(message.id),
+          "guild_id": str(message.guild.id)
+          if message.guild
+          else f"DM_{message.author.id}",
+          "author_id": str(message.author.id),
+          "input_tokens": usage.prompt_tokens,
+          "output_tokens": usage.total_tokens,
+        }
+      )
 
       await send_response(message, bot_response, stickers, usage)
       self._add_assistant_context(bot_response, server_id)
