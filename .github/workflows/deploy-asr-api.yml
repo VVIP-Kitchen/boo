@@ -57,7 +57,7 @@ jobs:
       if: success()
       run: |
         echo "✅ Deployment successful!"
-        echo "🔗 Your API is live at: https://kashifulhaque--boo-asr-api-fastapi-app.modal.run/docs"
+        echo "🔗 Your API is live at: https://kashifulhaque--boo-whisper-api-fastapi-app.modal.run/docs"
 
     - name: Notify failure
       if: failure()

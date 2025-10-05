@@ -174,14 +174,17 @@ import modal  # noqa: E402
 app = modal.App("boo-whisper-api")
 
 image = (
-  modal.Image.debian_slim()
-  .pip_install(
-    "fastapi[standard]",
-    "numpy",
-    "faster-whisper==1.0.3",
-  )
-  # Optional: pin ctranslate2 or set environment vars here
+    # CUDA 12 + cuDNN 9 runtime → satisfies CTranslate2 GPU wheel
+    modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04")
+    .apt_install("python3-pip", "ffmpeg")
+    .pip_install(
+        "fastapi[standard]",
+        "numpy",
+        "faster-whisper==1.0.3",
+        "ctranslate2==4.5.0", # optional: pin ctranslate2 if you want exact control
+    )
 )
+
 
 
 @app.function(
@@ -189,7 +192,7 @@ image = (
   gpu=os.getenv("MODAL_GPU", "T4"),  # e.g., "any", "t4", "a10g"
   timeout=int(os.getenv("MODAL_TIMEOUT", "180")),
   memory=int(os.getenv("MODAL_MEMORY", "2048")),
-  concurrency_limit=int(os.getenv("MODAL_CONCURRENCY", "2")),
+  max_containers=int(os.getenv("MODAL_CONCURRENCY", "2")),
 )
 @modal.asgi_app()
 def fastapi_app():
