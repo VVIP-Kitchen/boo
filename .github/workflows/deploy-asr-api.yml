@@ -1,4 +1,4 @@
-name: Deploy Embeddings API to Modal
+name: Deploy ASR API to Modal
 
 on:
   push:
@@ -22,9 +22,9 @@ jobs:
       uses: astral-sh/setup-uv@v3
 
     - name: Install dependencies
-      working-directory: ./modal/embeddings
+      working-directory: ./modal/asr
       run: |
-        uv pip install --system modal torch numpy Pillow torchvision sentence-transformers fastapi[standard]
+        uv pip install --system modal numpy fastapi[standard] faster-whisper==1.0.3
         if [ -f pyproject.toml ]; then
           uv sync
         fi
@@ -37,13 +37,13 @@ jobs:
         modal token set --token-id $MODAL_TOKEN_ID --token-secret $MODAL_TOKEN_SECRET
 
     - name: Deploy to Modal
-      working-directory: ./modal/embeddings
+      working-directory: ./modal/asr
       run: |
-        echo "🚀 Deploying embeddings API to Modal..."
+        echo "🚀 Deploying ASR API to Modal..."
         modal deploy main.py
 
     - name: Get deployment URL
-      working-directory: ./modal/embeddings
+      working-directory: ./modal/asr
       run: |
         echo "📡 Getting deployment URL..."
         modal app list
@@ -57,7 +57,7 @@ jobs:
       if: success()
       run: |
         echo "✅ Deployment successful!"
-        echo "🔗 Your API is live at: https://kashifulhaque--boo-embeddings-api-fastapi-app.modal.run/docs"
+        echo "🔗 Your API is live at: https://kashifulhaque--boo-asr-api-fastapi-app.modal.run/docs"
 
     - name: Notify failure
       if: failure()
