@@ -4,15 +4,14 @@ import asyncio
 import discord
 import webrtcvad
 import numpy as np
-
 from datetime import datetime
 from discord.ext import commands
 from discord.ext import voice_recv
 from collections import defaultdict
 from scipy.signal import resample_poly
-from faster_whisper import WhisperModel
 from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
+from services.asr_service import RemoteASR
 from services.llm_service import LLMService
 from discord.ext.voice_recv import AudioSink
 from services.tenor_service import TenorService
@@ -21,7 +20,6 @@ from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
 from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
-
 
 WARMUP_BYTES_48K_STEREO = int(0.30 * 48000 * 2 * 2)  # ~300ms per speaker
 
@@ -41,7 +39,6 @@ class PcmFanoutSink(voice_recv.AudioSink):
     # user can be None until SSRC is mapped; that's fine
     if not data.pcm:
       return
-
     pkt = getattr(data, "packet", None)  # raw RTP packet
     ts = getattr(pkt, "timestamp", None)
     self.loop.call_soon_threadsafe(
@@ -63,11 +60,25 @@ class PcmFanoutSink(voice_recv.AudioSink):
 
 
 class VoiceConsumer:
-  def __init__(self, queue: asyncio.Queue, model_size="small", device="auto"):
-    compute = "int8" if device == "auto" else "float16"
-    self.model = WhisperModel(
-      model_size, device=("cuda" if device == "cuda" else "auto"), compute_type=compute
-    )
+  """Consumes voice data, transcribes it, and generates LLM responses"""
+
+  def __init__(
+    self,
+    queue: asyncio.Queue,
+    asr_base_url: str,
+    llm_service: LLMService,
+    bot: commands.Bot,
+    hmac_secret: str | None = None,
+  ):
+    self._conversation_history = defaultdict(list)
+    self._transcript_buffer = defaultdict(list)  # user_id -> list of recent transcripts
+    self._last_response_time = defaultdict(float)  # user_id -> timestamp of last LLM response
+    self._buffer_max_size = 3  # Keep last 3 transcriptions
+    self._response_cooldown = 5.0  # Minimum 5 seconds between LLM responses per user
+
+    self.asr_client = RemoteASR(asr_base_url, hmac_secret=hmac_secret, timeout_s=10.0)
+    self.llm_service = llm_service
+    self.bot = bot
     self.queue = queue
     self.buffers = defaultdict(bytearray)  # uid -> PCM(48k stereo, s16le)
     self.vad = webrtcvad.Vad(2)
@@ -75,9 +86,11 @@ class VoiceConsumer:
       int
     )  # uid -> accumulated bytes for coarse partials
     self._warmup = defaultdict(int)  # uid -> bytes left to drop
+    self._conversation_history = defaultdict(list)  # user_id -> list of messages
 
   @staticmethod
   def stereo48k_to_mono16k(pcm48_stereo: bytes) -> bytes:
+    """Convert 48kHz stereo PCM to 16kHz mono PCM"""
     s = np.frombuffer(pcm48_stereo, dtype=np.int16)
     if s.size == 0:
       return b""
@@ -86,25 +99,110 @@ class VoiceConsumer:
     return mono16.tobytes()
 
   def vad_keep_voiced(self, mono16_bytes: bytes) -> bytes:
+    """Filter out non-speech frames using VAD"""
     # 20ms @ 16k -> 640 bytes
     frames = [mono16_bytes[i : i + 640] for i in range(0, len(mono16_bytes), 640)]
     voiced = [f for f in frames if len(f) == 640 and self.vad.is_speech(f, 16000)]
     return b"".join(voiced)
 
-  def transcribe(self, mono16_bytes: bytes) -> str:
+  async def transcribe(self, mono16_bytes: bytes) -> str:
+    """Send audio to remote ASR service for transcription"""
     if not mono16_bytes:
       return ""
-    audio = np.frombuffer(mono16_bytes, dtype=np.int16).astype(np.float32) / 32768.0
-    segments, _ = self.model.transcribe(
-      audio,
-      language="en",  # set None to auto-detect
-      vad_filter=True,  # Whisper's internal VAD too
-      beam_size=1,
-    )
-    return " ".join(s.text.strip() for s in segments).strip()
+
+    try:
+      result = await self.asr_client.transcribe_pcm16(mono16_bytes, language="en")
+      text = result.get("text", "").strip()
+
+      # Log additional metadata from the response
+      if text:
+        duration = result.get("duration_s", 0)
+        asr_ms = result.get("asr_ms", 0)
+        model_info = result.get("model", {})
+        print(
+          f"[boo|ASR] Transcription took {asr_ms}ms for {duration:.2f}s audio using {model_info.get('name', 'unknown')} on {model_info.get('device', 'unknown')}"
+        )
+
+      return text
+    except Exception as e:
+      print(f"[boo|ASR] ERROR: Failed to transcribe audio: {e}")
+      return ""
+
+  async def generate_llm_response(
+    self, user_text: str, user_id: int, user_name: str
+  ) -> str:
+    """Generate LLM response for the transcribed text"""
+    try:
+      # Build conversation context
+      self._conversation_history[user_id].append({"role": "user", "content": user_text})
+
+      # Keep only last 10 messages for context window management
+      if len(self._conversation_history[user_id]) > 10:
+        self._conversation_history[user_id] = self._conversation_history[user_id][-10:]
+
+      # Create system message for voice chat context
+      messages = [
+        {
+          "role": "system",
+          "content": f"You are Boo, a friendly and helpful voice assistant in a Discord voice chat. Keep responses concise and conversational (1-3 sentences max). The user speaking is {user_name}.",
+        }
+      ]
+      messages.extend(self._conversation_history[user_id])
+
+      # Generate response using LLM service (synchronous, so use to_thread)
+      response, usage = await to_thread(
+        self.llm_service.chat_completions,
+        messages=messages,
+        temperature=0.7,
+        max_tokens=150,
+        enable_tools=False,  # Disable tools for faster voice responses
+      )
+
+      # Add assistant response to history
+      self._conversation_history[user_id].append(
+        {"role": "assistant", "content": response}
+      )
+
+      print(
+        f"[boo|LLM] Generated response for {user_name} (tokens: {usage.total_tokens})"
+      )
+      return response
+
+    except Exception as e:
+      print(f"[boo|LLM] ERROR: Failed to generate response: {e}")
+      return "Sorry, I couldn't process that right now."
+
+  async def send_to_voice_text_channel(self, user: discord.Member, text: str):
+    """Send LLM response to the voice channel's embedded text channel"""
+    try:
+      if not user.voice or not user.voice.channel:
+        print(f"[boo|Discord] User {user.display_name} not in voice channel")
+        return
+
+      voice_channel = user.voice.channel
+
+      # Check if it's a voice channel
+      if not isinstance(voice_channel, discord.VoiceChannel):
+        print(f"[boo|Discord] Not a voice channel")
+        return
+
+      # Check permissions
+      permissions = voice_channel.permissions_for(user.guild.me)
+      if not permissions.send_messages:
+        print(f"[boo|Discord] No permission to send messages in this voice channel")
+        return
+
+      # Send to embedded text-in-voice channel
+      await voice_channel.send(f"{user.mention} {text}")
+      print(f"[boo|Discord] Sent response to '{voice_channel.name}' chat")
+
+    except Exception as e:
+      print(f"[boo|Discord] ERROR: {e}")
 
   async def run(self):
+    """Main consumer loop processing audio chunks"""
     SECOND_48K_STEREO = 48000 * 2 * 2  # 192000 bytes ~= 1s
+
     while True:
       item = await self.queue.get()
       typ = item["type"]
@@ -123,8 +221,9 @@ class VoiceConsumer:
           cut = min(drop, len(b))
           b = b[cut:]
           self._warmup[uid] = drop - cut
-          if not b:
-            continue  # still in warm-up—skip
+        if not b:
+          continue  # still in warm-up—skip
+
         # buffer & maybe partial flush
         self.buffers[uid] += b
         self._fallback_ticks[uid] += len(b)
@@ -137,21 +236,67 @@ class VoiceConsumer:
         self._fallback_ticks[uid] = 0
 
   async def _flush_user(self, uid: int, user, partial: bool = False) -> None:
+    """Process buffered audio for a user, transcribe, and generate response"""
     buf = self.buffers[uid]
     if not buf:
       return
+
     data = bytes(buf)
     self.buffers[uid].clear()
 
+    # Convert and filter audio
     mono16 = self.stereo48k_to_mono16k(data)
     voiced = self.vad_keep_voiced(mono16)
     chosen = voiced if len(voiced) >= int(16000 * 2 * 0.3) else mono16
 
-    text = self.transcribe(chosen)
+    # Transcribe using remote ASR
+    text = await self.transcribe(chosen)
+
     if text:
       name = getattr(user, "display_name", "unknown")
       tag = "(partial)" if partial else "(final)"
       print(f"[boo|ASR] {name} {tag}: {text}")
+
+      # Only generate response for final (complete) utterances
+      if isinstance(user, discord.Member):
+        # Add to transcript buffer
+        self._transcript_buffer[uid].append(text)
+
+        # Keep only last N transcriptions
+        if len(self._transcript_buffer[uid]) > self._buffer_max_size:
+          self._transcript_buffer[uid] = self._transcript_buffer[uid][-self._buffer_max_size:]
+
+        # Check if we should generate a response (cooldown-based)
+        current_time = asyncio.get_event_loop().time()
+        last_response = self._last_response_time.get(uid, 0)
+        time_since_last = current_time - last_response
+
+        # Generate response if:
+        # 1. Enough time has passed since last response (cooldown)
+        # 2. We have at least 2 transcriptions in buffer (some context)
+        should_respond = (
+          time_since_last >= self._response_cooldown and
+          len(self._transcript_buffer[uid]) >= 2
+        )
+
+        if should_respond:
+          # Combine buffered transcriptions into one context
+          combined_text = " ".join(self._transcript_buffer[uid])
+
+          # Generate LLM response
+          response = await self.generate_llm_response(combined_text, uid, name)
+          print(f"[boo|LLM] Response for {name}: {response}")
+
+          # Send response to voice channel's text channel
+          await self.send_to_voice_text_channel(user, response)
+
+          # Update last response time and clear buffer
+          self._last_response_time[uid] = current_time
+          self._transcript_buffer[uid] = []
+
+  async def close(self):
+    """Clean up the ASR client"""
+    await self.asr_client.close()
 
 
 class GeneralCommands(commands.Cog):
@@ -164,9 +309,8 @@ class GeneralCommands(commands.Cog):
     Initialize the GeneralCommands cog.
 
     Args:
-      bot (commands.Bot): The Discord bot instance.
+        bot (commands.Bot): The Discord bot instance.
     """
-
     self.bot = bot
     self.db_service = DBService()
     self.llm_service = LLMService()
@@ -192,7 +336,6 @@ class GeneralCommands(commands.Cog):
   )
   async def boo_join(self, ctx: commands.Context):
     await ctx.defer(ephemeral=True)
-
     if not ctx.guild:
       return await ctx.reply("Use this in a server.")
 
@@ -218,19 +361,33 @@ class GeneralCommands(commands.Cog):
     else:
       # IMPORTANT: use the receive-capable client
       vc = await channel.connect(cls=voice_recv.VoiceRecvClient)  # <- key line
+
       # start listening with our sink
       sink = PcmFanoutSink(self.bot.loop, self.voice_queue)
       vc.listen(sink)  # start receiving into sink
 
     if not hasattr(self.bot, "_voice_consumer_started"):
       self.bot._voice_consumer_started = True
+
+      # Initialize the remote ASR consumer with LLM integration
+      # Update the URL to match your Modal endpoint
+      asr_url = "https://kashifulhaque--boo-whisper-api-fastapi-app.modal.run"
       consumer = VoiceConsumer(
-        self.voice_queue, model_size="base", device="auto"
-      )  # "base" for better, "tiny" for faster
+        self.voice_queue,
+        asr_base_url=asr_url,
+        llm_service=self.llm_service,
+        bot=self.bot,
+        hmac_secret=None,  # Set your HMAC secret if configured on the server
+      )
+
+      # Store consumer reference for cleanup
+      self.bot._voice_consumer = consumer
       self.bot.loop.create_task(consumer.run())
 
     self._listening_guild_ids.add(ctx.guild.id)
-    await ctx.reply("Joined **boo** and started capturing.")
+    await ctx.reply(
+      "Joined **boo** and started capturing with remote ASR + LLM responses."
+    )
 
   # ---- leave and stop capture ----
   @commands.hybrid_command(
@@ -240,6 +397,14 @@ class GeneralCommands(commands.Cog):
     if ctx.guild and ctx.guild.voice_client:
       await ctx.guild.voice_client.disconnect(force=True)
       self._listening_guild_ids.discard(ctx.guild.id)
+
+      # Clean up ASR client if it exists
+      if hasattr(self.bot, "_voice_consumer"):
+        try:
+          await self.bot._voice_consumer.close()
+        except Exception as e:
+          print(f"[boo|ASR] Error closing ASR client: {e}")
+
       await ctx.reply("Left **boo**. Capture stopped.")
     else:
       await ctx.reply("I'm not in a voice channel.")
@@ -247,7 +412,7 @@ class GeneralCommands(commands.Cog):
   # optional: lightweight consumer demonstrating how you'd read frames
   @commands.command(name="boo-debug-drain")
   async def boo_debug_drain(self, ctx: commands.Context, frames: int = 50):
-    """Pull some frames from the queue just to prove it’s flowing."""
+    """Pull some frames from the queue just to prove it's flowing."""
     grabbed = 0
     while grabbed < frames:
       try:
@@ -269,9 +434,7 @@ class GeneralCommands(commands.Cog):
     name="get_model", description="Which is currently powering Boo?"
   )
   async def get_model(self, ctx: commands.Context) -> None:
-    await ctx.send(
-      f"**Powered by** [{OPENROUTER_MODEL}](<https://openrouter.ai/{OPENROUTER_MODEL}>)"
-    )
+    await ctx.send(f"**Powered by** [{OPENROUTER_MODEL}]()")
 
   @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
@@ -279,8 +442,8 @@ class GeneralCommands(commands.Cog):
     Get the weather for a location.
 
     Args:
-      ctx (commands.Context): The invocation context.
-      location (str): The location for which to get the weather.
+        ctx (commands.Context): The invocation context.
+        location (str): The location for which to get the weather.
     """
     location = location.strip()
     if ctx.interaction:
@@ -351,6 +514,7 @@ class GeneralCommands(commands.Cog):
     self, ctx: commands.Context, user: discord.Member = None, period: str = "daily"
   ) -> None:
     await ctx.defer()
+
     guild = ctx.guild
     if not guild:
       embed = discord.Embed(
@@ -361,6 +525,7 @@ class GeneralCommands(commands.Cog):
       return await ctx.send(embed=embed)
 
     target_user = user or ctx.author
+
     valid_periods = ["daily", "weekly", "monthly", "yearly"]
     if period.lower() not in valid_periods:
       embed = discord.Embed(
@@ -407,25 +572,21 @@ class GeneralCommands(commands.Cog):
         value=f"**Total:** {total_input:,}\n**Average:** {avg_input:.1f} per message",
         inline=True,
       )
-
       embed.add_field(
         name="📤 Output Tokens",
         value=f"**Total:** {total_output:,}\n**Average:** {avg_output:.1f} per message",
         inline=True,
       )
-
       embed.add_field(
         name="🔢 Combined",
         value=f"**Total:** {total_tokens:,}\n**Average:** {avg_total:.1f} per message",
         inline=True,
       )
-
       embed.add_field(
         name="💬 Messages",
         value=f"{total_messages:,}",
         inline=True,
       )
-
       embed.add_field(
         name="📅 Period",
         value=period.capitalize(),
@@ -462,6 +623,7 @@ class GeneralCommands(commands.Cog):
       )
 
       await ctx.send(embed=embed)
+
     except Exception as e:
       embed = discord.Embed(
         title="❌ Error",
@@ -477,7 +639,6 @@ class GeneralCommands(commands.Cog):
     """
     Generate a summary of recent messages from Redis for the current channel
     """
-
     await ctx.defer()  # Defer to avoid timeout
 
     try:
@@ -558,6 +719,7 @@ class GeneralCommands(commands.Cog):
     try:
       result = self.db_service.fetch_prompt(str(guild.id))
       system_prompt = result.get("system_prompt") if result else "No system prompt set"
+
       file_content = system_prompt.encode("utf-8")
       filename = f"system_prompt_{guild.id}.md"
       file = discord.File(fp=io.BytesIO(file_content), filename=filename)
@@ -565,6 +727,7 @@ class GeneralCommands(commands.Cog):
       await ctx.send(
         content=f"📄 Here's the system prompt for **{guild.name}**:", file=file
       )
+
     except Exception as e:
       await ctx.send(f"❌ Failed to fetch system prompt: {e}")
 
@@ -577,9 +740,10 @@ class GeneralCommands(commands.Cog):
     Update the system prompt for this guild from an uploaded file
 
     Args:
-      file: A text file containing the new system prompt
+        file: A text file containing the new system prompt
     """
     await ctx.defer()
+
     guild = ctx.guild
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
@@ -592,6 +756,7 @@ class GeneralCommands(commands.Cog):
     is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
       ctx.author
     )
+
     if not is_manager:
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to update the system prompt."
@@ -635,9 +800,10 @@ class GeneralCommands(commands.Cog):
     Add a system prompt for this guild from an uploaded file
 
     Args:
-      file: A text file containing the new system prompt
+        file: A text file containing the new system prompt
     """
     await ctx.defer()
+
     guild = ctx.guild
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
@@ -650,6 +816,7 @@ class GeneralCommands(commands.Cog):
     is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
       ctx.author
     )
+
     if not is_manager:
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to add a system prompt."
@@ -693,7 +860,6 @@ async def setup(bot: commands.Bot) -> None:
   Setup function to add the GeneralCommands cog to the bot.
 
   Args:
-    bot (commands.Bot): The Discord bot instance.
+      bot (commands.Bot): The Discord bot instance.
   """
-
   await bot.add_cog(GeneralCommands(bot))
