@@ -2,14 +2,19 @@ import io
 import random
 import asyncio
 import discord
+import webrtcvad
+import numpy as np
 
 from datetime import datetime
 from discord.ext import commands
 from discord.ext import voice_recv
-from discord.ext.voice_recv import AudioSink
+from collections import defaultdict
+from scipy.signal import resample_poly
+from faster_whisper import WhisperModel
 from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
 from services.llm_service import LLMService
+from discord.ext.voice_recv import AudioSink
 from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
@@ -18,37 +23,135 @@ from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
 
 
+WARMUP_BYTES_48K_STEREO = int(0.30 * 48000 * 2 * 2)  # ~300ms per speaker
+
+
 class PcmFanoutSink(voice_recv.AudioSink):
   def __init__(self, loop: asyncio.AbstractEventLoop, queue: asyncio.Queue):
     super().__init__()
     self.loop = loop
     self.queue = queue
-    self._frame_counter = 0
 
   def wants_opus(self) -> bool:
     return False  # we want decoded PCM
 
-  def write(self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData):
+  def write(
+    self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData
+  ):
     # user can be None until SSRC is mapped; that's fine
     if not data.pcm:
       return
 
-    self._frame_counter += 1
-    if self._frame_counter % 50 == 0: # ~1s of audio (20ms/frame => 50 frames)
-      print(f"[voice] ~{self._frame_counter/50:.1f}s captured")
-
     pkt = getattr(data, "packet", None)  # raw RTP packet
     ts = getattr(pkt, "timestamp", None)
-    seq = getattr(pkt, "sequence", None)
-    # hand off safely to the asyncio loop
-    self.loop.call_soon_threadsafe(self.queue.put_nowait, (user, data.pcm, ts, seq))
+    self.loop.call_soon_threadsafe(
+      self.queue.put_nowait,
+      {"type": "pcm", "user": user, "pcm": data.pcm, "rtp_ts": ts},
+    )
 
   @AudioSink.listener()
-  def on_voice_member_speaking_state(self, member: discord.Member, ssrc: int, state: int):
-    print(f"[voice] speaking_state: {member} ({ssrc}) -> {state}")  # state '1' is speaking
+  def on_voice_member_speaking_state(
+    self, member: discord.Member, ssrc: int, state: int
+  ):
+    if state == 0:  # state: 1 is start, 0 is stop
+      self.loop.call_soon_threadsafe(
+        self.queue.put_nowait, {"type": "flush", "user": member}
+      )
 
   def cleanup(self):
     pass
+
+
+class VoiceConsumer:
+  def __init__(self, queue: asyncio.Queue, model_size="small", device="auto"):
+    compute = "int8" if device == "auto" else "float16"
+    self.model = WhisperModel(
+      model_size, device=("cuda" if device == "cuda" else "auto"), compute_type=compute
+    )
+    self.queue = queue
+    self.buffers = defaultdict(bytearray)  # uid -> PCM(48k stereo, s16le)
+    self.vad = webrtcvad.Vad(2)
+    self._fallback_ticks = defaultdict(
+      int
+    )  # uid -> accumulated bytes for coarse partials
+    self._warmup = defaultdict(int)  # uid -> bytes left to drop
+
+  @staticmethod
+  def stereo48k_to_mono16k(pcm48_stereo: bytes) -> bytes:
+    s = np.frombuffer(pcm48_stereo, dtype=np.int16)
+    if s.size == 0:
+      return b""
+    mono48 = s.reshape(-1, 2).mean(axis=1).astype(np.int16)
+    mono16 = resample_poly(mono48, up=1, down=3).astype(np.int16)
+    return mono16.tobytes()
+
+  def vad_keep_voiced(self, mono16_bytes: bytes) -> bytes:
+    # 20ms @ 16k -> 640 bytes
+    frames = [mono16_bytes[i : i + 640] for i in range(0, len(mono16_bytes), 640)]
+    voiced = [f for f in frames if len(f) == 640 and self.vad.is_speech(f, 16000)]
+    return b"".join(voiced)
+
+  def transcribe(self, mono16_bytes: bytes) -> str:
+    if not mono16_bytes:
+      return ""
+    audio = np.frombuffer(mono16_bytes, dtype=np.int16).astype(np.float32) / 32768.0
+    segments, _ = self.model.transcribe(
+      audio,
+      language="en",  # set None to auto-detect
+      vad_filter=True,  # Whisper's internal VAD too
+      beam_size=1,
+    )
+    return " ".join(s.text.strip() for s in segments).strip()
+
+  async def run(self):
+    SECOND_48K_STEREO = 48000 * 2 * 2  # 192000 bytes ~= 1s
+    while True:
+      item = await self.queue.get()
+      typ = item["type"]
+      user = item["user"]
+      uid = user.id if (user and hasattr(user, "id")) else 0
+
+      if typ == "start":
+        # (re)arm warm-up drop for this speaker
+        self._warmup[uid] = WARMUP_BYTES_48K_STEREO
+
+      elif typ == "pcm":
+        b = item["pcm"]
+        # drop warm-up bytes first
+        drop = self._warmup.get(uid, 0)
+        if drop:
+          cut = min(drop, len(b))
+          b = b[cut:]
+          self._warmup[uid] = drop - cut
+          if not b:
+            continue  # still in warm-up—skip
+        # buffer & maybe partial flush
+        self.buffers[uid] += b
+        self._fallback_ticks[uid] += len(b)
+        if self._fallback_ticks[uid] >= 2 * SECOND_48K_STEREO:
+          await self._flush_user(uid, user, partial=True)
+          self._fallback_ticks[uid] = 0
+
+      elif typ == "flush":
+        await self._flush_user(uid, user, partial=False)
+        self._fallback_ticks[uid] = 0
+
+  async def _flush_user(self, uid: int, user, partial: bool = False) -> None:
+    buf = self.buffers[uid]
+    if not buf:
+      return
+    data = bytes(buf)
+    self.buffers[uid].clear()
+
+    mono16 = self.stereo48k_to_mono16k(data)
+    voiced = self.vad_keep_voiced(mono16)
+    chosen = voiced if len(voiced) >= int(16000 * 2 * 0.3) else mono16
+
+    text = self.transcribe(chosen)
+    if text:
+      name = getattr(user, "display_name", "unknown")
+      tag = "(partial)" if partial else "(final)"
+      print(f"[boo|ASR] {name} {tag}: {text}")
 
 
 class GeneralCommands(commands.Cog):
@@ -72,7 +175,9 @@ class GeneralCommands(commands.Cog):
     self.openrouter_service = OpenRouterService()
 
     # a simple queue you can consume elsewhere (e.g., a task that streams to your voice LLM)
-    self.voice_queue: asyncio.Queue[tuple[discord.Member|None, bytes, int|None, int|None]] = asyncio.Queue()
+    self.voice_queue: asyncio.Queue[
+      tuple[discord.Member | None, bytes, int | None, int | None]
+    ] = asyncio.Queue()
     self._listening_guild_ids: set[int] = set()
 
   def _on_pcm(self, user, pcm_bytes: bytes, ts: float):
@@ -117,6 +222,13 @@ class GeneralCommands(commands.Cog):
       sink = PcmFanoutSink(self.bot.loop, self.voice_queue)
       vc.listen(sink)  # start receiving into sink
 
+    if not hasattr(self.bot, "_voice_consumer_started"):
+      self.bot._voice_consumer_started = True
+      consumer = VoiceConsumer(
+        self.voice_queue, model_size="base", device="auto"
+      )  # "base" for better, "tiny" for faster
+      self.bot.loop.create_task(consumer.run())
+
     self._listening_guild_ids.add(ctx.guild.id)
     await ctx.reply("Joined **boo** and started capturing.")
 
@@ -152,17 +264,6 @@ class GeneralCommands(commands.Cog):
       await ctx.send(
         content=f"<@{ctx.author.id}> has bonked <@{member.id}> {bonk_gif['url']}"
       )
-
-  @commands.cooldown(10, 60)
-  @commands.hybrid_command(name="skibidi", description="You are my skibidi")
-  async def skibidi(self, ctx: commands.Context) -> None:
-    """
-    Post O Skibidi RE
-
-    Args:
-      ctx (commands.Context): The invocation context.
-    """
-    await ctx.send("SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
 
   @commands.hybrid_command(
     name="get_model", description="Which is currently powering Boo?"
