@@ -28,7 +28,7 @@ _compute_type: Optional[str] = None
 def _pick_device_and_compute() -> tuple[str, str]:
   # Try CUDA via environment hint; fall back to CPU.
   # faster-whisper picks device via string; we don’t import torch.
-  prefer = os.getenv("DEVICE", "auto").lower()
+  prefer = os.getenv("DEVICE", "cuda").lower()
   if prefer in {"cuda", "gpu"}:
     return "cuda", os.getenv("COMPUTE_TYPE", "float16")
   # Auto: try CUDA; otherwise CPU. We can be conservative and let runtime decide.
