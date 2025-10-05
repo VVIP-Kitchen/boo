@@ -174,18 +174,17 @@ import modal  # noqa: E402
 app = modal.App("boo-whisper-api")
 
 image = (
-    # CUDA 12 + cuDNN 9 runtime → satisfies CTranslate2 GPU wheel
-    modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04")
-    .apt_install("python3-pip", "ffmpeg")
-    .pip_install(
-        "fastapi[standard]",
-        "numpy",
-        "faster-whisper==1.0.3",
-        "ctranslate2==4.5.0", # optional: pin ctranslate2 if you want exact control
-    )
+  modal.Image.from_registry(
+    "nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04", add_python="3.11"
+  )
+  .apt_install("ffmpeg")                     # optional, but handy
+  .pip_install(
+    "fastapi[standard]",
+    "numpy",
+    "faster-whisper==1.0.3",
+    "ctranslate2==4.5.0",  # optional explicit pin
+  )
 )
-
-
 
 @app.function(
   image=image,
