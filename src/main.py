@@ -10,13 +10,19 @@ def _try_load_opus():
 
   candidates = []
   candidates += [
-    "/opt/homebrew/opt/opus/lib/libopus.dylib",   # Apple Silicon
-    "/usr/local/opt/opus/lib/libopus.dylib",      # Intel mac
+    "/opt/homebrew/opt/opus/lib/libopus.dylib",  # Apple Silicon
+    "/usr/local/opt/opus/lib/libopus.dylib",  # Intel mac
   ]
   # Linux
   candidates += [
-    "libopus.so", "/usr/lib/x86_64-linux-gnu/libopus.so",
+    "libopus.so",
+    "libopus.so.0",  # runtime-only case
+    "/usr/lib/x86_64-linux-gnu/libopus.so",
+    "/usr/lib/x86_64-linux-gnu/libopus.so.0",
     "/usr/lib/aarch64-linux-gnu/libopus.so",
+    "/usr/lib/aarch64-linux-gnu/libopus.so.0",
+    "/usr/lib/libopus.so",  # Alpine
+    "/usr/lib/libopus.so.0",
   ]
 
   for c in candidates:
@@ -35,6 +41,7 @@ def _try_load_opus():
       "  macOS: brew install opus (then use /opt/homebrew/opt/opus/lib/libopus.dylib)\n"
       "  Ubuntu: apt install libopus0 libopus-dev"
     )
+
 
 def main() -> None:
   """

@@ -170,3 +170,29 @@ def run_code(code: str, timeout: int = 5):
     return resp.json()
   except Exception as e:
     return {"error": f"Sandbox service unavailable: {str(e)}"}
+
+
+### Image Generation Tool
+generate_image_tool = {
+  "type": "function",
+  "function": {
+    "name": "generate_image",
+    "description": "Generates a new image from a textual description (prompt). This is used when a user explicitly asks to create, draw, or generate an image.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "A detailed description of the image to be generated.",
+        },
+        "aspect_ratio": {
+          "type": "string",
+          "description": "The desired aspect ratio of the image.",
+          "enum": ["1:1", "16:9", "9:16", "4:3", "3:4"],
+          "default": "1:1",
+        },
+      },
+      "required": ["prompt"],
+    },
+  },
+}

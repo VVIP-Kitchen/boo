@@ -51,14 +51,21 @@ def get_model() -> WhisperModel:
     )
     # Force a tiny graph warmup with a silent frame (optional, cheap)
     try:
-      _ = list(_model.transcribe(np.zeros(1600, dtype=np.float32), language=os.getenv("LANGUAGE"), beam_size=1))[0:0]
+      _ = list(
+        _model.transcribe(
+          np.zeros(1600, dtype=np.float32), language=os.getenv("LANGUAGE"), beam_size=1
+        )
+      )[0:0]
     except Exception:
       pass
-    print(f"[whisper] loaded '{WHISPER_MODEL}' on { _device } ({ _compute_type }) in {time.time()-t0:.2f}s")
+    print(
+      f"[whisper] loaded '{WHISPER_MODEL}' on {_device} ({_compute_type}) in {time.time() - t0:.2f}s"
+    )
   return _model
 
 
 # ---------- Security (optional HMAC) ----------
+
 
 def _check_hmac(x_sign: Optional[str], x_ts: Optional[str], body_bytes: bytes) -> None:
   if not HMAC_SECRET:
@@ -75,7 +82,9 @@ def _check_hmac(x_sign: Optional[str], x_ts: Optional[str], body_bytes: bytes) -
 class TranscribeIn(BaseModel):
   pcm16_base64: str = Field(..., description="Base64 of int16 mono 16 kHz PCM")
   sample_rate: int = Field(16000, description="Sampling rate of the PCM")
-  language: Optional[str] = Field(default=None, description="ISO 639-1/2 code; None = auto")
+  language: Optional[str] = Field(
+    default=None, description="ISO 639-1/2 code; None = auto"
+  )
   temperature: float = Field(0.0, ge=0.0, le=1.0)
   beam_size: int = Field(1, ge=1, le=5, description="1 for low-latency live captions")
   logprob_threshold: Optional[float] = Field(default=None)
@@ -102,7 +111,12 @@ class TranscribeOut(BaseModel):
 @web.get("/preload")
 def health():
   get_model()
-  return {"status": "ok", "model": WHISPER_MODEL, "device": _device, "compute_type": _compute_type}
+  return {
+    "status": "ok",
+    "model": WHISPER_MODEL,
+    "device": _device,
+    "compute_type": _compute_type,
+  }
 
 
 @web.post("/transcribe", response_model=TranscribeOut)
@@ -130,7 +144,9 @@ async def transcribe(
 
   duration_s = len(audio) / 16000.0
   if duration_s <= 0 or duration_s > MAX_SECONDS:
-    raise HTTPException(status_code=400, detail=f"chunk duration must be 0 < t <= {MAX_SECONDS}s")
+    raise HTTPException(
+      status_code=400, detail=f"chunk duration must be 0 < t <= {MAX_SECONDS}s"
+    )
 
   model = get_model()
   t0 = time.time()
@@ -149,7 +165,9 @@ async def transcribe(
     segments_list = []
     texts = []
     for seg in segments_iter:
-      segments_list.append(Segment(start=float(seg.start), end=float(seg.end), text=seg.text))
+      segments_list.append(
+        Segment(start=float(seg.start), end=float(seg.end), text=seg.text)
+      )
       texts.append(seg.text)
     text = "".join(texts).strip()
   except Exception as e:
@@ -177,7 +195,7 @@ image = (
   modal.Image.from_registry(
     "nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04", add_python="3.11"
   )
-  .apt_install("ffmpeg")                     # optional, but handy
+  .apt_install("ffmpeg")  # optional, but handy
   .pip_install(
     "fastapi[standard]",
     "numpy",
@@ -185,6 +203,7 @@ image = (
     "ctranslate2==4.5.0",  # optional explicit pin
   )
 )
+
 
 @app.function(
   image=image,

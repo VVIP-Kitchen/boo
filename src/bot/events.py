@@ -92,11 +92,17 @@ class BotEvents(commands.Cog):
       )
 
       async with message.channel.typing():
-        bot_response, usage = await to_thread(
+        result = await to_thread(
           self.llm_service.chat_completions,
           messages=messages,
           enable_tools=not has_imgs,
         )
+        if len(result) == 3:
+          bot_response, usage, generated_images = result
+        else:
+          bot_response, usage = result
+          generated_images = []
+
         bot_response = replace_emojis(bot_response, self.custom_emojis)
         bot_response, sticker_ids = replace_stickers(bot_response)
         stickers = await self._fetch_stickers(sticker_ids)
@@ -113,7 +119,7 @@ class BotEvents(commands.Cog):
         }
       )
 
-      await send_response(message, bot_response, stickers, usage)
+      await send_response(message, bot_response, stickers, usage, generated_images)
       self._add_assistant_context(bot_response, server_id)
       await self._trim_context(server_id)
     except Exception as e:

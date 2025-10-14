@@ -28,14 +28,16 @@ class PcmFanoutSink(voice_recv.AudioSink):
   def wants_opus(self) -> bool:
     return False  # we want decoded PCM
 
-  def write(self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData):
+  def write(
+    self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData
+  ):
     # user can be None until SSRC is mapped; that's fine
     if not data.pcm:
       return
 
     self._frame_counter += 1
-    if self._frame_counter % 50 == 0: # ~1s of audio (20ms/frame => 50 frames)
-      print(f"[voice] ~{self._frame_counter/50:.1f}s captured")
+    if self._frame_counter % 50 == 0:  # ~1s of audio (20ms/frame => 50 frames)
+      print(f"[voice] ~{self._frame_counter / 50:.1f}s captured")
 
     pkt = getattr(data, "packet", None)  # raw RTP packet
     ts = getattr(pkt, "timestamp", None)
@@ -44,8 +46,12 @@ class PcmFanoutSink(voice_recv.AudioSink):
     self.loop.call_soon_threadsafe(self.queue.put_nowait, (user, data.pcm, ts, seq))
 
   @AudioSink.listener()
-  def on_voice_member_speaking_state(self, member: discord.Member, ssrc: int, state: int):
-    print(f"[voice] speaking_state: {member} ({ssrc}) -> {state}")  # state '1' is speaking
+  def on_voice_member_speaking_state(
+    self, member: discord.Member, ssrc: int, state: int
+  ):
+    print(
+      f"[voice] speaking_state: {member} ({ssrc}) -> {state}"
+    )  # state '1' is speaking
 
   def cleanup(self):
     pass
@@ -72,7 +78,9 @@ class GeneralCommands(commands.Cog):
     self.openrouter_service = OpenRouterService()
 
     # a simple queue you can consume elsewhere (e.g., a task that streams to your voice LLM)
-    self.voice_queue: asyncio.Queue[tuple[discord.Member|None, bytes, int|None, int|None]] = asyncio.Queue()
+    self.voice_queue: asyncio.Queue[
+      tuple[discord.Member | None, bytes, int | None, int | None]
+    ] = asyncio.Queue()
     self._listening_guild_ids: set[int] = set()
 
   def _on_pcm(self, user, pcm_bytes: bytes, ts: float):

@@ -2,6 +2,7 @@ import re
 import io
 import json
 import redis
+import base64
 import discord
 import logging
 from typing import List
@@ -291,9 +292,23 @@ async def send_message(message: Message, response: str) -> None:
 
 
 async def send_response(
-  message: Message, response: str, stickers: list, _usage
+  message: Message, response: str, stickers: list, _usage, generated_images: list = None
 ) -> None:
+  # Prepare Discord file attachments from generated images
+  files = []
+  if generated_images:
+    for idx, img_data in enumerate(generated_images):
+      image_bytes = base64.b64decode(img_data["data"])
+      img_format = img_data.get("format", "png")
+      filename = f"generated_image_{idx + 1}.{img_format}"
+      files.append(File(io.BytesIO(image_bytes), filename=filename))
+
   if len(response) > 1800:
-    await message.channel.send(file=text_to_file(response))
+    await message.channel.send(file=text_to_file(response), reference=message)
+    # Send images separately if text was too long
+    if files:
+      await message.channel.send(files=files)
   else:
-    await message.channel.send(response, reference=message, stickers=stickers)
+    await message.channel.send(
+      response, reference=message, stickers=stickers, files=files if files else None
+    )
