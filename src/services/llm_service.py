@@ -20,6 +20,15 @@ from services.tool_calling_service import (
 )
 
 ### Helper functions
+def clean_tool_blob(text: str) -> str:
+  # remove special wrappers like <|python_start|> ... <|python_end|>
+  text = re.sub(r"<\|python_start\|>", "", text)
+  text = re.sub(r"<\|python_end\|>", "", text)
+  # strip markdown code fences
+  text = re.sub(r"^```(?:json)?", "", text.strip(), flags=re.MULTILINE)
+  text = re.sub(r"```$", "", text.strip(), flags=re.MULTILINE)
+  return text.strip()
+
 def _extract_first_json_object(text: str) -> Optional[dict]:
   """
   Find the first top-level JSON object in `text` using brace matching.
@@ -28,6 +37,7 @@ def _extract_first_json_object(text: str) -> Optional[dict]:
   if not text:
     return None
 
+  text = clean_tool_blob(text)
   start = None
   depth = 0
   for i , ch in enumerate(text):
