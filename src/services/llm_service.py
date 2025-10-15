@@ -1,9 +1,9 @@
 import io
+import os
+import re
 import json
 import time
 import base64
-import os
-import uuid  # For generating unique filenames
 from openai import OpenAI
 from typing import List, Dict, Union, Optional
 from utils.logger import logger
@@ -19,6 +19,37 @@ from services.tool_calling_service import (
   generate_image_tool,
 )
 
+### Helper functions
+def _extract_first_json_object(text: str) -> Optional[dict]:
+  """
+  Find the first top-level JSON object in `text` using brace matching.
+  Return a parsed dict or None
+  """
+  if not text:
+    return None
+
+  start = None
+  depth = 0
+  for i , ch in enumerate(text):
+    if ch == '{' and start is None:
+      start = i
+      depth = 1
+      continue
+    if start is not None:
+      if ch == '{':
+        depth += 1
+      elif ch == '}':
+        depth -= 1
+        if depth == 0:
+          candidate = text[start:i + 1]
+          try:
+            parsed = json.loads(candidate)
+            return parsed
+          except json.JSONDecodeError:
+            start = None
+            depth = 0
+
+  return None
 
 class LLMService:
   def __init__(self):
@@ -166,19 +197,37 @@ class LLMService:
       pass
     return False
 
-  def _execute_tool_call(self, tool_call) -> str:
-    function_name = tool_call.function.name
-
-    if function_name not in self.available_tools:
-      return json.dumps({"error": f"Unknown function: {function_name}"})
-
+  def _execute_tool_call(self, call_dict: dict) -> str:
+    """
+    `call_dict` expected shape: {"name": "...", "parameters": {...}} or {"function": {"name": "...", "arguments": "..."}}
+    Returns a JSON string (so callers can json.loads it)
+    """
+    name = None
     try:
-      arguments = json.loads(tool_call.function.arguments)
-      function = self.available_tools[function_name]["function"]
-      result = function(**arguments)
+      if "name" in call_dict and "parameters" in call_dict:
+        name = call_dict["name"]
+        args = call_dict["parameters"]
+      elif "function" in call_dict and isinstance(call_dict["function"], dict):
+        fn = call_dict["function"]
+        name = fn.get("name") or fn.get("function_name")
+        args_raw = fn.get("arguments") or fn.get("parameters") or "{}"
+        args = json.loads(args_raw) if isinstance(args_raw, str) else args_raw
+      else:
+        name = call_dict.get("name")
+        args = call_dict.get("parameters") or call_dict.get("arguments") or {}
+
+      if not name or name not in self.available_tools:
+        return json.dumps({
+          "error": f"Unknown function name: {name}"
+        })
+
+      function = self.available_tools[name]["function"]
+      result = function(**args)
       return json.dumps(result)
     except Exception as e:
-      return json.dumps({"error": f"Error executing {function_name}: {str(e)}"})
+      return json.dumps({
+        "error": f"Error executing {name}: {str(e)}"
+      })
 
   def chat_completions(
     self,
@@ -234,6 +283,7 @@ class LLMService:
 
       response = self.client.chat.completions.create(**api_params)
       message = response.choices[0].message
+      message_text = (message.content or "").strip()
 
       if not vision_mode and hasattr(message, "tool_calls") and message.tool_calls:
         for tool_call in message.tool_calls:
@@ -262,6 +312,45 @@ class LLMService:
             # Return immediately for image generation - no second API call needed
             simple_message = "Here's your generated image! 🎨"
             return simple_message, response.usage, generated_images
+        else:
+          parsed = _extract_first_json_object(message_text)
+          if parsed:
+            # If parsed contains top-level {"name": "...", "parameters": {...}}
+            # or variant shapes, execute it:
+            tool_result = self._execute_tool_call_dict(parsed)
+
+            # try decode result
+            try:
+              tool_result_dict = json.loads(tool_result)
+            except json.JSONDecodeError:
+              tool_result_dict = {"error": "Invalid JSON response from tool execution"}
+
+            # If image generated, handle same as before (collect base64, return)
+            if parsed.get("name") == "generate_image" and tool_result_dict.get("status") == "success" and "image_data" in tool_result_dict:
+              generated_images.append({
+                "data": tool_result_dict["image_data"],
+                "format": tool_result_dict.get("format", "png"),
+              })
+              return "Here's your generated image! 🎨", response.usage, generated_images
+
+            # otherwise attach assistant+tool result and re-call model for final answer
+            chat_messages.append({
+              "role": "assistant",
+              "content": message_text,   # keep model's human-friendly part (it may include commentary)
+            })
+            chat_messages.append({
+              "role": "tool",
+              "tool_call_id": parsed.get("id", "parsed_json"),
+              "content": tool_result
+            })
+
+            final_response = self.client.chat.completions.create(
+              model=self.model,
+              messages=chat_messages,
+              max_tokens=max_tokens,
+              temperature=temperature,
+            )
+            return final_response.choices[0].message.content.strip(), final_response.usage, []
 
         # For non-image tools, add to context for final response
         chat_messages.append(
