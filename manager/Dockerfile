@@ -6,10 +6,10 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o server ./cmd/api
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/api
 
 ### 🏃‍♂️ Minimal runtime
-FROM alpine:3.20
+FROM gcr.io/distroless/static-debian12
 
 WORKDIR /app
 COPY --from=builder /app/server .
