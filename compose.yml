@@ -32,6 +32,23 @@ services:
       timeout: 3s
       retries: 5
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.16
+    container_name: meilisearch
+    ports:
+      - "127.0.0.1:7700:7700"
+    restart: always
+    environment:
+      - MEILI_MASTER_KEY=meilisearch
+      - MEILI_ENV=production
+    volumes:
+      - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   manager:
     depends_on:
       postgres:
@@ -73,7 +90,7 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=6379
       - REDIS_TOKEN=${REDIS_TOKEN}
-  
+
   sandbox:
     build: ./sandbox
     container_name: sandbox
@@ -97,6 +114,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  meilisearch_data:
 
 networks:
   default: {}
