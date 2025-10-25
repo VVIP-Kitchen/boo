@@ -24,7 +24,10 @@ TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
 
+MEILI_MASTER_KEY = os.getenv("MEILI_MASTER_KEY")
+
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+VOYAGEAI_API_KEY = os.getenv("VOYAGEAI_API_KEY")
 
 try:
   ADMIN_LIST = [int(item) for item in ADMIN_LIST.split(",")]
@@ -46,6 +49,8 @@ for var_name in [
   "OPENROUTER_API_KEY",
   "OPENROUTER_MODEL",
   "TAVILY_API_KEY",
+  "VOYAGEAI_API_KEY",
+  "MEILI_MASTER_KEY"
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

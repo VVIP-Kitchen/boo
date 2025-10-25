@@ -39,7 +39,7 @@ services:
       - "127.0.0.1:7700:7700"
     restart: always
     environment:
-      - MEILI_MASTER_KEY=meilisearch-secret-key
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - MEILI_ENV=production
     volumes:
       - meilisearch_data:/meili_data
@@ -87,6 +87,7 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENROUTER_MODEL=${OPENROUTER_MODEL}
       - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=6379
       - REDIS_TOKEN=${REDIS_TOKEN}

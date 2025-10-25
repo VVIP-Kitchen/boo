@@ -24,6 +24,7 @@ dependencies = [
     "httpx==0.28.1",
     "idna==3.10",
     "jiter==0.10.0",
+    "meilisearch>=0.37.1",
     "multidict==6.6.3",
     "openai==1.97.1",
     "pillow==11.3.0",
@@ -45,6 +46,7 @@ dependencies = [
     "typing-extensions==4.14.1",
     "typing-inspection==0.4.1",
     "urllib3==2.5.0",
+    "voyageai>=0.3.5",
     "yarl==1.20.1",
 ]
 
