@@ -91,7 +91,6 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_TOKEN=${REDIS_TOKEN}
 
   boo-worker:
     depends_on:
@@ -118,7 +117,6 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_TOKEN=${REDIS_TOKEN}
     deploy:
       replicas: 2
 
