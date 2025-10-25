@@ -60,13 +60,16 @@ class MeilisearchService:
     """Add image document with embeddings and Discord metadata."""
     document = {
       "image_id": image_id,
-      "_vectors": {"image": image_embedding, "vlm_caption": vlm_caption_embedding},
+      "_vectors": {
+        "image": image_embedding,
+        "vlm_caption": vlm_caption_embedding,
+        "user_caption": user_caption_embedding if user_caption_embedding else None
+      },
       "vlm_caption": vlm_caption,
       "created_at": datetime.utcnow().isoformat(),
     }
 
     if user_caption and user_caption_embedding:
-      document["_vectors"]["user_caption"] = user_caption_embedding
       document["user_caption"] = user_caption
 
     if message_url:
