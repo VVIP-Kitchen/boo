@@ -15,7 +15,7 @@ def main():
     redis_conn = redis.Redis(
       host="redis",
       port=6379,
-      password="boo-redis-token",
+      password=None,
       decode_responses=False,
     )
 
