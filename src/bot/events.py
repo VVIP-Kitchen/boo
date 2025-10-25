@@ -126,7 +126,7 @@ class BotEvents(commands.Cog):
 
       # Queue image processing in background (non-blocking)
       if has_imgs:
-        self._queue_images_for_processing(
+        await self._queue_images_for_processing(
           message=message,
           image_attachments=image_attachments,
           user_caption=prompt if prompt else None,
@@ -156,7 +156,7 @@ class BotEvents(commands.Cog):
       logger.error(f"Error in on_message: {e}")
       await send_error_message(message)
 
-  def _queue_images_for_processing(
+  async def _queue_images_for_processing(
     self,
     message: discord.Message,
     image_attachments: list,
@@ -167,19 +167,15 @@ class BotEvents(commands.Cog):
     Non-blocking - immediately returns after queuing.
     """
     if not self.task_queue.queue:
-      logger.warning("Task queue not available, falling back to synchronous processing")
-      # Fallback: could run in thread but won't be truly background
+      logger.warning("Task queue not available, skipping background processing")
       return
 
     logger.info(f"Queueing {len(image_attachments)} images for background processing")
 
     for idx, attachment in enumerate(image_attachments):
       try:
-        # We need to read the attachment here since it might not be available later
-        # This is quick - just reading bytes, not processing
-        import asyncio
-
-        img_bytes = asyncio.run(attachment.read())
+        # Read attachment bytes (this is async)
+        img_bytes = await attachment.read()
 
         # Create message URL
         message_url = f"https://discord.com/channels/{message.guild.id if message.guild else '@me'}/{message.channel.id}/{message.id}"
@@ -187,8 +183,9 @@ class BotEvents(commands.Cog):
         # Generate image ID
         image_id = f"{message.id}_{attachment.id}"
 
-        # Queue the task
-        job_id = self.task_queue.enqueue_image_processing(
+        # Queue the task (run in thread since RQ is sync)
+        job_id = await to_thread(
+          self.task_queue.enqueue_image_processing,
           image_bytes=img_bytes,
           user_caption=user_caption,
           image_id=image_id,
@@ -209,13 +206,13 @@ class BotEvents(commands.Cog):
 
         if job_id:
           logger.info(
-            f"Queued image {idx + 1}/{len(image_attachments)}: {image_id} (job: {job_id})"
+            f"✅ Queued image {idx + 1}/{len(image_attachments)}: {image_id} (job: {job_id})"
           )
         else:
-          logger.error(f"Failed to queue image {idx + 1}/{len(image_attachments)}")
+          logger.error(f"❌ Failed to queue image {idx + 1}/{len(image_attachments)}")
 
       except Exception as e:
-        logger.error(f"Error queueing attachment {attachment.filename}: {e}")
+        logger.error(f"❌ Error queueing attachment {attachment.filename}: {e}")
         continue
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
