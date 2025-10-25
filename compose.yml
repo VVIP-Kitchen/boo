@@ -53,7 +53,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    build: ./manager
+    image: ghcr.io/vvip-kitchen/boo-manager:latest
     container_name: manager
     restart: always
     ports:
@@ -69,7 +69,7 @@ services:
     depends_on:
       - manager
       - redis
-    build: .
+    image: ghcr.io/vvip-kitchen/boo:latest
     container_name: boo
     command: uv run src/main.py
     restart: always
@@ -94,7 +94,7 @@ services:
     depends_on:
       - redis
       - meilisearch
-    build: .
+    image: ghcr.io/vvip-kitchen/boo:latest
     command: uv run src/worker.py
     restart: always
     networks:
@@ -117,7 +117,7 @@ services:
       replicas: 4
 
   sandbox:
-    build: ./sandbox
+    image: ghcr.io/vvip-kitchen/boo-sandbox:latest
     container_name: sandbox
     read_only: true
     mem_limit: 512m
