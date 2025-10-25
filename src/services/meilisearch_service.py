@@ -166,33 +166,35 @@ class MeilisearchService:
   def get_stats(self) -> Dict:
     """Get index statistics."""
     try:
-      # Method 1: Try using get_stats() if available
-      try:
-        stats = self.index.get_stats()
-        return {
-          "total_documents": stats.get("numberOfDocuments", 0),
-          "is_indexing": stats.get("isIndexing", False),
-        }
-      except AttributeError:
-        # Method 2: Fallback to fetching index info
-        pass
+      # Method 1: Try get_stats() on index
+      index = self.client.get_index(self.index_name)
+      stats = index.get_stats()
+      doc_count = stats.get("numberOfDocuments", 0)
 
-      # Get index details (this always works)
-      index_info = self.client.get_index(self.index_name)
-
-      # Get task info to check if indexing
-      tasks = self.client.get_tasks({"indexUids": [self.index_name], "limit": 1})
-      is_indexing = False
-      if tasks.get("results"):
-        latest_task = tasks["results"][0]
-        is_indexing = latest_task.get("status") in ["enqueued", "processing"]
+      logger.info(f"Meilisearch: {doc_count} documents indexed")
 
       return {
-        "total_documents": index_info.get_stats()["numberOfDocuments"],
-        "is_indexing": is_indexing,
+        "total_documents": doc_count,
+        "is_indexing": False,  # Simplified - don't check indexing status
       }
 
     except Exception as e:
       logger.error(f"Error getting Meilisearch stats: {e}")
-      # Return error info instead of hiding it
-      return {"total_documents": 0, "is_indexing": False, "error": str(e)}
+
+      # Fallback: Use search with limit 0 to get count
+      try:
+        result = self.index.search("", {"limit": 0})
+        total = result.get("estimatedTotalHits", 0)
+        logger.info(f"Meilisearch (via search): {total} documents")
+
+        return {
+          "total_documents": total,
+          "is_indexing": False,
+        }
+      except Exception as e2:
+        logger.error(f"All methods failed: {e2}")
+        return {
+          "total_documents": 0,
+          "is_indexing": False,
+          "error": f"{str(e)} | {str(e2)}",
+        }
