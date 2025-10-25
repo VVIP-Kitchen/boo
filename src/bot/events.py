@@ -55,6 +55,23 @@ class BotEvents(commands.Cog):
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
     log_message(message)
+
+    ### -------- Get image attachments from discord message and add them to search index --------
+    image_attachments = [
+      att
+      for att in message.attachments
+      if att.content_type and att.content_type.startswith("image")
+    ]
+    has_imgs = bool(image_attachments)
+    prompt = prepare_prompt(message)
+
+    if has_imgs:
+      await self._queue_images_for_processing(
+        message=message,
+        image_attachments=image_attachments,
+        user_caption=prompt if prompt else None,
+      )
+
     reason = should_ignore(message, self.bot)
     if reason is True:
       return
@@ -65,7 +82,6 @@ class BotEvents(commands.Cog):
         if reply_context:
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
 
-      prompt = prepare_prompt(message)
       server_id = (
         f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
       )
@@ -76,13 +92,6 @@ class BotEvents(commands.Cog):
         await self._reset_chat(message, server_id)
         return
 
-      image_attachments = [
-        att
-        for att in message.attachments
-        if att.content_type and att.content_type.startswith("image")
-      ]
-
-      has_imgs = bool(image_attachments)
       user_content = [{"type": "text", "text": prompt}]
 
       if has_imgs:
@@ -123,14 +132,6 @@ class BotEvents(commands.Cog):
         else:
           bot_response, usage = result
           generated_images = []
-
-      # Queue image processing in background (non-blocking)
-      if has_imgs:
-        await self._queue_images_for_processing(
-          message=message,
-          image_attachments=image_attachments,
-          user_caption=prompt if prompt else None,
-        )
 
       bot_response = replace_emojis(bot_response, self.custom_emojis)
       bot_response, sticker_ids = replace_stickers(bot_response)
@@ -217,7 +218,11 @@ class BotEvents(commands.Cog):
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
-    lore = prompt.get("system_prompt", "You are a helpful assistant") if prompt else "You are a helpful assistant"
+    lore = (
+      prompt.get("system_prompt", "You are a helpful assistant")
+      if prompt
+      else "You are a helpful assistant"
+    )
     now = datetime.datetime.now(
       datetime.timezone(datetime.timedelta(hours=5, minutes=30))
     )
