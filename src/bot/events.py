@@ -4,6 +4,9 @@ import datetime
 from discord.ext import commands
 from services.db_service import DBService
 from services.llm_service import LLMService
+from services.voyageai_service import VoyageAiService
+from services.meilisearch_service import MeilisearchService
+from services.image_processing_service import ImageProcessingService
 from services.async_caller_service import to_thread
 from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.emoji_utils import replace_emojis, replace_stickers
@@ -28,6 +31,16 @@ class BotEvents(commands.Cog):
     self.db_service = DBService()
     self.channel_name = CHANNEL_NAME
     self.llm_service = LLMService()
+
+    # Initialize image processing services
+    self.voyage_service = VoyageAiService()
+    self.meili_service = MeilisearchService()
+    self.image_processor = ImageProcessingService(
+      llm_service=self.llm_service,
+      voyage_service=self.voyage_service,
+      meilisearch_service=self.meili_service,
+    )
+
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
 
   @commands.Cog.listener()
@@ -40,7 +53,6 @@ class BotEvents(commands.Cog):
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
     log_message(message)
-
     reason = should_ignore(message, self.bot)
     if reason is True:
       return
@@ -55,6 +67,7 @@ class BotEvents(commands.Cog):
       server_id = (
         f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
       )
+
       self._load_server_lore(server_id, message.guild)
 
       if "reset" in prompt.lower():
@@ -66,13 +79,16 @@ class BotEvents(commands.Cog):
         for att in message.attachments
         if att.content_type and att.content_type.startswith("image")
       ]
-      has_imgs = bool(image_attachments)
 
+      has_imgs = bool(image_attachments)
       user_content = [{"type": "text", "text": prompt}]
+
       if has_imgs:
         await send_message(
           message, f"-# Analyzing {len(image_attachments)} images ... 💭"
         )
+
+        # Process images for LLM
         for att in image_attachments:
           img_bytes = await att.read()
           data_uri = to_base64_data_uri(img_bytes)
@@ -98,15 +114,25 @@ class BotEvents(commands.Cog):
           messages=messages,
           enable_tools=not has_imgs,
         )
+
         if len(result) == 3:
           bot_response, usage, generated_images = result
         else:
           bot_response, usage = result
           generated_images = []
 
-        bot_response = replace_emojis(bot_response, self.custom_emojis)
-        bot_response, sticker_ids = replace_stickers(bot_response)
-        stickers = await self._fetch_stickers(sticker_ids)
+      # Process and store images in background (don't block response)
+      if has_imgs:
+        await self._process_images_for_storage(
+          message=message,
+          image_attachments=image_attachments,
+          user_caption=prompt if prompt else None,
+          vlm_caption=bot_response,
+        )
+
+      bot_response = replace_emojis(bot_response, self.custom_emojis)
+      bot_response, sticker_ids = replace_stickers(bot_response)
+      stickers = await self._fetch_stickers(sticker_ids)
 
       self.db_service.store_token_usage(
         {
@@ -123,14 +149,76 @@ class BotEvents(commands.Cog):
       await send_response(message, bot_response, stickers, usage, generated_images)
       self._add_assistant_context(bot_response, server_id)
       await self._trim_context(server_id)
+
     except Exception as e:
       logger.error(f"Error in on_message: {e}")
       await send_error_message(message)
 
+  async def _process_images_for_storage(
+    self,
+    message: discord.Message,
+    image_attachments: list,
+    user_caption: str,
+    vlm_caption: str,
+  ) -> None:
+    """
+    Process images and store them in Meilisearch with embeddings.
+    Runs in background to not block bot response.
+    """
+    try:
+      logger.info(f"Processing {len(image_attachments)} images for storage")
+
+      for idx, attachment in enumerate(image_attachments):
+        try:
+          # Read image bytes
+          img_bytes = await attachment.read()
+
+          # Create message URL for easy reference
+          message_url = f"https://discord.com/channels/{message.guild.id if message.guild else '@me'}/{message.channel.id}/{message.id}"
+
+          # Generate unique image ID from attachment
+          image_id = f"{message.id}_{attachment.id}"
+
+          # Process and store in thread to avoid blocking
+          await to_thread(
+            self.image_processor.process_and_store_image,
+            image=img_bytes,
+            user_caption=user_caption,
+            image_id=image_id,
+            # Discord metadata
+            message_url=message_url,
+            message_id=str(message.id),
+            server_id=str(message.guild.id)
+            if message.guild
+            else f"DM_{message.author.id}",
+            server_name=message.guild.name if message.guild else "Direct Message",
+            channel_id=str(message.channel.id),
+            channel_name=getattr(message.channel, "name", "DM"),
+            author_id=str(message.author.id),
+            author_name=f"{message.author.name} ({message.author.display_name})",
+            attachment_url=attachment.url,
+            metadata={
+              "attachment_filename": attachment.filename,
+              "attachment_size": attachment.size,
+              "vlm_caption_preview": vlm_caption[:200],  # Store preview
+            },
+          )
+
+          logger.info(
+            f"Successfully stored image {image_id} (attachment {idx + 1}/{len(image_attachments)})"
+          )
+
+        except Exception as e:
+          logger.error(f"Error processing attachment {attachment.filename}: {e}")
+          # Continue with other images even if one fails
+          continue
+
+    except Exception as e:
+      logger.error(f"Error in _process_images_for_storage: {e}")
+
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
     lore = prompt.get("system_prompt") if prompt else "You are a helpful assistant"
-
     now = datetime.datetime.now(
       datetime.timezone(datetime.timedelta(hours=5, minutes=30))
     )
@@ -153,6 +241,7 @@ class BotEvents(commands.Cog):
     if "reset" in prompt and "reset chat" not in prompt:
       await message.channel.send('-# Say "reset chat"')
       return
+
     server_contexts[server_id] = []
     await message.channel.send(self.context_reset_message)
 

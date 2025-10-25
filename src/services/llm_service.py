@@ -198,6 +198,40 @@ class LLMService:
       logger.error(f"Error in chat_completions: {e}")
       return self._handle_api_error(e), mock_usage, []
 
+  def describe_image(
+    self,
+    image: Union[io.BytesIO, bytes, str],
+    prompt: Optional[str] = None,
+    temperature: float = 0.7,
+    max_tokens: int = 300,
+  ) -> str:
+    """
+    Convenience method to describe an image.
+
+    Args:
+        image: Image as BytesIO, bytes, or base64 string
+        prompt: Optional custom prompt (uses default if not provided)
+        temperature: Sampling temperature
+        max_tokens: Maximum tokens in response
+
+    Returns:
+        Image description/caption as string
+    """
+    default_prompt = (
+      "Please provide a detailed description of this image. "
+      "Include objects, people, colors, setting, and any notable details."
+    )
+
+    caption, _, _ = self.chat_completions(
+      prompt=prompt or default_prompt,
+      image=image,
+      temperature=temperature,
+      max_tokens=max_tokens,
+      enable_tools=False,  # Disable tools for image description
+    )
+
+    return caption.strip()
+
   def _handle_tool_calls(
     self, message, chat_messages: List[Dict], max_tokens: int, temperature: float, usage
   ) -> tuple:
