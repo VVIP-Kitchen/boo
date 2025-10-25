@@ -824,6 +824,10 @@ class GeneralCommands(commands.Cog):
         timestamp=datetime.now(),
       )
 
+      # Check if there's an error
+      if "error" in stats:
+        embed.add_field(name="⚠️ Error", value=f"``````", inline=False)
+
       embed.add_field(
         name="📸 Total Images",
         value=f"{stats.get('total_documents', 0):,}",
@@ -836,10 +840,15 @@ class GeneralCommands(commands.Cog):
         inline=True,
       )
 
+      # Show method used if available
+      if "method" in stats:
+        embed.add_field(name="📋 Method", value=stats["method"], inline=True)
+
       embed.set_footer(text=f"Server: {ctx.guild.name}")
       await ctx.send(embed=embed)
 
     except Exception as e:
+      logger.error(f"Error in image_stats command: {e}")
       embed = discord.Embed(
         title="❌ Error",
         description=f"Failed to get statistics: {str(e)}",

@@ -2,6 +2,7 @@ import meilisearch
 from datetime import datetime
 from typing import List, Optional, Dict
 from utils.config import MEILI_MASTER_KEY
+from utils.logger import logger
 
 
 class MeilisearchService:
@@ -163,12 +164,35 @@ class MeilisearchService:
     return self.index.delete_all_documents()
 
   def get_stats(self) -> Dict:
-    """Get index statistics"""
+    """Get index statistics."""
     try:
-      stats = self.index.get_stats()
+      # Method 1: Try using get_stats() if available
+      try:
+        stats = self.index.get_stats()
+        return {
+          "total_documents": stats.get("numberOfDocuments", 0),
+          "is_indexing": stats.get("isIndexing", False),
+        }
+      except AttributeError:
+        # Method 2: Fallback to fetching index info
+        pass
+
+      # Get index details (this always works)
+      index_info = self.client.get_index(self.index_name)
+
+      # Get task info to check if indexing
+      tasks = self.client.get_tasks({"indexUids": [self.index_name], "limit": 1})
+      is_indexing = False
+      if tasks.get("results"):
+        latest_task = tasks["results"][0]
+        is_indexing = latest_task.get("status") in ["enqueued", "processing"]
+
       return {
-        "total_documents": stats.get("numberOfDocuments", 0),
-        "is_indexing": stats.get("isIndexing", False),
+        "total_documents": index_info.get_stats()["numberOfDocuments"],
+        "is_indexing": is_indexing,
       }
-    except Exception:
-      return {"total_documents": 0, "is_indexing": False}
+
+    except Exception as e:
+      logger.error(f"Error getting Meilisearch stats: {e}")
+      # Return error info instead of hiding it
+      return {"total_documents": 0, "is_indexing": False, "error": str(e)}
