@@ -44,10 +44,10 @@ services:
     volumes:
       - meilisearch_data:/meili_data
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+        test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+        interval: 5s
+        timeout: 3s
+        retries: 5
 
   manager:
     depends_on:

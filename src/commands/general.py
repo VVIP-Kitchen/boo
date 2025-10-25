@@ -14,8 +14,10 @@ from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
+from services.voyageai_service import VoyageAiService
 from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
+from services.meilisearch_service import MeilisearchService
 
 
 class PcmFanoutSink(voice_recv.AudioSink):
@@ -75,6 +77,8 @@ class GeneralCommands(commands.Cog):
     self.llm_service = LLMService()
     self.tenor_service = TenorService()
     self.weather_service = WeatherService()
+    self.voyage_service = VoyageAiService()
+    self.meili_service = MeilisearchService()
     self.openrouter_service = OpenRouterService()
 
     # a simple queue you can consume elsewhere (e.g., a task that streams to your voice LLM)
@@ -593,6 +597,255 @@ class GeneralCommands(commands.Cog):
 
     except Exception as e:
       await ctx.send(f"❌ An error occurred while processing the file: {str(e)}")
+
+  ### Search commands
+  @commands.hybrid_command(
+    name="search_images", description="Search for images by text query"
+  )
+  async def search_images(self, ctx: commands.Context, query: str, limit: int = 5):
+    """
+    Search for images using a text query.
+
+    Args:
+        query: Text to search for
+        limit: Maximum number of results (default: 5, max: 10)
+    """
+    await ctx.defer()
+
+    if not ctx.guild:
+      return await ctx.send("❌ This command can only be used in a server")
+
+    try:
+      # Validate limit
+      limit = max(1, min(limit, 10))
+
+      # Generate embedding for the query
+      query_embedding = await to_thread(
+        self.voyage_service.generate_text_embeddings, query
+      )
+
+      # Search in Meilisearch
+      results = await to_thread(
+        self.meili_service.search_by_text,
+        query=query,
+        query_embedding=query_embedding,
+        server_id=str(ctx.guild.id),
+        limit=limit,
+        semantic_ratio=0.7,  # Balance between semantic and keyword search
+      )
+
+      hits = results.get("hits", [])
+
+      if not hits:
+        embed = discord.Embed(
+          title="🔍 No Results Found",
+          description=f"No images found matching: **{query}**",
+          color=0xFF6B6B,
+        )
+        return await ctx.send(embed=embed)
+
+      # Create embed with results
+      embed = discord.Embed(
+        title=f"🔍 Image Search Results for: {query}",
+        description=f"Found {len(hits)} result(s) in this server",
+        color=0x7615D1,
+        timestamp=datetime.now(),
+      )
+
+      for idx, hit in enumerate(hits, 1):
+        score = hit.get("_rankingScore", 0)
+        vlm_caption = hit.get("vlm_caption", "No caption")
+        user_caption = hit.get("user_caption", "")
+        author_name = hit.get("author_name", "Unknown")
+        message_url = hit.get("message_url", "")
+
+        # Truncate captions if too long
+        vlm_caption_short = (
+          (vlm_caption[:100] + "...") if len(vlm_caption) > 100 else vlm_caption
+        )
+
+        field_value = f"**Score:** {score:.3f}\n"
+        field_value += f"**Description:** {vlm_caption_short}\n"
+        if user_caption:
+          field_value += f"**User Caption:** {user_caption[:50]}\n"
+        field_value += f"**Posted by:** {author_name}\n"
+        if message_url:
+          field_value += f"[Jump to message]({message_url})"
+
+        embed.add_field(name=f"#{idx}", value=field_value, inline=False)
+
+      embed.set_footer(text=f"Requested by {ctx.author.display_name}")
+      await ctx.send(embed=embed)
+
+    except Exception as e:
+      embed = discord.Embed(
+        title="❌ Search Error",
+        description=f"An error occurred while searching: {str(e)}",
+        color=0xFF0000,
+      )
+      await ctx.send(embed=embed)
+
+  @commands.hybrid_command(
+    name="search_by_image",
+    description="Search for similar images using an uploaded image",
+  )
+  async def search_by_image(self, ctx: commands.Context, limit: int = 5):
+    """
+    Search for visually similar images.
+    Attach an image when using this command.
+
+    Args:
+        limit: Maximum number of results (default: 5, max: 10)
+    """
+    await ctx.defer()
+
+    if not ctx.guild:
+      return await ctx.send("❌ This command can only be used in a server")
+
+    # Check for image attachment
+    if ctx.message.attachments:
+      attachments = ctx.message.attachments
+    elif ctx.interaction and ctx.interaction.message.attachments:
+      attachments = ctx.interaction.message.attachments
+    else:
+      embed = discord.Embed(
+        title="❌ No Image Provided",
+        description="Please attach an image when using this command!",
+        color=0xFF6B6B,
+      )
+      return await ctx.send(embed=embed)
+
+    # Get the first image attachment
+    image_attachments = [
+      att
+      for att in attachments
+      if att.content_type and att.content_type.startswith("image")
+    ]
+
+    if not image_attachments:
+      embed = discord.Embed(
+        title="❌ No Image Found",
+        description="Please attach an image file (PNG, JPG, etc.)",
+        color=0xFF6B6B,
+      )
+      return await ctx.send(embed=embed)
+
+    try:
+      # Read image bytes
+      image_attachment = image_attachments[0]
+      image_bytes = await image_attachment.read()
+
+      # Validate limit
+      limit = max(1, min(limit, 10))
+
+      # Generate embedding for the image
+      image_embedding = await to_thread(
+        self.voyage_service.generate_image_embeddings, image_bytes
+      )
+
+      # Search in Meilisearch
+      results = await to_thread(
+        self.meili_service.search_by_image,
+        image_embedding=image_embedding,
+        server_id=str(ctx.guild.id),
+        limit=limit,
+        semantic_ratio=0.95,  # High semantic ratio for visual similarity
+      )
+
+      hits = results.get("hits", [])
+
+      if not hits:
+        embed = discord.Embed(
+          title="🔍 No Similar Images Found",
+          description="No visually similar images found in this server",
+          color=0xFF6B6B,
+        )
+        return await ctx.send(embed=embed)
+
+      # Create embed with results
+      embed = discord.Embed(
+        title="🖼️ Visually Similar Images",
+        description=f"Found {len(hits)} similar image(s) in this server",
+        color=0x7615D1,
+        timestamp=datetime.now(),
+      )
+
+      for idx, hit in enumerate(hits, 1):
+        score = hit.get("_rankingScore", 0)
+        vlm_caption = hit.get("vlm_caption", "No caption")
+        author_name = hit.get("author_name", "Unknown")
+        message_url = hit.get("message_url", "")
+        attachment_url = hit.get("attachment_url", "")
+
+        # Truncate caption
+        vlm_caption_short = (
+          (vlm_caption[:100] + "...") if len(vlm_caption) > 100 else vlm_caption
+        )
+
+        field_value = f"**Similarity:** {score:.3f}\n"
+        field_value += f"**Description:** {vlm_caption_short}\n"
+        field_value += f"**Posted by:** {author_name}\n"
+        if message_url:
+          field_value += f"[Jump to message]({message_url})"
+
+        embed.add_field(name=f"#{idx}", value=field_value, inline=False)
+
+      # Set thumbnail to first result if available
+      if hits and hits[0].get("attachment_url"):
+        embed.set_thumbnail(url=hits[0]["attachment_url"])
+
+      embed.set_footer(text=f"Requested by {ctx.author.display_name}")
+      await ctx.send(embed=embed)
+
+    except Exception as e:
+      embed = discord.Embed(
+        title="❌ Search Error",
+        description=f"An error occurred while searching: {str(e)}",
+        color=0xFF0000,
+      )
+      await ctx.send(embed=embed)
+
+  @commands.hybrid_command(
+    name="image_stats", description="Show statistics about stored images"
+  )
+  async def image_stats(self, ctx: commands.Context):
+    """Show statistics about the image database."""
+    await ctx.defer()
+
+    if not ctx.guild:
+      return await ctx.send("❌ This command can only be used in a server")
+
+    try:
+      stats = await to_thread(self.meili_service.get_stats)
+
+      embed = discord.Embed(
+        title="📊 Image Database Statistics",
+        color=0x7615D1,
+        timestamp=datetime.now(),
+      )
+
+      embed.add_field(
+        name="📸 Total Images",
+        value=f"{stats.get('total_documents', 0):,}",
+        inline=True,
+      )
+
+      embed.add_field(
+        name="🔄 Indexing Status",
+        value="In Progress" if stats.get("is_indexing") else "Up to Date",
+        inline=True,
+      )
+
+      embed.set_footer(text=f"Server: {ctx.guild.name}")
+      await ctx.send(embed=embed)
+
+    except Exception as e:
+      embed = discord.Embed(
+        title="❌ Error",
+        description=f"Failed to get statistics: {str(e)}",
+        color=0xFF0000,
+      )
+      await ctx.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
