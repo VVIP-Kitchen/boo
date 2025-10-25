@@ -5,7 +5,6 @@ Background task queue service using Redis and RQ
 import redis
 from rq import Queue
 from typing import Optional
-from utils.config import REDIS_HOST, REDIS_PORT
 from utils.logger import logger
 
 
@@ -17,8 +16,8 @@ class TaskQueueService:
     try:
       # Connect to Redis
       self.redis_conn = redis.Redis(
-        host=REDIS_HOST,
-        port=REDIS_PORT,
+        host="redis",
+        port=6379,
         password=None,
         decode_responses=False,  # We'll handle binary data
         socket_connect_timeout=5,
