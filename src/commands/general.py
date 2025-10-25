@@ -668,9 +668,9 @@ class GeneralCommands(commands.Cog):
         if user_caption:
           field_value += f"**User Caption:** `{user_caption[:50]}`\n"
         field_value += f"**Posted by:** {author_name}\n"
+        field_value += f"-# Score: {score:.3f}\n"
         if message_url:
           field_value += f"[Jump to message]({message_url})"
-        field_value += f"-# Score: {score:.3f}\n"
 
         embed.add_field(name=f"#{idx}", value=field_value, inline=False)
 
