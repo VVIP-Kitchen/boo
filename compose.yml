@@ -114,7 +114,7 @@ services:
       - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     deploy:
-      replicas: 2
+      replicas: 4
 
   sandbox:
     build: ./sandbox

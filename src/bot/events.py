@@ -65,7 +65,7 @@ class BotEvents(commands.Cog):
     has_imgs = bool(image_attachments)
     prompt = prepare_prompt(message)
 
-    if has_imgs:
+    if has_imgs and not message.author.bot:
       await self._queue_images_for_processing(
         message=message,
         image_attachments=image_attachments,
