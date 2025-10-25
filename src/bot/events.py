@@ -53,6 +53,32 @@ class BotEvents(commands.Cog):
     }
 
   @commands.Cog.listener()
+  async def on_message_delete(self, message: discord.Message) -> None:
+    ### Delete those messages from meilisearch
+    try:
+      # Check if the message had attachments
+      img_attachments = [
+        att for att in message.attachments
+        if att.content_type and att.content_type.startswith("image")
+      ]
+
+      if not img_attachments:
+        return
+
+      logger.info(f"Message {message.id} deleted with {len(img_attachments)} images")
+
+      # Delete each image from Meilisearch
+      for att in img_attachments:
+        img_id = f"{message.id}_{att.id}"
+        try:
+          await to_thread(self.meili_service.delete_document, img_id)
+          logger.info(f"Delete image {img_id} from Meilisearch")
+        except Exception as e:
+          logger.error(f"Failed to delete image {img_id}: {e}")
+    except Exception as e:
+      logger.error(f"Error in on_message_delete: {e}")
+
+  @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
     log_message(message)
 
