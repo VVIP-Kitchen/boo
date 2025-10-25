@@ -50,7 +50,7 @@ for var_name in [
   "OPENROUTER_MODEL",
   "TAVILY_API_KEY",
   "VOYAGEAI_API_KEY",
-  "MEILI_MASTER_KEY"
+  "MEILI_MASTER_KEY",
 ]:
   if not globals()[var_name]:
     logger.error(f"{var_name} environment variable is not set.")

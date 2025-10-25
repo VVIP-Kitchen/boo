@@ -18,6 +18,7 @@ from utils.message_utils import (
   send_message,
   send_response,
 )
+from utils.llm_utils import to_base64_data_uri
 
 
 class BotEvents(commands.Cog):
@@ -74,7 +75,7 @@ class BotEvents(commands.Cog):
         )
         for att in image_attachments:
           img_bytes = await att.read()
-          data_uri = self.llm_service._to_base64_data_uri(img_bytes)
+          data_uri = to_base64_data_uri(img_bytes)
           user_content.append({"type": "image_url", "image_url": {"url": data_uri}})
 
       img_note = f"\n\n[Attached {len(image_attachments)} image(s)]" if has_imgs else ""

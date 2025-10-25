@@ -8,7 +8,7 @@ hackernews_tool = {
   "type": "function",
   "function": {
     "name": "get_hackernews_stories",
-    "description": "Fetch top stories from Hacker News. Returns the top stories from the past week, sorted by score.",
+    "description": "Fetch top stories from Hacker News. Use ONLY when the user explicitly asks for Hacker News stories or HN content.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -27,7 +27,6 @@ def fetch_top_stories():
   try:
     response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
     response.raise_for_status()
-
     return response.json()
   except requests.RequestException as e:
     return {"error": f"Failed to fetch top stories: {str(e)}"}
@@ -38,7 +37,6 @@ def fetch_story(story_id):
     url = f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"
     response = requests.get(url)
     response.raise_for_status()
-
     return response.json()
   except requests.RequestException as e:
     return {"error": f"Failed to fetch story {story_id}: {str(e)}"}
@@ -55,7 +53,6 @@ def get_top_hn_stories(limit=20):
   for story_id in story_ids:
     if len(stories) >= limit:
       break
-
     story = fetch_story(story_id)
     if isinstance(story, dict) and "error" not in story:
       if story.get("time", 0) >= last_week and story.get("type") == "story":
@@ -77,11 +74,12 @@ def get_top_hn_stories(limit=20):
 
 ### Tavily
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+
 tavily_search_tool = {
   "type": "function",
   "function": {
     "name": "search_web",
-    "description": "Search the web using Tavily API for current information, news, and general queries.",
+    "description": "Search the web for real-time information. Use ONLY when the user explicitly requests a web search or asks for current/live information that you don't have in your training data.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -110,7 +108,6 @@ def search_web(query, max_results=5):
   try:
     max_results = min(max(1, max_results), 10)
     response = tavily_client.search(query, max_results=max_results)
-
     formatted_results = []
     for result in response.get("results", []):
       formatted_results.append(
@@ -121,13 +118,11 @@ def search_web(query, max_results=5):
           "score": result.get("score", 0),
         }
       )
-
     return {
       "query": query,
       "results": formatted_results,
       "total_results": len(formatted_results),
     }
-
   except Exception as e:
     return {"error": f"Failed to search web: {str(e)}"}
 
@@ -135,7 +130,6 @@ def search_web(query, max_results=5):
 def get_tavily_usage():
   url = "https://api.tavily.com/usage"
   headers = {"Authorization": f"Bearer {TAVILY_API_KEY}"}
-
   response = requests.get(url, headers=headers)
   return response.json()
 
@@ -145,7 +139,7 @@ sandbox_tool = {
   "type": "function",
   "function": {
     "name": "run_code",
-    "description": "Execute Python code in a locked-down sandbox",
+    "description": "Execute Python code in a secure sandbox. Use ONLY when the user explicitly asks to run or execute code.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -177,7 +171,7 @@ generate_image_tool = {
   "type": "function",
   "function": {
     "name": "generate_image",
-    "description": "Generates a new image from a textual description (prompt). This is used when a user explicitly asks to create, draw, or generate an image.",
+    "description": "Generate an image from a text description. Use ONLY when the user explicitly asks to create, draw, generate, or make an image/picture.",
     "parameters": {
       "type": "object",
       "properties": {

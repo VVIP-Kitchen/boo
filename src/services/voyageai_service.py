@@ -5,6 +5,7 @@ from PIL import Image
 from io import BytesIO
 from utils.config import VOYAGEAI_API_KEY
 
+
 class VoyageAiService:
   def __init__(self, model="voyage-multimodal-3"):
     self.vo = voyageai.Client(VOYAGEAI_API_KEY)

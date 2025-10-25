@@ -1,14 +1,12 @@
 import io
-import os
-import re
-import json
 import time
 import base64
+import json
 from openai import OpenAI
 from typing import List, Dict, Union, Optional
+
 from utils.logger import logger
 from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
-
 from services.tool_calling_service import (
   hackernews_tool,
   get_top_hn_stories,
@@ -18,48 +16,8 @@ from services.tool_calling_service import (
   run_code,
   generate_image_tool,
 )
+from utils.llm_utils import has_vision_content, to_base64_data_uri
 
-### Helper functions
-def clean_tool_blob(text: str) -> str:
-  # remove special wrappers like <|python_start|> ... <|python_end|>
-  text = re.sub(r"<\|python_start\|>", "", text)
-  text = re.sub(r"<\|python_end\|>", "", text)
-  # strip markdown code fences
-  text = re.sub(r"^```(?:json)?", "", text.strip(), flags=re.MULTILINE)
-  text = re.sub(r"```$", "", text.strip(), flags=re.MULTILINE)
-  return text.strip()
-
-def _extract_first_json_object(text: str) -> Optional[dict]:
-  """
-  Find the first top-level JSON object in `text` using brace matching.
-  Return a parsed dict or None
-  """
-  if not text:
-    return None
-
-  text = clean_tool_blob(text)
-  start = None
-  depth = 0
-  for i , ch in enumerate(text):
-    if ch == '{' and start is None:
-      start = i
-      depth = 1
-      continue
-    if start is not None:
-      if ch == '{':
-        depth += 1
-      elif ch == '}':
-        depth -= 1
-        if depth == 0:
-          candidate = text[start:i + 1]
-          try:
-            parsed = json.loads(candidate)
-            return parsed
-          except json.JSONDecodeError:
-            start = None
-            depth = 0
-
-  return None
 
 class LLMService:
   def __init__(self):
@@ -67,18 +25,22 @@ class LLMService:
       base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY
     )
     self.model = OPENROUTER_MODEL
-    self.available_tools = {
-      "get_hackernews_stories": {
-        "tool_definition": hackernews_tool,
-        "function": get_top_hn_stories,
-      },
-      "search_web": {"tool_definition": tavily_search_tool, "function": search_web},
-      "run_code": {"tool_definition": sandbox_tool, "function": run_code},
-      "generate_image": {
-        "tool_definition": generate_image_tool,
-        "function": self._generate_image_as_tool,
-      },
+
+    # Map of tool names to their functions
+    self.tool_functions = {
+      "get_hackernews_stories": get_top_hn_stories,
+      "search_web": search_web,
+      "run_code": run_code,
+      "generate_image": self._generate_image_as_tool,
     }
+
+    # Tool definitions for OpenAI API
+    self.tool_definitions = [
+      hackernews_tool,
+      tavily_search_tool,
+      sandbox_tool,
+      generate_image_tool,
+    ]
 
   def create_or_edit_image(
     self,
@@ -87,15 +49,17 @@ class LLMService:
     aspect_ratio: str = "1:1",
   ) -> Union[bytes, str]:
     """
-    Directly generates or edits an image. This can be called programmatically.
-    Returns raw image bytes on success or an error string on failure.
+    Generate or edit an image.
+    Returns raw image bytes (base64 string) on success or error message.
     """
     image_model = "google/gemini-2.5-flash-image"
-    logger.info(f"Initiating image task with model: {image_model}")
+    logger.info(f"Image task with model: {image_model}")
+
     try:
+      # Prepare messages
       if input_image:
         logger.info("Mode: Image Editing")
-        base64_image_data = self._to_base64_data_uri(input_image)
+        base64_image_data = to_base64_data_uri(input_image)
         content = [
           {"type": "image_url", "image_url": {"url": base64_image_data}},
           {"type": "text", "text": prompt},
@@ -105,28 +69,26 @@ class LLMService:
         logger.info("Mode: Text-to-Image Generation")
         chat_messages = [{"role": "user", "content": prompt}]
 
-      api_params = {
-        "model": image_model,
-        "messages": chat_messages,
-        "max_tokens": 4096,
-        "extra_body": {
+      # API call
+      response = self.client.chat.completions.create(
+        model=image_model,
+        messages=chat_messages,
+        max_tokens=4096,
+        extra_body={
           "modalities": ["image"],
-          "image_config": {
-            "aspect_ratio": aspect_ratio
-          }
-        }
-      }
+          "image_config": {"aspect_ratio": aspect_ratio},
+        },
+      )
 
-      response = self.client.chat.completions.create(**api_params)
       message = response.choices[0].message
 
-      # Try to get images from the model_extra field (where OpenAI SDK stores unknown fields)
-      if hasattr(message, 'model_extra') and message.model_extra:
-        images = message.model_extra.get('images', [])
+      # Extract image from response
+      if hasattr(message, "model_extra") and message.model_extra:
+        images = message.model_extra.get("images", [])
         if images and len(images) > 0:
-          image_url = images[0].get('image_url', {}).get('url', '')
+          image_url = images[0].get("image_url", {}).get("url", "")
           if image_url:
-            logger.info("Successfully received image data from API")
+            logger.info("Successfully received image data")
             # Extract base64 data
             if "base64," in image_url:
               _, base64_data = image_url.split(",", 1)
@@ -134,110 +96,37 @@ class LLMService:
               base64_data = image_url
             return base64_data
 
-      logger.warning(f"Model returned text instead of image")
+      logger.warning("Model returned text instead of image")
       return "ERROR: No image returned"
-    except Exception as e:
-      if hasattr(e, "response") and getattr(e.response, "status_code", None) == 429:
-        headers = getattr(e.response, "headers", {})
-        reset_ts = int(headers.get("X-RateLimit-Reset", "0"))
-        wait_sec = max(0, reset_ts - int(time.time()))
-        formatted = f"{wait_sec // 60}m {wait_sec % 60}s"
-        logger.warning(f"Rate limit hit. Waiting for {formatted}.")
-        return f"⏳ Rate limit hit. Try again in {formatted}."
 
-      logger.error(f"Unexpected error in create_or_edit_image: {e}")
-      return "😵 Something went wrong while generating the image."
+    except Exception as e:
+      return self._handle_api_error(e)
 
   def _generate_image_as_tool(self, prompt: str, aspect_ratio: str = "1:1") -> dict:
-    """
-    Wrapper for the tool-calling mechanism. It saves the generated image
-    and returns a JSON-serializable dictionary as the result.
-    """
-    logger.info(f"Tool call received: generate_image with prompt: '{prompt}'")
-
-    # Call the core image generation logic
+    """Wrapper for tool-calling mechanism."""
+    logger.info(f"Tool call: generate_image with prompt: '{prompt}'")
     result = self.create_or_edit_image(prompt=prompt, aspect_ratio=aspect_ratio)
 
-    # If core returned raw bytes, base64-encode them so the tool result is JSON-serializable
-    if isinstance(result, (bytes, bytearray)):
-      image_b64 = base64.b64encode(result).decode("utf-8")
-      return {
-        "status": "success",
-        "message": f"Image successfully generated for prompt '{prompt}'",
-        "image_data": image_b64,
-        "format": "png",
-      }
-
-    # If core returned a string, assume it's already base64 (or data URI). Normalize it.
+    # Handle result
     if isinstance(result, str):
+      if (
+        result.startswith("ERROR") or result.startswith("⏳") or result.startswith("😵")
+      ):
+        return {"status": "error", "message": result}
+
+      # It's base64 data
       b64 = result
-      # If it's a data URI like "data:image/png;base64,AAAA...", strip the prefix.
       if b64.startswith("data:") and "," in b64:
         _, b64 = b64.split(",", 1)
 
-      # sanity check: quick length check to avoid returning error messages as "image"
-      if len(b64) < 50:
-        # probably an error message like "ERROR: No image returned"
-        return {"status": "error", "message": result}
-
       return {
         "status": "success",
-        "message": f"Image successfully generated for prompt '{prompt}'",
+        "message": f"Image generated for '{prompt}'",
         "image_data": b64,
         "format": "png",
       }
 
-    # fallback: unexpected type -> treat as error
-    return {"status": "error", "message": str(result)}
-
-  def _to_base64_data_uri(self, image: Union[io.BytesIO, bytes]) -> str:
-    image_bytes = image.getvalue() if isinstance(image, io.BytesIO) else image
-    base64_str = base64.b64encode(image_bytes).decode("utf-8")
-    return f"data:image/jpeg;base64,{base64_str}"
-
-  def _has_vision_content(self, messages):
-    try:
-      for m in messages or []:
-        c = m.get("content")
-        if isinstance(c, list):
-          for item in c:
-            if isinstance(item, dict) and item.get("type") == "image_url":
-              return True
-    except Exception:
-      pass
-    return False
-
-  def _execute_tool_call(self, call_dict: dict) -> str:
-    """
-    `call_dict` expected shape: {"name": "...", "parameters": {...}} or {"function": {"name": "...", "arguments": "..."}}
-    Returns a JSON string (so callers can json.loads it)
-    """
-    name = None
-    try:
-      if "name" in call_dict and "parameters" in call_dict:
-        name = call_dict["name"]
-        args = call_dict["parameters"]
-      elif "function" in call_dict and isinstance(call_dict["function"], dict):
-        fn = call_dict["function"]
-        name = fn.get("name") or fn.get("function_name")
-        args_raw = fn.get("arguments") or fn.get("parameters") or "{}"
-        args = json.loads(args_raw) if isinstance(args_raw, str) else args_raw
-      else:
-        name = call_dict.get("name")
-        args = call_dict.get("parameters") or call_dict.get("arguments") or {}
-
-      if not name or name not in self.available_tools:
-        return json.dumps({
-          "error": f"Unknown function name: {name}"
-        })
-
-      function = self.available_tools[name]["function"]
-      result = function(**args)
-      return json.dumps(result)
-    except Exception as e:
-      return json.dumps({
-        "error": f"Error executing {name}: {str(e)}"
-      })
+    return {"status": "error", "message": "Unexpected result type"}
 
   def chat_completions(
     self,
@@ -246,15 +135,19 @@ class LLMService:
     messages: Optional[Union[str, List[Dict[str, str]]]] = None,
     temperature: float = 0.6,
     max_tokens: int = 512,
-    enable_tools: bool = True,
+    enable_tools: bool = False,  # Changed to False by default
     tools: Optional[List[str]] = None,
   ) -> tuple:
-    try:
-      mock_usage = type("Usage", (), {"prompt_tokens": 0, "total_tokens": 0})()
-      generated_images = []
+    """
+    Main chat completion with tool calling.
+    Returns: (response_text, usage, generated_images)
+    """
+    mock_usage = type("Usage", (), {"prompt_tokens": 0, "total_tokens": 0})()
 
+    try:
+      # Prepare messages
       if image:
-        image_url = image if isinstance(image, str) else self._to_base64_data_uri(image)
+        image_url = image if isinstance(image, str) else to_base64_data_uri(image)
         content = [
           {"type": "text", "text": prompt or "Describe this image."},
           {"type": "image_url", "image_url": {"url": image_url}},
@@ -271,6 +164,10 @@ class LLMService:
       else:
         return "⚠️ No input provided.", mock_usage, []
 
+      # Check if vision mode (disable tools for vision)
+      vision_mode = has_vision_content(chat_messages)
+
+      # Prepare API parameters
       api_params = {
         "model": self.model,
         "messages": chat_messages,
@@ -278,142 +175,124 @@ class LLMService:
         "temperature": temperature,
       }
 
-      vision_mode = self._has_vision_content(chat_messages)
+      # Add tools if enabled and not vision mode
       if enable_tools and not vision_mode:
-        tool_definitions = []
-        enabled_tools = tools or list(self.available_tools.keys())
+        api_params["tools"] = self.tool_definitions
+        # Only use tools when explicitly requested
+        api_params["tool_choice"] = "auto"
 
-        for tool_name in enabled_tools:
-          if tool_name in self.available_tools:
-            tool_definitions.append(self.available_tools[tool_name]["tool_definition"])
-
-        if tool_definitions:
-          api_params["tools"] = tool_definitions
-          api_params["tool_choice"] = "auto"
-
+      # Initial API call
       response = self.client.chat.completions.create(**api_params)
       message = response.choices[0].message
-      message_text = (message.content or "").strip()
 
-      if not vision_mode and hasattr(message, "tool_calls") and message.tool_calls:
-        for tool_call in message.tool_calls:
-          tool_result = self._execute_tool_call(tool_call)
-          if tool_result is None:
-            tool_result = json.dumps({"error": "Tool returned None"})
-
-          try:
-            tool_result_dict = json.loads(tool_result)
-          except json.JSONDecodeError:
-            tool_result_dict = {"error": "Invalid JSON response"}
-
-          # Check if this is an image generation result
-          if (
-            tool_call.function.name == "generate_image"
-            and tool_result_dict.get("status") == "success"
-            and "image_data" in tool_result_dict
-          ):
-            generated_images.append(
-              {
-                "data": tool_result_dict["image_data"],
-                "format": tool_result_dict.get("format", "png"),
-              }
-            )
-
-            # Return immediately for image generation - no second API call needed
-            simple_message = "Here's your generated image! 🎨"
-            return simple_message, response.usage, generated_images
-        else:
-          parsed = _extract_first_json_object(message_text)
-          if parsed:
-            # If parsed contains top-level {"name": "...", "parameters": {...}}
-            # or variant shapes, execute it:
-            tool_result = self._execute_tool_call_dict(parsed)
-
-            # try decode result
-            try:
-              tool_result_dict = json.loads(tool_result)
-            except json.JSONDecodeError:
-              tool_result_dict = {"error": "Invalid JSON response from tool execution"}
-
-            # If image generated, handle same as before (collect base64, return)
-            if parsed.get("name") == "generate_image" and tool_result_dict.get("status") == "success" and "image_data" in tool_result_dict:
-              generated_images.append({
-                "data": tool_result_dict["image_data"],
-                "format": tool_result_dict.get("format", "png"),
-              })
-              return "Here's your generated image! 🎨", response.usage, generated_images
-
-            # otherwise attach assistant+tool result and re-call model for final answer
-            chat_messages.append({
-              "role": "assistant",
-              "content": message_text,   # keep model's human-friendly part (it may include commentary)
-            })
-            chat_messages.append({
-              "role": "tool",
-              "tool_call_id": parsed.get("id", "parsed_json"),
-              "content": tool_result
-            })
-
-            final_response = self.client.chat.completions.create(
-              model=self.model,
-              messages=chat_messages,
-              max_tokens=max_tokens,
-              temperature=temperature,
-            )
-            return final_response.choices[0].message.content.strip(), final_response.usage, []
-
-        # For non-image tools, add to context for final response
-        chat_messages.append(
-          {
-            "role": "assistant",
-            "content": message.content or "",
-            "tool_calls": [
-              {
-                "id": tool_call.id,
-                "type": "function",
-                "function": {
-                  "name": tool_call.function.name,
-                  "arguments": tool_call.function.arguments,
-                },
-              }
-            ],
-          }
-        )
-        chat_messages.append(
-          {"role": "tool", "tool_call_id": tool_call.id, "content": tool_result}
-        )
-        final_response = self.client.chat.completions.create(
-          model=self.model,
-          messages=chat_messages,
-          max_tokens=max_tokens,
-          temperature=temperature,
+      # Check for tool calls
+      if hasattr(message, "tool_calls") and message.tool_calls:
+        return self._handle_tool_calls(
+          message, chat_messages, max_tokens, temperature, response.usage
         )
 
-        return (
-          final_response.choices[0].message.content.strip(),
-          final_response.usage,
-          [],
-        )
-
-      else:
-        return message.content.strip(), response.usage, []
+      # No tool calls - return response directly
+      return message.content.strip(), response.usage, []
 
     except Exception as e:
-      if hasattr(e, "response") and getattr(e.response, "status_code", None) == 429:
-        headers = getattr(e.response, "headers", {})
-        reset_ts = int(headers.get("X-RateLimit-Reset", "0"))
-        current_ts = int(time.time())
-        wait_sec = max(0, reset_ts - current_ts)
+      logger.error(f"Error in chat_completions: {e}")
+      return self._handle_api_error(e), mock_usage, []
 
-        mins = wait_sec // 60
-        secs = wait_sec % 60
-        formatted = f"{mins}m {secs}s" if mins else f"{secs}s"
+  def _handle_tool_calls(
+    self, message, chat_messages: List[Dict], max_tokens: int, temperature: float, usage
+  ) -> tuple:
+    """Handle tool calls in standard OpenAI format."""
+    generated_images = []
+    tool_results = []
 
-        return (
-          f"⏳ You've hit the rate limit for this model. Try again in {formatted}.",
-          mock_usage,
-          []
-        )
+    # Execute each tool call
+    for tool_call in message.tool_calls:
+      function_name = tool_call.function.name
+      logger.info(f"Executing tool: {function_name}")
 
-      logger.error(f"Unexpected error in chat_completions: {e}")
-      return "😵 Something went wrong while generating a response.", mock_usage, []
+      try:
+        # Parse arguments
+        arguments = json.loads(tool_call.function.arguments)
+
+        # Execute function
+        if function_name in self.tool_functions:
+          result = self.tool_functions[function_name](**arguments)
+        else:
+          result = {"error": f"Unknown function: {function_name}"}
+
+        # Convert result to JSON string
+        result_str = json.dumps(result)
+
+        # Check for image generation
+        if (
+          function_name == "generate_image"
+          and result.get("status") == "success"
+          and "image_data" in result
+        ):
+          generated_images.append(
+            {
+              "data": result["image_data"],
+              "format": result.get("format", "png"),
+            }
+          )
+
+        tool_results.append({"call": tool_call, "result": result_str})
+
+      except Exception as e:
+        logger.error(f"Error executing {function_name}: {e}")
+        error_result = json.dumps({"error": str(e)})
+        tool_results.append({"call": tool_call, "result": error_result})
+
+    # If image was generated, return immediately
+    if generated_images:
+      return "Here's your generated image! 🎨", usage, generated_images
+
+    # Add assistant message with tool calls
+    chat_messages.append(
+      {
+        "role": "assistant",
+        "content": message.content or "",
+        "tool_calls": [
+          {
+            "id": tr["call"].id,
+            "type": "function",
+            "function": {
+              "name": tr["call"].function.name,
+              "arguments": tr["call"].function.arguments,
+            },
+          }
+          for tr in tool_results
+        ],
+      }
+    )
+
+    # Add tool results
+    for tr in tool_results:
+      chat_messages.append(
+        {"role": "tool", "tool_call_id": tr["call"].id, "content": tr["result"]}
+      )
+
+    # Get final response
+    final_response = self.client.chat.completions.create(
+      model=self.model,
+      messages=chat_messages,
+      max_tokens=max_tokens,
+      temperature=temperature,
+    )
+
+    return final_response.choices[0].message.content.strip(), final_response.usage, []
+
+  def _handle_api_error(self, error: Exception) -> str:
+    """Handle API errors with user-friendly messages."""
+    if (
+      hasattr(error, "response") and getattr(error.response, "status_code", None) == 429
+    ):
+      headers = getattr(error.response, "headers", {})
+      reset_ts = int(headers.get("X-RateLimit-Reset", "0"))
+      wait_sec = max(0, reset_ts - int(time.time()))
+      formatted = f"{wait_sec // 60}m {wait_sec % 60}s"
+      logger.warning(f"Rate limit hit. Wait {formatted}.")
+      return f"⏳ Rate limit hit. Try again in {formatted}."
+
+    logger.error(f"Unexpected error: {error}")
+    return "😵 Something went wrong while generating a response."
