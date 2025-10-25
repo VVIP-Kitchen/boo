@@ -217,7 +217,7 @@ class BotEvents(commands.Cog):
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)
-    lore = prompt.get("system_prompt") if prompt else "You are a helpful assistant"
+    lore = prompt.get("system_prompt", "You are a helpful assistant") if prompt else "You are a helpful assistant"
     now = datetime.datetime.now(
       datetime.timezone(datetime.timedelta(hours=5, minutes=30))
     )
@@ -264,7 +264,7 @@ class BotEvents(commands.Cog):
     for sid in sticker_ids:
       try:
         stickers.append(await self.bot.fetch_sticker(int(sid)))
-      except discord.errors.NotFound:
+      except:
         logger.info(f"Sticker not found: {sid}")
     return stickers
 

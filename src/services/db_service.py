@@ -16,7 +16,7 @@ class DBService:
     self.base_url = DB_SERVICE_BASE_URL
     self.timeout = 1  ### Timeout of 1s
 
-  def fetch_prompt(self, guild_id: str) -> Optional[Dict[str, str]]:
+  def fetch_prompt(self, guild_id: str) -> Dict[str, str]:
     """
     Fetch a prompt for a given guild ID.
 
@@ -49,7 +49,7 @@ class DBService:
     except ValueError as e:
       logger.error(f"Error parsing JSON response for guild {guild_id}: {e}")
 
-    return None
+    return {"system_prompt": ""}
 
   def update_prompt(self, guild_id: str, system_prompt: str) -> bool:
     """
