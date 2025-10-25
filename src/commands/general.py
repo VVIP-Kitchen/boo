@@ -847,6 +847,45 @@ class GeneralCommands(commands.Cog):
       )
       await ctx.send(embed=embed)
 
+  @commands.hybrid_command(
+    name="queue_status", description="Show background image processing queue status"
+  )
+  @commands.has_permissions(administrator=True)
+  async def queue_status(self, ctx: commands.Context):
+    """Show status of the background task queue."""
+    try:
+      # Initialize task queue service
+      from services.task_queue_service import TaskQueueService
+
+      task_queue = TaskQueueService()
+
+      info = task_queue.get_queue_info()
+
+      if "error" in info:
+        return await ctx.send(f"❌ Queue error: {info['error']}")
+
+      embed = discord.Embed(
+        title="📊 Task Queue Status",
+        color=0x7615D1,
+        timestamp=datetime.now(),
+      )
+
+      embed.add_field(name="⏳ Pending", value=str(info.get("count", 0)), inline=True)
+      embed.add_field(
+        name="▶️ Running", value=str(info.get("started_count", 0)), inline=True
+      )
+      embed.add_field(
+        name="✅ Completed", value=str(info.get("finished_count", 0)), inline=True
+      )
+      embed.add_field(
+        name="❌ Failed", value=str(info.get("failed_count", 0)), inline=True
+      )
+
+      await ctx.send(embed=embed)
+
+    except Exception as e:
+      await ctx.send(f"❌ Error: {str(e)}")
+
 
 async def setup(bot: commands.Bot) -> None:
   """

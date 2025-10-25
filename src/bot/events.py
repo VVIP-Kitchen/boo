@@ -1,16 +1,18 @@
 import random
 import discord
 import datetime
+from utils.logger import logger
 from discord.ext import commands
 from services.db_service import DBService
 from services.llm_service import LLMService
-from services.voyageai_service import VoyageAiService
-from services.meilisearch_service import MeilisearchService
-from services.image_processing_service import ImageProcessingService
+from utils.llm_utils import to_base64_data_uri
 from services.async_caller_service import to_thread
-from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
+from services.voyageai_service import VoyageAiService
+from services.task_queue_service import TaskQueueService
+from services.meilisearch_service import MeilisearchService
 from utils.emoji_utils import replace_emojis, replace_stickers
-from utils.logger import logger
+from services.image_processing_service import ImageProcessingService
+from utils.config import CONTEXT_LIMIT, server_contexts, server_lore
 from utils.message_utils import (
   CHANNEL_NAME,
   should_ignore,
@@ -21,7 +23,6 @@ from utils.message_utils import (
   send_message,
   send_response,
 )
-from utils.llm_utils import to_base64_data_uri
 
 
 class BotEvents(commands.Cog):
@@ -41,6 +42,7 @@ class BotEvents(commands.Cog):
       meilisearch_service=self.meili_service,
     )
 
+    self.task_queue = TaskQueueService()
     self.context_reset_message = "Context reset! Starting a new conversation. 👋"
 
   @commands.Cog.listener()
@@ -84,11 +86,12 @@ class BotEvents(commands.Cog):
       user_content = [{"type": "text", "text": prompt}]
 
       if has_imgs:
+        # Just show analyzing message, don't wait
         await send_message(
           message, f"-# Analyzing {len(image_attachments)} images ... 💭"
         )
 
-        # Process images for LLM
+        # Process images for LLM (for caption generation)
         for att in image_attachments:
           img_bytes = await att.read()
           data_uri = to_base64_data_uri(img_bytes)
@@ -121,13 +124,12 @@ class BotEvents(commands.Cog):
           bot_response, usage = result
           generated_images = []
 
-      # Process and store images in background (don't block response)
+      # Queue image processing in background (non-blocking)
       if has_imgs:
-        await self._process_images_for_storage(
+        self._queue_images_for_processing(
           message=message,
           image_attachments=image_attachments,
           user_caption=prompt if prompt else None,
-          vlm_caption=bot_response,
         )
 
       bot_response = replace_emojis(bot_response, self.custom_emojis)
@@ -154,67 +156,67 @@ class BotEvents(commands.Cog):
       logger.error(f"Error in on_message: {e}")
       await send_error_message(message)
 
-  async def _process_images_for_storage(
+  def _queue_images_for_processing(
     self,
     message: discord.Message,
     image_attachments: list,
     user_caption: str,
-    vlm_caption: str,
   ) -> None:
     """
-    Process images and store them in Meilisearch with embeddings.
-    Runs in background to not block bot response.
+    Queue images for background processing.
+    Non-blocking - immediately returns after queuing.
     """
-    try:
-      logger.info(f"Processing {len(image_attachments)} images for storage")
+    if not self.task_queue.queue:
+      logger.warning("Task queue not available, falling back to synchronous processing")
+      # Fallback: could run in thread but won't be truly background
+      return
 
-      for idx, attachment in enumerate(image_attachments):
-        try:
-          # Read image bytes
-          img_bytes = await attachment.read()
+    logger.info(f"Queueing {len(image_attachments)} images for background processing")
 
-          # Create message URL for easy reference
-          message_url = f"https://discord.com/channels/{message.guild.id if message.guild else '@me'}/{message.channel.id}/{message.id}"
+    for idx, attachment in enumerate(image_attachments):
+      try:
+        # We need to read the attachment here since it might not be available later
+        # This is quick - just reading bytes, not processing
+        import asyncio
 
-          # Generate unique image ID from attachment
-          image_id = f"{message.id}_{attachment.id}"
+        img_bytes = asyncio.run(attachment.read())
 
-          # Process and store in thread to avoid blocking
-          await to_thread(
-            self.image_processor.process_and_store_image,
-            image=img_bytes,
-            user_caption=user_caption,
-            image_id=image_id,
-            # Discord metadata
-            message_url=message_url,
-            message_id=str(message.id),
-            server_id=str(message.guild.id)
-            if message.guild
-            else f"DM_{message.author.id}",
-            server_name=message.guild.name if message.guild else "Direct Message",
-            channel_id=str(message.channel.id),
-            channel_name=getattr(message.channel, "name", "DM"),
-            author_id=str(message.author.id),
-            author_name=f"{message.author.name} ({message.author.display_name})",
-            attachment_url=attachment.url,
-            metadata={
-              "attachment_filename": attachment.filename,
-              "attachment_size": attachment.size,
-              "vlm_caption_preview": vlm_caption[:200],  # Store preview
-            },
-          )
+        # Create message URL
+        message_url = f"https://discord.com/channels/{message.guild.id if message.guild else '@me'}/{message.channel.id}/{message.id}"
 
+        # Generate image ID
+        image_id = f"{message.id}_{attachment.id}"
+
+        # Queue the task
+        job_id = self.task_queue.enqueue_image_processing(
+          image_bytes=img_bytes,
+          user_caption=user_caption,
+          image_id=image_id,
+          message_url=message_url,
+          message_id=str(message.id),
+          server_id=str(message.guild.id)
+          if message.guild
+          else f"DM_{message.author.id}",
+          server_name=message.guild.name if message.guild else "Direct Message",
+          channel_id=str(message.channel.id),
+          channel_name=getattr(message.channel, "name", "DM"),
+          author_id=str(message.author.id),
+          author_name=f"{message.author.name} ({message.author.display_name})",
+          attachment_url=attachment.url,
+          attachment_filename=attachment.filename,
+          attachment_size=attachment.size,
+        )
+
+        if job_id:
           logger.info(
-            f"Successfully stored image {image_id} (attachment {idx + 1}/{len(image_attachments)})"
+            f"Queued image {idx + 1}/{len(image_attachments)}: {image_id} (job: {job_id})"
           )
+        else:
+          logger.error(f"Failed to queue image {idx + 1}/{len(image_attachments)}")
 
-        except Exception as e:
-          logger.error(f"Error processing attachment {attachment.filename}: {e}")
-          # Continue with other images even if one fails
-          continue
-
-    except Exception as e:
-      logger.error(f"Error in _process_images_for_storage: {e}")
+      except Exception as e:
+        logger.error(f"Error queueing attachment {attachment.filename}: {e}")
+        continue
 
   def _load_server_lore(self, server_id: str, guild: discord.Guild) -> None:
     prompt = self.db_service.fetch_prompt(server_id)

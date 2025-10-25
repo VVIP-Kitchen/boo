@@ -93,6 +93,28 @@ services:
       - REDIS_PORT=6379
       - REDIS_TOKEN=${REDIS_TOKEN}
 
+  worker:
+    depends_on:
+      - redis
+      - meilisearch
+    build: .
+    container_name: boo-worker
+    command: uv run src/worker.py
+    restart: always
+    networks:
+      - default
+      - internal_net
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL}
+      - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=6379
+      - REDIS_TOKEN=${REDIS_TOKEN}
+    deploy:
+      replicas: 2  # Run 2 workers for parallel processing
+
   sandbox:
     build: ./sandbox
     container_name: sandbox
