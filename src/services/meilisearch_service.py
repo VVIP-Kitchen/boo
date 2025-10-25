@@ -91,7 +91,14 @@ class MeilisearchService:
     if metadata:
       document.update(metadata)
 
-    return self.index.add_documents([document])
+    task_info = self.index.add_documents([document])
+    task_result = self.client.wait_for_task(task_info.task_uid)
+    if task_result.status == "failed":
+      logger.error(f"Meilisearch indexing failed: {task_result.error}")
+      raise Exception(f"Failed to index document: {task_result.error}")
+
+    logger.info(f"Document {image_id} successfully indexed (task: {task_info.task_uid})")
+    return task_result
 
   def search_by_text(
     self,
