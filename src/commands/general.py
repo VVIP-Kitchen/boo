@@ -631,7 +631,7 @@ class GeneralCommands(commands.Cog):
         query_embedding=query_embedding,
         server_id=str(ctx.guild.id),
         limit=limit,
-        semantic_ratio=0.7,  # Balance between semantic and keyword search
+        semantic_ratio=0.55,  # Balance between semantic and keyword search
       )
 
       hits = results.get("hits", [])
