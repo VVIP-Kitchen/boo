@@ -6,7 +6,6 @@ RQ Worker for processing background tasks
 import redis
 from rq import Worker, Queue
 from utils.logger import logger
-from utils.config import REDIS_HOST, REDIS_PORT, REDIS_TOKEN
 
 
 def main():
@@ -14,9 +13,9 @@ def main():
   try:
     # Connect to Redis
     redis_conn = redis.Redis(
-      host=REDIS_HOST,
-      port=REDIS_PORT,
-      password=REDIS_TOKEN if REDIS_TOKEN else None,
+      host="redis",
+      port=6379,
+      password="boo-redis-token",
       decode_responses=False,
     )
 
