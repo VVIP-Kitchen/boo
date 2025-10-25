@@ -39,7 +39,7 @@ services:
       - "127.0.0.1:7700:7700"
     restart: always
     environment:
-      - MEILI_MASTER_KEY=meilisearch
+      - MEILI_MASTER_KEY=meilisearch-secret-key
       - MEILI_ENV=production
     volumes:
       - meilisearch_data:/meili_data
