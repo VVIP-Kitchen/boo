@@ -93,7 +93,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_TOKEN=${REDIS_TOKEN}
 
-  worker:
+  boo-worker:
     depends_on:
       - redis
       - meilisearch
