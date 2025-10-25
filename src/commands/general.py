@@ -600,9 +600,9 @@ class GeneralCommands(commands.Cog):
 
   ### Search commands
   @commands.hybrid_command(
-    name="search_images", description="Search for images by text query"
+    name="search_by_text", description="Search for images by text query"
   )
-  async def search_images(self, ctx: commands.Context, query: str, limit: int = 5):
+  async def search_by_text(self, ctx: commands.Context, query: str, limit: int = 5):
     """
     Search for images using a text query.
 
@@ -646,7 +646,7 @@ class GeneralCommands(commands.Cog):
 
       # Create embed with results
       embed = discord.Embed(
-        title=f"🔍 Image Search Results for: {query}",
+        title=f"🔍 Image Search Results for: `{query}`",
         description=f"Found {len(hits)} result(s) in this server",
         color=0x7615D1,
         timestamp=datetime.now(),
@@ -661,16 +661,16 @@ class GeneralCommands(commands.Cog):
 
         # Truncate captions if too long
         vlm_caption_short = (
-          (vlm_caption[:100] + "...") if len(vlm_caption) > 100 else vlm_caption
+          (vlm_caption[:50] + "...") if len(vlm_caption) > 50 else vlm_caption
         )
 
-        field_value = f"**Score:** {score:.3f}\n"
-        field_value += f"**Description:** {vlm_caption_short}\n"
+        field_value = f"**Description:** `{vlm_caption_short}`\n"
         if user_caption:
-          field_value += f"**User Caption:** {user_caption[:50]}\n"
+          field_value += f"**User Caption:** `{user_caption[:50]}`\n"
         field_value += f"**Posted by:** {author_name}\n"
         if message_url:
           field_value += f"[Jump to message]({message_url})"
+        field_value += f"-# Score: {score:.3f}\n"
 
         embed.add_field(name=f"#{idx}", value=field_value, inline=False)
 
