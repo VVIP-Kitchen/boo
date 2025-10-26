@@ -1,7 +1,26 @@
 FROM python:3.12-alpine
 
-RUN apk add --no-cache gcc musl-dev libffi-dev \
-    && pip install --no-cache-dir fastapi uvicorn
+RUN apk add --no-cache \
+    gcc \
+    g++ \
+    musl-dev \
+    libffi-dev \
+    openblas-dev \
+    freetype-dev \
+    libpng-dev \
+    jpeg-dev \
+    && pip install --no-cache-dir \
+    fastapi \
+    uvicorn \
+    numpy \
+    pandas \
+    matplotlib \
+    scipy \
+    requests \
+    pillow \
+    sympy \
+    # Remove build deps to reduce image size
+    && apk del gcc g++
 
 ### Create non-root user
 RUN adduser -D sandboxuser
