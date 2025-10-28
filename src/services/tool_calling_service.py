@@ -1,8 +1,8 @@
 import requests
+from bs4 import BeautifulSoup
 from tavily import TavilyClient
 from utils.config import TAVILY_API_KEY
 from datetime import datetime, timedelta
-
 ### Hackernews
 hackernews_tool = {
   "type": "function",
@@ -21,6 +21,34 @@ hackernews_tool = {
     },
   },
 }
+
+
+### Discord Agent
+def discord_agent(query: str, llm_service):
+    # Step 1: Search the web for relevant URLs
+    search_results = search_web(query)
+    if "error" in search_results:
+        return search_results
+
+    # Step 2: Crawl the websites for content and summarize each one
+    summaries = []
+    for result in search_results.get("results", []):
+        try:
+            response = requests.get(result["url"])
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            text = soup.get_text()
+            summary_prompt = f"Please summarize the following text to answer the query: {query}\n\n{text}"
+            summary, _, _ = llm_service.chat_completions(prompt=summary_prompt)
+            summaries.append(summary)
+        except requests.RequestException as e:
+            summaries.append(f"Error crawling {result['url']}: {str(e)}")
+
+    # Step 3: Synthesize the summaries
+    synthesis_prompt = f"Please synthesize the following summaries to answer the query: {query}\n\n{''.join(summaries)}"
+    final_answer, _, _ = llm_service.chat_completions(prompt=synthesis_prompt)
+
+    return {"answer": final_answer}
 
 
 def fetch_top_stories():
@@ -167,6 +195,24 @@ def run_code(code: str, timeout: int = 5):
 
 
 ### Image Generation Tool
+discord_agent_tool = {
+    "type": "function",
+    "function": {
+        "name": "discord_agent",
+        "description": "An autonomous agent that can perform web searches, crawl websites, and run Python code to answer a user's query.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The query to search for and analyze.",
+                },
+            },
+            "required": ["query"],
+        },
+    },
+}
+
 generate_image_tool = {
   "type": "function",
   "function": {

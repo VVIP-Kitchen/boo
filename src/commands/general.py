@@ -18,6 +18,7 @@ from services.voyageai_service import VoyageAiService
 from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
 from services.meilisearch_service import MeilisearchService
+from utils.logger import logger
 
 
 class PcmFanoutSink(voice_recv.AudioSink):
@@ -894,6 +895,23 @@ class GeneralCommands(commands.Cog):
 
     except Exception as e:
       await ctx.send(f"❌ Error: {str(e)}")
+
+  @commands.command()
+  async def research(self, ctx: commands.Context, *, query: str) -> None:
+      """
+      Perform research on a given topic.
+      """
+      await ctx.send(f"🔬 Researching: {query}...")
+      try:
+          response, _, _ = await to_thread(
+              self.llm_service.chat_completions,
+              prompt=query,
+              enable_tools=True
+          )
+          await ctx.send(response)
+      except Exception as e:
+          logger.error(f"Error in research command: {e}")
+          await ctx.send("An error occurred while researching.")
 
 
 async def setup(bot: commands.Bot) -> None:
