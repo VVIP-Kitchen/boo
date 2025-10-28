@@ -3,9 +3,10 @@ from datetime import datetime
 from typing import List, Optional, Dict
 from utils.config import MEILI_MASTER_KEY
 from utils.logger import logger
+from utils.singleton import Singleton
 
 
-class MeilisearchService:
+class MeilisearchService(metaclass=Singleton):
   def __init__(self, host="http://meilisearch:7700"):
     self.client = meilisearch.Client(host, MEILI_MASTER_KEY)
     self.index_name = "boo"

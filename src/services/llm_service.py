@@ -17,9 +17,10 @@ from services.tool_calling_service import (
   generate_image_tool,
 )
 from utils.llm_utils import has_vision_content, to_base64_data_uri
+from utils.singleton import Singleton
 
 
-class LLMService:
+class LLMService(metaclass=Singleton):
   def __init__(self):
     self.client = OpenAI(
       base_url="https://openrouter.ai/api/v1", api_key=OPENROUTER_API_KEY

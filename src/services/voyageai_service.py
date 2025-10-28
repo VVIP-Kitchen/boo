@@ -6,9 +6,10 @@ from typing import List, Union
 from utils.config import VOYAGEAI_API_KEY
 from utils.logger import logger
 from utils.image_utils import compress_image, validate_image_for_voyage, get_image_info
+from utils.singleton import Singleton
 
 
-class VoyageAiService:
+class VoyageAiService(metaclass=Singleton):
   def __init__(self, model="voyage-multimodal-3"):
     self.vo = voyageai.Client(VOYAGEAI_API_KEY)
     self.model = model

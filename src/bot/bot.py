@@ -27,9 +27,12 @@ class DiscordBot(commands.Bot):
     """
 
     ### Load necessary extensions
-    await self.load_extension("bot.events")
+    await self.load_extension("cogs.message_handler")
+    await self.load_extension("cogs.image_handler")
+    await self.load_extension("cogs.error_handler")
     await self.load_extension("commands.general")
     await self.load_extension("commands.admin")
+    await self.load_extension("commands.metrics")
 
   def run(self) -> None:
     """

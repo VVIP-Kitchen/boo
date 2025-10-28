@@ -2,9 +2,10 @@ import requests
 from typing import Optional, Dict
 from utils.logger import logger
 from utils.config import DB_SERVICE_BASE_URL
+from utils.singleton import Singleton
 
 
-class DBService:
+class DBService(metaclass=Singleton):
   """
   Service for interacting with the database API.
   """
@@ -192,3 +193,40 @@ class DBService:
     except ValueError as e:
       logger.error(f"Error parsing response after storing token usage: {e}")
     return None
+
+  def get_chat_history(self, guild_id: str) -> Optional[list]:
+    endpoint = f"http://{self.base_url}/chat-history"
+    params = {"guild_id": guild_id}
+
+    try:
+      response = requests.get(endpoint, params=params, timeout=self.timeout)
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error fetching chat history for guild {guild_id}: {e}")
+      return None
+
+  def update_chat_history(self, guild_id: str, messages: list) -> bool:
+    endpoint = f"http://{self.base_url}/chat-history"
+    params = {"guild_id": guild_id}
+    payload = messages
+
+    try:
+      response = requests.put(endpoint, params=params, json=payload, timeout=self.timeout)
+      response.raise_for_status()
+      return True
+    except requests.RequestException as e:
+      logger.error(f"Error updating chat history for guild {guild_id}: {e}")
+      return False
+
+  def delete_chat_history(self, guild_id: str) -> bool:
+    endpoint = f"http://{self.base_url}/chat-history"
+    params = {"guild_id": guild_id}
+
+    try:
+      response = requests.delete(endpoint, params=params, timeout=self.timeout)
+      response.raise_for_status()
+      return True
+    except requests.RequestException as e:
+      logger.error(f"Error deleting chat history for guild {guild_id}: {e}")
+      return False

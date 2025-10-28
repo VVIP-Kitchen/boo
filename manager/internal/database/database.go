@@ -65,6 +65,11 @@ func InitializeSchema(db *sql.DB) error {
 	CREATE INDEX IF NOT EXISTS idx_discord_author_id ON discord_messages(author_id);
 	CREATE INDEX IF NOT EXISTS idx_token_usage_guild_id ON token_usage(guild_id);
 	CREATE INDEX IF NOT EXISTS idx_token_usage_author_id ON token_usage(author_id);
+
+	CREATE TABLE IF NOT EXISTS chat_history (
+		guild_id TEXT PRIMARY KEY,
+		messages JSONB NOT NULL
+	);
 	`
 
 	_, err := db.Exec(query)

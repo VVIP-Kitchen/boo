@@ -51,6 +51,13 @@ func main() {
 	r.POST("/token", tokenHandler.AddTokenUsage)
 	r.GET("/token/stats", tokenHandler.GetTokenStats)
 
+	// Chat history endpoints
+	chatHistoryService := service.NewChatHistoryService(db)
+	chatHistoryHandler := handler.NewChatHistoryHandler(chatHistoryService)
+	r.GET("/chat-history", chatHistoryHandler.GetChatHistory)
+	r.PUT("/chat-history", chatHistoryHandler.UpdateChatHistory)
+	r.DELETE("/chat-history", chatHistoryHandler.DeleteChatHistory)
+
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))
 }
