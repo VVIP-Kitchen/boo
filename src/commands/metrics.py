@@ -11,7 +11,7 @@ class MetricsCog(commands.Cog):
         self.task_queue_service = TaskQueueService()
         self.meilisearch_service = MeilisearchService()
 
-    @commands.hybrid_command(name="metrics", help="Get bot metrics")
+    @commands.hybrid_command(name="meilisearch-metrics", help="Get bot metrics")
     @commands.is_owner()
     async def metrics(self, ctx):
         """Get bot metrics"""

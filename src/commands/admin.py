@@ -45,20 +45,6 @@ class AdminCommands(commands.Cog):
     await self.bot.reload_extension(f"cogs.{cog}")
     await ctx.send(f"Cog {cog} reloaded")
 
-  @commands.hybrid_command(name="resetchat", help="Reset chat history")
-  @commands.is_owner()
-  async def resetchat(self, ctx: commands.Context) -> None:
-    """
-    Reset chat history.
-
-    Args:
-      ctx (commands.Context): The invocation context.
-    """
-    server_id = str(ctx.guild.id)
-    self.db_service.delete_chat_history(server_id)
-    await ctx.send("Chat history reset!")
-
-
 async def setup(bot: commands.Bot) -> None:
   """
   Setup function to add the AdminCommands cog to the bot.
