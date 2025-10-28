@@ -6,9 +6,10 @@ import redis
 from rq import Queue
 from typing import Optional
 from utils.logger import logger
+from utils.singleton import Singleton
 
 
-class TaskQueueService:
+class TaskQueueService(metaclass=Singleton):
   """Service for managing background tasks with Redis Queue."""
 
   def __init__(self):

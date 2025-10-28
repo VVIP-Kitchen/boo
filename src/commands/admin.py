@@ -32,6 +32,18 @@ class AdminCommands(commands.Cog):
     await self.bot.tree.sync()
     await ctx.reply("Command Tree is synced, slash commands are updated ✔️")
 
+  @commands.command()
+  @commands.is_owner()
+  async def reload(self, ctx: commands.Context, cog: str) -> None:
+    """
+    Reload a cog.
+
+    Args:
+      ctx (commands.Context): The invocation context.
+      cog (str): The name of the cog to reload.
+    """
+    await self.bot.reload_extension(f"cogs.{cog}")
+    await ctx.send(f"Cog {cog} reloaded")
 
 async def setup(bot: commands.Bot) -> None:
   """
