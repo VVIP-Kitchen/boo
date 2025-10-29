@@ -143,7 +143,7 @@ class LLMService(metaclass=Singleton):
     image: Optional[Union[io.BytesIO, bytes, str]] = None,
     messages: Optional[Union[str, List[Dict[str, str]]]] = None,
     temperature: float = 0.6,
-    max_tokens: int = 512,
+    max_tokens: int = 4096,
     enable_tools: bool = False,  # Changed to False by default
     tools: Optional[List[str]] = None,
   ) -> tuple:
