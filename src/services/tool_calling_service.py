@@ -1,5 +1,8 @@
+import io
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from PyPDF2 import PdfReader
 from tavily import TavilyClient
 from utils.config import TAVILY_API_KEY
 from datetime import datetime, timedelta
@@ -21,34 +24,6 @@ hackernews_tool = {
     },
   },
 }
-
-
-### Discord Agent
-def discord_agent(query: str, llm_service):
-    # Step 1: Search the web for relevant URLs
-    search_results = search_web(query)
-    if "error" in search_results:
-        return search_results
-
-    # Step 2: Crawl the websites for content and summarize each one
-    summaries = []
-    for result in search_results.get("results", []):
-        try:
-            response = requests.get(result["url"])
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
-            text = soup.get_text()
-            summary_prompt = f"Please summarize the following text to answer the query: {query}\n\n{text}"
-            summary, _, _ = llm_service.chat_completions(prompt=summary_prompt)
-            summaries.append(summary)
-        except requests.RequestException as e:
-            summaries.append(f"Error crawling {result['url']}: {str(e)}")
-
-    # Step 3: Synthesize the summaries
-    synthesis_prompt = f"Please synthesize the following summaries to answer the query: {query}\n\n{''.join(summaries)}"
-    final_answer, _, _ = llm_service.chat_completions(prompt=synthesis_prompt)
-
-    return {"answer": final_answer}
 
 
 def fetch_top_stories():
@@ -127,6 +102,68 @@ tavily_search_tool = {
 }
 
 
+### PDF Reader
+read_pdf_tool = {
+    "type": "function",
+    "function": {
+        "name": "read_pdf",
+        "description": "Read the text content of a PDF file from a URL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the PDF file to read.",
+                },
+            },
+            "required": ["url"],
+        },
+    },
+}
+
+
+def read_pdf(url: str):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        pdf_file = io.BytesIO(response.content)
+        reader = PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return {"text": text}
+    except Exception as e:
+        return {"error": f"Failed to read PDF: {str(e)}"}
+
+
+### CSV Reader
+read_csv_tool = {
+    "type": "function",
+    "function": {
+        "name": "read_csv",
+        "description": "Read the text content of a CSV file from a URL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the CSV file to read.",
+                },
+            },
+            "required": ["url"],
+        },
+    },
+}
+
+
+def read_csv(url: str):
+    try:
+        df = pd.read_csv(url)
+        return {"data": df.head().to_string()}
+    except Exception as e:
+        return {"error": f"Failed to read CSV: {str(e)}"}
+
+
 def search_web(query, max_results=5):
   if not tavily_client:
     return {
@@ -195,24 +232,6 @@ def run_code(code: str, timeout: int = 5):
 
 
 ### Image Generation Tool
-discord_agent_tool = {
-    "type": "function",
-    "function": {
-        "name": "discord_agent",
-        "description": "An autonomous agent that can perform web searches, crawl websites, and run Python code to answer a user's query.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The query to search for and analyze.",
-                },
-            },
-            "required": ["query"],
-        },
-    },
-}
-
 generate_image_tool = {
   "type": "function",
   "function": {

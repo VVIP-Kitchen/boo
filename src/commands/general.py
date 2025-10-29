@@ -903,6 +903,11 @@ class GeneralCommands(commands.Cog):
       """
       await ctx.send(f"🔬 Researching: {query}...")
       try:
+          # Check for attachments
+          if ctx.message.attachments:
+              attachment_url = ctx.message.attachments[0].url
+              query += f"\n\nFile: {attachment_url}"
+
           response, _, _ = await to_thread(
               self.llm_service.chat_completions,
               prompt=query,
