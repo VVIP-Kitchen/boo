@@ -1,8 +1,11 @@
+import io
+import pandas as pd
 import requests
+from bs4 import BeautifulSoup
+from PyPDF2 import PdfReader
 from tavily import TavilyClient
 from utils.config import TAVILY_API_KEY
 from datetime import datetime, timedelta
-
 ### Hackernews
 hackernews_tool = {
   "type": "function",
@@ -97,6 +100,68 @@ tavily_search_tool = {
     },
   },
 }
+
+
+### PDF Reader
+read_pdf_tool = {
+    "type": "function",
+    "function": {
+        "name": "read_pdf",
+        "description": "Read the text content of a PDF file from a URL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the PDF file to read.",
+                },
+            },
+            "required": ["url"],
+        },
+    },
+}
+
+
+def read_pdf(url: str):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        pdf_file = io.BytesIO(response.content)
+        reader = PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return {"text": text}
+    except Exception as e:
+        return {"error": f"Failed to read PDF: {str(e)}"}
+
+
+### CSV Reader
+read_csv_tool = {
+    "type": "function",
+    "function": {
+        "name": "read_csv",
+        "description": "Read the text content of a CSV file from a URL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the CSV file to read.",
+                },
+            },
+            "required": ["url"],
+        },
+    },
+}
+
+
+def read_csv(url: str):
+    try:
+        df = pd.read_csv(url)
+        return {"data": df.head().to_string()}
+    except Exception as e:
+        return {"error": f"Failed to read CSV: {str(e)}"}
 
 
 def search_web(query, max_results=5):

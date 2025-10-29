@@ -15,6 +15,10 @@ from services.tool_calling_service import (
   sandbox_tool,
   run_code,
   generate_image_tool,
+  read_pdf_tool,
+  read_pdf,
+  read_csv_tool,
+  read_csv,
 )
 from utils.llm_utils import has_vision_content, to_base64_data_uri
 from utils.singleton import Singleton
@@ -33,6 +37,8 @@ class LLMService(metaclass=Singleton):
       "search_web": search_web,
       "run_code": run_code,
       "generate_image": self._generate_image_as_tool,
+      "read_pdf": read_pdf,
+      "read_csv": read_csv,
     }
 
     # Tool definitions for OpenAI API
@@ -41,6 +47,8 @@ class LLMService(metaclass=Singleton):
       tavily_search_tool,
       sandbox_tool,
       generate_image_tool,
+      read_pdf_tool,
+      read_csv_tool,
     ]
 
   def create_or_edit_image(
