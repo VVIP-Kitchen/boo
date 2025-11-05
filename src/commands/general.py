@@ -898,25 +898,23 @@ class GeneralCommands(commands.Cog):
 
   @commands.command()
   async def research(self, ctx: commands.Context, *, query: str) -> None:
-      """
-      Perform research on a given topic.
-      """
-      await ctx.send(f"🔬 Researching: {query}...")
-      try:
-          # Check for attachments
-          if ctx.message.attachments:
-              attachment_url = ctx.message.attachments[0].url
-              query += f"\n\nFile: {attachment_url}"
+    """
+    Perform research on a given topic.
+    """
+    await ctx.send(f"🔬 Researching: {query}...")
+    try:
+      # Check for attachments
+      if ctx.message.attachments:
+        attachment_url = ctx.message.attachments[0].url
+        query += f"\n\nFile: {attachment_url}"
 
-          response, _, _ = await to_thread(
-              self.llm_service.chat_completions,
-              prompt=query,
-              enable_tools=True
-          )
-          await ctx.send(response)
-      except Exception as e:
-          logger.error(f"Error in research command: {e}")
-          await ctx.send("An error occurred while researching.")
+      response, _, _ = await to_thread(
+        self.llm_service.chat_completions, prompt=query, enable_tools=True
+      )
+      await ctx.send(response)
+    except Exception as e:
+      logger.error(f"Error in research command: {e}")
+      await ctx.send("An error occurred while researching.")
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -212,7 +212,9 @@ class DBService(metaclass=Singleton):
     payload = messages
 
     try:
-      response = requests.put(endpoint, params=params, json=payload, timeout=self.timeout)
+      response = requests.put(
+        endpoint, params=params, json=payload, timeout=self.timeout
+      )
       response.raise_for_status()
       return True
     except requests.RequestException as e:

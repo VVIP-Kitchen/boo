@@ -45,6 +45,7 @@ class AdminCommands(commands.Cog):
     await self.bot.reload_extension(f"cogs.{cog}")
     await ctx.send(f"Cog {cog} reloaded")
 
+
 async def setup(bot: commands.Bot) -> None:
   """
   Setup function to add the AdminCommands cog to the bot.

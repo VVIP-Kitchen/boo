@@ -64,7 +64,7 @@ class MeilisearchService(metaclass=Singleton):
       "_vectors": {
         "image": image_embedding,
         "vlm_caption": vlm_caption_embedding,
-        "user_caption": user_caption_embedding if user_caption_embedding else None
+        "user_caption": user_caption_embedding if user_caption_embedding else None,
       },
       "vlm_caption": vlm_caption,
       "created_at": datetime.utcnow().isoformat(),
@@ -101,7 +101,9 @@ class MeilisearchService(metaclass=Singleton):
       logger.error(f"Meilisearch indexing failed: {task_result.error}")
       raise Exception(f"Failed to index document: {task_result.error}")
 
-    logger.info(f"Document {image_id} successfully indexed (task: {task_info.task_uid})")
+    logger.info(
+      f"Document {image_id} successfully indexed (task: {task_info.task_uid})"
+    )
     return task_result
 
   def search_by_text(

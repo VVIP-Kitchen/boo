@@ -9,8 +9,8 @@ from utils.logger import logger
 
 
 # Voyage AI limits
-MAX_PIXELS = 16_000_000  # 16M pixels
-MAX_SIZE_BYTES = 20 * 1024 * 1024  # 20MB
+MAX_PIXELS = 8_000_000  # 8M pixels
+MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10MB
 
 # Target resolution (1080p)
 TARGET_WIDTH = 1920
