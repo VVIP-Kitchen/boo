@@ -57,6 +57,7 @@ dependencies = [
 
 [tool.uv.workspace]
 members = [
-    "embeddings",
+    "modal/embeddings",
+    "modal/asr",
 ]
 
