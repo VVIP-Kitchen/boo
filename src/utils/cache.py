@@ -14,7 +14,7 @@ class ServerCache:
   _instance: Optional["ServerCache"] = None
   _lock = RLock()
 
-  def __new__(cls) -> "ServerCache":
+  def __new__(cls, *args, **kwargs) -> "ServerCache":
     if cls._instance is None:
       with cls._lock:
         if cls._instance is None:
