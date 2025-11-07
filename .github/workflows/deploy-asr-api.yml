@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       working-directory: ./modal/asr
       run: |
-        uv pip install --system modal numpy fastapi[standard] faster-whisper==1.0.3
+        uv pip install --system modal requests numpy fastapi[standard] faster-whisper==1.0.3
         if [ -f pyproject.toml ]; then
           uv sync
         fi
