@@ -53,3 +53,14 @@ jobs:
           tags: |
             ghcr.io/vvip-kitchen/boo-sandbox:latest
             ghcr.io/vvip-kitchen/boo-sandbox:${{ github.sha }}
+
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/boo
+            docker compose pull
+            docker compose up -d
