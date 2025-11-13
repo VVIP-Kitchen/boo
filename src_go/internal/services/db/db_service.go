@@ -7,26 +7,34 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
 // Singleton DB service
+var svc *dbService
 
-type DBService struct {
+type dbService struct {
 	BaseURL string
 	Timeout int
 }
 
-func (d *DBService) Init() {
-	// Connecting to the PG Database
+func GetDBService() *dbService {
+	return svc
 }
 
-func (d *DBService) Close() error {
-	// Closing the DB connection
-	return nil
+func Setup() {
+	baseURL, ok := os.LookupEnv("DB_SERVICE_URL")
+	if !ok {
+		baseURL = "http://localhost:8080"
+	}
+	svc = &dbService{
+		BaseURL: baseURL,
+		Timeout: 10,
+	}
 }
 
-func (d *DBService) FetchPrompt(guildID string) (map[string]string, error) {
+func (d *dbService) FetchPrompt(guildID string) (map[string]string, error) {
 	// sending a request
 	endpoint := d.BaseURL + "/prompt"
 	params := url.Values{}
@@ -57,7 +65,7 @@ func (d *DBService) FetchPrompt(guildID string) (map[string]string, error) {
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("Error fetching prompt: %s", string(responseBody))
 
-		return map[string]string{"system_prompt": ""}, nil
+		return map[string]string{"system_prompt": "You are an helpful assistant."}, nil
 	}
 
 	// converting response bytes into a map
@@ -69,7 +77,7 @@ func (d *DBService) FetchPrompt(guildID string) (map[string]string, error) {
 	return result, nil
 }
 
-func (d *DBService) UpdatePrompt(guildID, systemPrompt string) error {
+func (d *dbService) UpdatePrompt(guildID, systemPrompt string) error {
 	entrypoint := d.BaseURL + "/prompt"
 	params := url.Values{}
 	params.Add("guild_id", guildID)
@@ -99,7 +107,7 @@ func (d *DBService) UpdatePrompt(guildID, systemPrompt string) error {
 	return nil
 }
 
-func (d *DBService) AddPrompt(guildID, systemPrompt string) error {
+func (d *dbService) AddPrompt(guildID, systemPrompt string) error {
 	entrypoint := d.BaseURL + "/prompt"
 	jsonBody := `{"guild_id":"` + guildID + `","system_prompt":"` + systemPrompt + `"}`
 	req, err := http.NewRequest(http.MethodPost, entrypoint, strings.NewReader(jsonBody))

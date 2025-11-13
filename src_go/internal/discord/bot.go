@@ -4,6 +4,9 @@ import (
 	"boo/internal/discord/handlers"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -44,8 +47,13 @@ func (b *Bot) Run() {
 	defer discord.Close() // Ensure the connection is closed when done
 
 	fmt.Println("Bot is now running. Press CTRL+C to exit.")
-	<-make(chan struct{})
 
+	// Listen for interrupt signal (CTRL+C)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	<-stop
+
+	fmt.Println("Shutting down bot...")
 }
 
 func ready(discord *discordgo.Session, event *discordgo.Ready) {

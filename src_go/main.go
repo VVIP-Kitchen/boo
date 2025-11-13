@@ -2,6 +2,9 @@ package main
 
 import (
 	"boo/internal/discord"
+	"boo/internal/services/db"
+	"boo/internal/services/llm"
+	"context"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -21,6 +24,12 @@ func main() {
 	if !ok {
 		panic("ENVIRONMENT not set in environment")
 	}
+
+	
+
+	llm.Setup(context.Background())
+
+	db.Setup()
 
 	bot := discord.Bot{Token: botToken, Environment: env}
 	bot.Run()

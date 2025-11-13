@@ -18,6 +18,11 @@ require (
 	github.com/invopop/jsonschema v0.13.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mbleigh/raymond v0.0.0-20250414171441-6b3a58ab9e0a // indirect
+	github.com/openai/openai-go v1.8.2 // indirect
+	github.com/tidwall/gjson v1.18.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
@@ -34,7 +39,6 @@ require (
 require (
 	github.com/firebase/genkit/go v1.1.0
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 )
