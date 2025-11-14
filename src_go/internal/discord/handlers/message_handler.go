@@ -26,6 +26,25 @@ func Messages(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 
+	if message.Author.Bot {
+		return
+	}
+
+	// Only replying if bot is mentioned
+	mentioned := false
+	if len(message.Mentions) > 0 {
+		for _, user := range message.Mentions {
+			if user.ID == discord.State.User.ID {
+				mentioned = true
+				break
+			}
+		}
+	}
+
+	if !mentioned {
+		return
+	}
+
 	fmt.Println("Received Message", message.Author.DisplayName())
 
 	// responding with dummy text with typing indicator
@@ -45,7 +64,13 @@ func handleMessages(discord *discordgo.Session, message *discordgo.MessageCreate
 
 	ctx := context.Background()
 
-	resp, err := llm.LLM.ChatCompletion(ctx, state.ServerLore[message.GuildID], nil)
+	history, err := db.GetDBService().GetChatHistory(message.GuildID)
+	if err != nil {
+		fmt.Println("Error getting chat history:", err)
+		return
+	}
+
+	resp, err := llm.LLM.ChatCompletion(ctx, state.ServerLore[message.GuildID], history, message.Content)
 	if err != nil {
 		fmt.Println("Error getting chat completion:", err)
 		return

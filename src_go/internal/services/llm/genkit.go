@@ -34,11 +34,31 @@ func Setup(ctx context.Context) {
 	LLM = &GenKitService{gk: gk}
 }
 
-func (g *GenKitService) ChatCompletion(ctx context.Context, systemPrompt string, messages []*ai.Message) (string, error) {
+func convertMessages(messages []map[string]string) []*ai.Message {
+	var result []*ai.Message
+	for _, m := range messages {
+		role := ai.Role(m["role"]) // e.g., "user", "system", "model"
+		text := m["content"]
+
+		part := &ai.Part{
+			Text: text,
+		}
+
+		msg := &ai.Message{
+			Role:    role,
+			Content: []*ai.Part{part},
+		}
+		result = append(result, msg)
+	}
+	return result
+}
+
+func (g *GenKitService) ChatCompletion(ctx context.Context, systemPrompt string, messages []map[string]string, userMessage string) (string, error) {
 
 	resp, err := genkit.Generate(ctx, g.gk,
 		ai.WithSystem(systemPrompt),
-		ai.WithMessages(messages...),
+		ai.WithMessages(convertMessages(messages)...),
+		ai.WithPrompt(userMessage),
 	)
 
 	if err != nil {

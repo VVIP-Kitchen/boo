@@ -135,3 +135,104 @@ func (d *dbService) AddPrompt(guildID, systemPrompt string) error {
 		return fmt.Errorf("failed to add prompt, status code: %d", resp.StatusCode)
 	}
 }
+
+func (d *dbService) GetChatHistory(guildID string) ([]map[string]string, error) {
+	// sending a request
+	endpoint := d.BaseURL + "/chat_history"
+	params := url.Values{}
+	params.Add("guild_id", guildID)
+	endpoint += "?" + params.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Parsing response
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	
+	switch resp.StatusCode {
+		case http.StatusOK:
+		// continue processing
+		case http.StatusNotFound:
+			// No chat history found, return empty slice
+			return []map[string]string{}, nil
+		default:
+			log.Printf("Error fetching chat history: %s", string(responseBody))
+			return nil, fmt.Errorf("failed to fetch chat history, status code: %d", resp.StatusCode)
+	}	
+
+	// converting response bytes into a slice of maps
+	var result []map[string]string
+	if err := json.Unmarshal(responseBody, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (d *dbService) UpdateChatHistory(guildID string, history []map[string]string) error {
+	entrypoint := d.BaseURL + "/chat_history"
+	jsonBodyBytes, err := json.Marshal(map[string]interface{}{
+		"guild_id":     guildID,
+		"chat_history": history,
+	})
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodPut, entrypoint, strings.NewReader(string(jsonBodyBytes)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		responseBody, _ := io.ReadAll(resp.Body)
+		log.Printf("Error updating chat history: %s", string(responseBody))
+		return fmt.Errorf("failed to update chat history, status code: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+func (d *dbService) DeleteChatHistory(guildID string) error {
+	entrypoint := d.BaseURL + "/chat_history"
+	params := url.Values{}
+	params.Add("guild_id", guildID)
+	entrypoint += "?" + params.Encode()
+
+	req, err := http.NewRequest(http.MethodDelete, entrypoint, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		responseBody, _ := io.ReadAll(resp.Body)
+		log.Printf("Error deleting chat history: %s", string(responseBody))
+		return fmt.Errorf("failed to delete chat history, status code: %d", resp.StatusCode)
+	}
+
+	return nil
+}
