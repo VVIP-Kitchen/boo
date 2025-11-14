@@ -1,8 +1,6 @@
-import re
-import json
-import base64
 import io
-from typing import Optional, Union
+import base64
+from typing import Union
 
 
 def to_base64_data_uri(image: Union[io.BytesIO, bytes]) -> str:

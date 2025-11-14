@@ -1,9 +1,9 @@
 import meilisearch
 from datetime import datetime
-from typing import List, Optional, Dict
-from utils.config import MEILI_MASTER_KEY
 from utils.logger import logger
 from utils.singleton import Singleton
+from typing import List, Optional, Dict
+from utils.config import MEILI_MASTER_KEY
 
 
 class MeilisearchService(metaclass=Singleton):

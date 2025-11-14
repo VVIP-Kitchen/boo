@@ -1,11 +1,7 @@
-"""
-Service to handle image captioning, embedding generation, and storage
-"""
-
 import io
 import uuid
-from typing import Optional, Union, Tuple
 from utils.logger import logger
+from typing import Optional, Union, Tuple
 
 
 class ImageProcessingService:

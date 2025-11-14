@@ -4,12 +4,13 @@ import asyncio
 import discord
 
 from datetime import datetime
+from utils.logger import logger
 from discord.ext import commands
 from discord.ext import voice_recv
-from discord.ext.voice_recv import AudioSink
 from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
 from services.llm_service import LLMService
+from discord.ext.voice_recv import AudioSink
 from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
@@ -18,7 +19,6 @@ from services.voyageai_service import VoyageAiService
 from services.openrouter_service import OpenRouterService
 from services.tool_calling_service import get_tavily_usage
 from services.meilisearch_service import MeilisearchService
-from utils.logger import logger
 
 
 class PcmFanoutSink(voice_recv.AudioSink):

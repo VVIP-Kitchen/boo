@@ -1,7 +1,3 @@
-"""
-Image processing utilities for compression and optimization
-"""
-
 import io
 from PIL import Image
 from typing import Union, Tuple

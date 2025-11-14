@@ -1,12 +1,11 @@
-import os
 import voyageai
 from PIL import Image
 from io import BytesIO
 from typing import List, Union
-from utils.config import VOYAGEAI_API_KEY
 from utils.logger import logger
-from utils.image_utils import compress_image, validate_image_for_voyage, get_image_info
 from utils.singleton import Singleton
+from utils.config import VOYAGEAI_API_KEY
+from utils.image_utils import compress_image, validate_image_for_voyage, get_image_info
 
 
 class VoyageAiService(metaclass=Singleton):

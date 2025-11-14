@@ -1,7 +1,3 @@
-"""
-Background task queue service using Redis and RQ
-"""
-
 import redis
 from rq import Queue
 from typing import Optional

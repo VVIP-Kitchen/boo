@@ -1,8 +1,8 @@
 import requests
-from typing import Optional, Dict
 from utils.logger import logger
-from utils.config import DB_SERVICE_BASE_URL
+from typing import Optional, Dict
 from utils.singleton import Singleton
+from utils.config import DB_SERVICE_BASE_URL
 
 
 class DBService(metaclass=Singleton):

@@ -1,13 +1,12 @@
 import discord
-from discord.ext import commands
 from utils.logger import logger
+from discord.ext import commands
+from utils.cache import server_cache
+from utils.config import CONTEXT_LIMIT
 from services.db_service import DBService
 from services.llm_service import LLMService
 from utils.llm_utils import to_base64_data_uri
 from services.async_caller_service import to_thread
-from services.image_processing_service import ImageProcessingService
-from utils.config import CONTEXT_LIMIT
-from utils.cache import server_cache
 from utils.message_utils import (
   CHANNEL_NAME,
   should_ignore,

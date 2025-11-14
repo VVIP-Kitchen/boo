@@ -89,6 +89,7 @@ services:
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
 
   boo-worker:
     depends_on:
@@ -113,6 +114,7 @@ services:
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     deploy:
       replicas: 4
 

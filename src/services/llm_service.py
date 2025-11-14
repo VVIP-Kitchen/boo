@@ -1,6 +1,5 @@
 import io
 import time
-import base64
 import json
 from openai import OpenAI
 from typing import List, Dict, Union, Optional
@@ -19,6 +18,12 @@ from services.tool_calling_service import (
   read_pdf,
   read_csv_tool,
   read_csv,
+  github_repo_info_tool,
+  get_github_repo_info,
+  github_search_tool,
+  search_github,
+  github_trending_tool,
+  get_trending_repos,
 )
 from utils.llm_utils import has_vision_content, to_base64_data_uri
 from utils.singleton import Singleton
@@ -39,6 +44,9 @@ class LLMService(metaclass=Singleton):
       "generate_image": self._generate_image_as_tool,
       "read_pdf": read_pdf,
       "read_csv": read_csv,
+      "get_github_repo_info": get_github_repo_info,
+      "search_github": search_github,
+      "get_trending_repos": get_trending_repos,
     }
 
     # Tool definitions for OpenAI API
@@ -49,6 +57,9 @@ class LLMService(metaclass=Singleton):
       generate_image_tool,
       read_pdf_tool,
       read_csv_tool,
+      github_repo_info_tool,
+      github_search_tool,
+      github_trending_tool,
     ]
 
   def create_or_edit_image(

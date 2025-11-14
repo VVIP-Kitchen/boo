@@ -23,6 +23,7 @@ OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "")
 MEILI_MASTER_KEY: str = os.getenv("MEILI_MASTER_KEY", "")
 TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
 VOYAGEAI_API_KEY: str = os.getenv("VOYAGEAI_API_KEY", "")
+GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 DB_SERVICE_BASE_URL: str = os.getenv("DB_SERVICE_BASE_URL", "localhost:8080")
 
 
@@ -71,6 +72,7 @@ def _validate_required_env_vars() -> None:
     "TAVILY_API_KEY": TAVILY_API_KEY,
     "VOYAGEAI_API_KEY": VOYAGEAI_API_KEY,
     "MEILI_MASTER_KEY": MEILI_MASTER_KEY,
+    "GITHUB_TOKEN": GITHUB_TOKEN,
   }
 
   missing_vars = [name for name, value in required_vars.items() if not value]
