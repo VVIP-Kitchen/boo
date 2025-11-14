@@ -53,12 +53,10 @@ func convertMessages(messages []map[string]string) []*ai.Message {
 	return result
 }
 
-func (g *GenKitService) ChatCompletion(ctx context.Context, systemPrompt string, messages []map[string]string, userMessage string) (string, error) {
+func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[string]string) (string, error) {
 
 	resp, err := genkit.Generate(ctx, g.gk,
-		ai.WithSystem(systemPrompt),
 		ai.WithMessages(convertMessages(messages)...),
-		ai.WithPrompt(userMessage),
 	)
 
 	if err != nil {

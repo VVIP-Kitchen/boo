@@ -138,7 +138,7 @@ func (d *dbService) AddPrompt(guildID, systemPrompt string) error {
 
 func (d *dbService) GetChatHistory(guildID string) ([]map[string]string, error) {
 	// sending a request
-	endpoint := d.BaseURL + "/chat_history"
+	endpoint := d.BaseURL + "/chat-history"
 	params := url.Values{}
 	params.Add("guild_id", guildID)
 	endpoint += "?" + params.Encode()
@@ -160,17 +160,17 @@ func (d *dbService) GetChatHistory(guildID string) ([]map[string]string, error) 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	switch resp.StatusCode {
-		case http.StatusOK:
-		// continue processing
-		case http.StatusNotFound:
-			// No chat history found, return empty slice
-			return []map[string]string{}, nil
-		default:
-			log.Printf("Error fetching chat history: %s", string(responseBody))
-			return nil, fmt.Errorf("failed to fetch chat history, status code: %d", resp.StatusCode)
-	}	
+	case http.StatusOK:
+	// continue processing
+	case http.StatusNotFound:
+		// No chat history found, return empty slice
+		return []map[string]string{}, nil
+	default:
+		log.Printf("Error fetching chat history: %s", string(responseBody))
+		return nil, fmt.Errorf("failed to fetch chat history, status code: %d", resp.StatusCode)
+	}
 
 	// converting response bytes into a slice of maps
 	var result []map[string]string
@@ -181,11 +181,12 @@ func (d *dbService) GetChatHistory(guildID string) ([]map[string]string, error) 
 }
 
 func (d *dbService) UpdateChatHistory(guildID string, history []map[string]string) error {
-	entrypoint := d.BaseURL + "/chat_history"
-	jsonBodyBytes, err := json.Marshal(map[string]interface{}{
-		"guild_id":     guildID,
-		"chat_history": history,
-	})
+	entrypoint := d.BaseURL + "/chat-history"
+	params := url.Values{}
+	params.Add("guild_id", guildID)
+	entrypoint += "?" + params.Encode()
+
+	jsonBodyBytes, err := json.Marshal(history)
 	if err != nil {
 		return err
 	}
@@ -211,7 +212,7 @@ func (d *dbService) UpdateChatHistory(guildID string, history []map[string]strin
 }
 
 func (d *dbService) DeleteChatHistory(guildID string) error {
-	entrypoint := d.BaseURL + "/chat_history"
+	entrypoint := d.BaseURL + "/chat-history"
 	params := url.Values{}
 	params.Add("guild_id", guildID)
 	entrypoint += "?" + params.Encode()
