@@ -82,9 +82,16 @@ func (d *dbService) UpdatePrompt(guildID, systemPrompt string) error {
 	params := url.Values{}
 	params.Add("guild_id", guildID)
 
-	jsonBody := `{"system_prompt":"` + systemPrompt + `"}`
-
-	req, err := http.NewRequest(http.MethodPut, entrypoint, strings.NewReader(jsonBody))
+	// jsonBody := `{"system_prompt":"` + systemPrompt + `"}`
+	payload := map[string]string{
+		"system_prompt": systemPrompt,
+	}
+	jsonBody, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	entrypoint += "?" + params.Encode()
+	req, err := http.NewRequest(http.MethodPut, entrypoint, strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return err
 	}
@@ -109,8 +116,16 @@ func (d *dbService) UpdatePrompt(guildID, systemPrompt string) error {
 
 func (d *dbService) AddPrompt(guildID, systemPrompt string) error {
 	entrypoint := d.BaseURL + "/prompt"
-	jsonBody := `{"guild_id":"` + guildID + `","system_prompt":"` + systemPrompt + `"}`
-	req, err := http.NewRequest(http.MethodPost, entrypoint, strings.NewReader(jsonBody))
+	payload := map[string]string{
+		"guild_id":      guildID,
+		"system_prompt": systemPrompt,
+	}
+	jsonBody, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, entrypoint, strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return err
 	}
@@ -131,7 +146,7 @@ func (d *dbService) AddPrompt(guildID, systemPrompt string) error {
 		log.Printf("Prompt already exists for guild_id: %s", guildID)
 		return nil
 	default:
-		log.Printf("Error adding prompt: %s", jsonBody)
+		log.Printf("Error adding prompt: %s", string(jsonBody))
 		return fmt.Errorf("failed to add prompt, status code: %d", resp.StatusCode)
 	}
 }
@@ -186,11 +201,11 @@ func (d *dbService) UpdateChatHistory(guildID string, history []map[string]strin
 	params.Add("guild_id", guildID)
 	entrypoint += "?" + params.Encode()
 
-	jsonBodyBytes, err := json.Marshal(history)
+	jsonBody, err := json.Marshal(history)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest(http.MethodPut, entrypoint, strings.NewReader(string(jsonBodyBytes)))
+	req, err := http.NewRequest(http.MethodPut, entrypoint, strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return err
 	}
