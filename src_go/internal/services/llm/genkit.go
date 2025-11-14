@@ -1,6 +1,7 @@
 package llm
 
 import (
+	"boo/internal/services/weather"
 	"context"
 	"os"
 
@@ -12,7 +13,8 @@ import (
 var LLM *GenKitService
 
 type GenKitService struct {
-	gk *genkit.Genkit
+	gk    *genkit.Genkit
+	tools []ai.ToolRef
 }
 
 func Setup(ctx context.Context) {
@@ -32,6 +34,12 @@ func Setup(ctx context.Context) {
 	}), genkit.WithDefaultModel("openrouter/"+Model))
 
 	LLM = &GenKitService{gk: gk}
+
+	// Initialing tool services
+	weather.Setup()
+
+	// Defining tools
+	LLM.defineTools()
 }
 
 func convertMessages(messages []map[string]string) []*ai.Message {
@@ -57,6 +65,7 @@ func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[strin
 
 	resp, err := genkit.Generate(ctx, g.gk,
 		ai.WithMessages(convertMessages(messages)...),
+		ai.WithTools(g.tools...),
 	)
 
 	if err != nil {
