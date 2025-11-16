@@ -12,11 +12,6 @@ import (
 
 var LLM *GenKitService
 
-type GenKitService struct {
-	gk    *genkit.Genkit
-	tools []ai.ToolRef
-}
-
 func Setup(ctx context.Context) {
 	APIKey, ok := os.LookupEnv("OPENROUTER_API_KEY")
 	if !ok {
@@ -33,7 +28,7 @@ func Setup(ctx context.Context) {
 		Provider: "openrouter",
 	}), genkit.WithDefaultModel("openrouter/"+Model))
 
-	LLM = &GenKitService{gk: gk}
+	LLM = &GenKitService{gk: gk, provider: "openrouter"}
 
 	// Initialing tool services
 	weather.Setup()
@@ -73,4 +68,31 @@ func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[strin
 	}
 
 	return resp.Message.Text(), nil
+}
+
+func (g *GenKitService) CreateOrEditImage(ctx context.Context, prompt string, aspectRatio string) (string, error) {
+
+	// checking if image_bytes is nil or not
+	messages := ai.WithMessages(
+		ai.NewUserMessage(
+			ai.NewTextPart(prompt),
+		),
+	)
+	resp, err := genkit.Generate(ctx, g.gk,
+		messages,
+		ai.WithModelName(g.provider+"/google/gemini-2.5-flash-image"),
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	// Getting the image from the response if any
+	for _, part := range resp.Message.Content {
+		if part.IsImage() {
+			// return part.
+		}
+	}
+
+	return "", nil
 }
