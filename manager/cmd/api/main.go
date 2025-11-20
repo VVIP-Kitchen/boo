@@ -44,6 +44,9 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.File("./static/index.html")
 	})
+	r.GET("/admin", func(c *gin.Context) {
+		c.File("./static/admin.html")
+	})
 	r.GET("/docs", func(c *gin.Context) {
 		c.File("./static/swagger.html")
 	})

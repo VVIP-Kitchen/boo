@@ -3,205 +3,438 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Boo Prompts</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Boo — the (un)friendly Discord AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      async function fetchPrompts() {
-        const response = await fetch("/prompts");
-        const prompts = await response.json();
-        const promptList = document.getElementById("prompt-list");
-        promptList.innerHTML = "";
-
-        prompts.forEach((prompt) => {
-          const truncatedPrompt =
-            prompt.system_prompt.length > 50
-              ? prompt.system_prompt.substring(0, 50) + "..."
-              : prompt.system_prompt;
-
-          const li = document.createElement("li");
-          li.classList.add(
-            "border",
-            "p-4",
-            "rounded-lg",
-            "mb-2",
-            "shadow",
-            "bg-stone-800",
-            "flex",
-            "justify-between",
-            "items-center"
-          );
-
-          // Encode the system prompt to escape problematic characters
-          const safeSystemPrompt = encodeURIComponent(prompt.system_prompt);
-
-          li.innerHTML = `
-            <div>
-                <p class="font-mono text-gray-300"><strong>Guild ID:</strong> ${prompt.guild_id}</p>
-                <p class="font-mono text-gray-300"><strong>System Prompt:</strong> ${truncatedPrompt}</p>
-            </div>
-            <button class="bg-sky-900 hover:bg-sky-800 text-white font-mono py-2 px-4 rounded edit-button" 
-                data-guild-id="${prompt.guild_id}"
-                data-system-prompt="${safeSystemPrompt}">Edit</button>`;
-
-          promptList.appendChild(li);
-        });
-
-        // Add event listeners to edit buttons
-        document.querySelectorAll(".edit-button").forEach((button) => {
-          button.addEventListener("click", function () {
-            const guildId = this.getAttribute("data-guild-id");
-            const systemPrompt = decodeURIComponent(
-              this.getAttribute("data-system-prompt")
-            );
-            editPrompt(guildId, systemPrompt);
-          });
-        });
-      }
-
-      async function addPrompt() {
-        const guildID = document.getElementById("new-guild-id").value;
-        const systemPrompt = document.getElementById("new-system-prompt").value;
-
-        const response = await fetch("/prompt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            guild_id: guildID,
-            system_prompt: systemPrompt,
-          }),
-        });
-
-        if (response.ok) {
-          fetchPrompts();
-          document.getElementById("new-guild-id").value = "";
-          document.getElementById("new-system-prompt").value = "";
-        } else {
-          alert("Failed to add prompt");
-        }
-      }
-
-      function editPrompt(guildID, systemPrompt) {
-        document.getElementById("edit-guild-id").value = guildID;
-        document.getElementById("edit-system-prompt").value = systemPrompt;
-      }
-
-      async function updatePrompt() {
-        const guildID = document.getElementById("edit-guild-id").value;
-        const systemPrompt =
-          document.getElementById("edit-system-prompt").value;
-
-        const response = await fetch(
-          `/prompt?guild_id=${encodeURIComponent(guildID)}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              midnight: "#05060a",
+              obsidian: "#0b0f1c",
+              void: "#0f1729",
+              acid: "#80ffea",
+              ember: "#f87171"
             },
-            body: JSON.stringify({ system_prompt: systemPrompt }),
+            fontFamily: {
+              grotesk: ['"Space Grotesk"', "sans-serif"]
+            }
           }
-        );
-
-        if (response.ok) {
-          fetchPrompts();
-          document.getElementById("edit-guild-id").value = "";
-          document.getElementById("edit-system-prompt").value = "";
-        } else {
-          alert("Failed to update prompt");
         }
-      }
-
-      window.onload = fetchPrompts;
+      };
     </script>
+    <style>
+      body {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .noise {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Crect width='2' height='2'/%3E%3Crect x='32' width='2' height='2'/%3E%3Crect y='32' width='2' height='2'/%3E%3Crect x='32' y='32' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      }
+    </style>
   </head>
-  <body class="bg-stone-900">
-    <div class="container mx-auto p-6">
-      <h1 class="text-3xl font-bold font-mono mb-6 text-center text-gray-200">
-        Boo Prompts
-      </h1>
-
-      <!-- List of Prompts -->
-      <div class="bg-stone-900 shadow-md rounded-lg p-6 mb-6">
-        <h2 class="text-2xl font-semibold font-mono mb-4 text-gray-200">List of Prompts</h2>
-        <ul id="prompt-list" class="space-y-2">
-          <!-- Prompts will be populated here -->
-        </ul>
-      </div>
-
-      <!-- Add New Prompt -->
-      <div class="bg-stone-900 shadow-md rounded-lg p-6 mb-6">
-        <h2 class="text-2xl font-semibold font-mono mb-4 text-gray-200">Add New Prompt</h2>
-        <form onsubmit="event.preventDefault(); addPrompt();" class="space-y-4">
-          <div>
-            <label for="new-guild-id" class="block text-gray-300 font-mono"
-              >Guild ID:</label
-            >
-            <input
-              type="text"
-              id="new-guild-id"
-              class="mt-1 p-2 w-full border-0 rounded-lg text-gray-300 bg-stone-800 font-mono"
-              required
-            />
-          </div>
-          <div>
-            <label for="new-system-prompt" class="block text-gray-300 font-mono"
-              >System Prompt:</label
-            >
-            <textarea
-              id="new-system-prompt"
-              rows="4"
-              class="mt-1 p-2 w-full border-0 rounded-lg text-gray-300 bg-stone-800 font-mono"
-              required
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            class="bg-sky-800 hover:bg-sky-700 text-white font-mono font-bold py-2 px-4 rounded"
-          >
-            Add Prompt
-          </button>
-        </form>
-      </div>
-
-      <!-- Edit Existing Prompt -->
-      <div class="bg-stone-900 shadow-md rounded-lg p-6">
-        <h2 class="text-2xl font-mono font-semibold mb-4 text-gray-300">Edit Existing Prompt</h2>
-        <form
-          onsubmit="event.preventDefault(); updatePrompt();"
-          class="space-y-4"
-        >
-          <div>
-            <label for="edit-guild-id" class="block text-gray-300 font-mono"
-              >Guild ID (read-only):</label
-            >
-            <input
-              type="text"
-              id="edit-guild-id"
-              class="mt-1 p-2 w-full border-0 rounded-lg bg-stone-800 font-mono text-gray-300"
-              readonly
-            />
-          </div>
-          <div>
-            <label for="edit-system-prompt" class="block text-gray-300"
-              >System Prompt:</label
-            >
-            <textarea
-              id="edit-system-prompt"
-              rows="4"
-              class="mt-1 p-2 w-full border-0 rounded-lg bg-stone-800 font-mono text-gray-300"
-              required
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            class="bg-sky-800 hover:bg-sky-700 text-white font-mono font-bold py-2 px-4 rounded"
-          >
-            Update Prompt
-          </button>
-        </form>
-      </div>
+  <body class="bg-midnight text-gray-100 antialiased">
+    <div
+      class="fixed inset-0 pointer-events-none opacity-70"
+      aria-hidden="true"
+    >
+      <div
+        class="absolute -top-32 -right-10 w-96 h-96 bg-emerald-500/20 blur-[120px]"
+      ></div>
+      <div
+        class="absolute top-40 -left-16 w-[28rem] h-[28rem] bg-fuchsia-500/20 blur-[140px]"
+      ></div>
+      <div class="absolute inset-0 noise mix-blend-soft-light"></div>
     </div>
+
+    <header class="relative z-10 border-b border-white/10 bg-obsidian/70">
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-void shadow-[0_0_40px_rgba(128,255,234,0.35)]"
+          >
+            <span class="text-2xl">👻</span>
+          </div>
+          <div>
+            <p class="text-lg font-semibold tracking-wide">Boo</p>
+            <p class="text-sm text-gray-400">the (un)friendly Discord AI</p>
+          </div>
+        </div>
+        <nav class="hidden items-center gap-6 text-sm font-medium md:flex">
+          <a
+            href="#features"
+            class="text-gray-300 transition hover:text-white"
+            >Features</a
+          >
+          <a
+            href="#stack"
+            class="text-gray-300 transition hover:text-white"
+            >Stack</a
+          >
+          <a href="#cta" class="text-gray-300 transition hover:text-white"
+            >Get Started</a
+          >
+        </nav>
+        <div class="flex items-center gap-3">
+          <a
+            href="/docs"
+            class="rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-gray-200 transition hover:border-white/40 hover:text-white"
+            >API Docs</a
+          >
+          <a
+            href="/admin"
+            class="rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold transition hover:bg-acid hover:text-black"
+            >Admin</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <main class="relative z-10">
+      <section
+        class="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1.2fr_0.8fr]"
+      >
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs uppercase tracking-[0.3em] text-gray-300">
+            version 1.0 • self-hosted stack
+          </p>
+          <h1 class="mt-6 text-4xl font-semibold leading-tight text-white md:text-5xl">
+            A slightly spooky, super capable AI companion for your Discord server.
+          </h1>
+          <p class="mt-6 text-lg text-gray-300">
+            Boo blends OpenRouter-powered chat, image understanding, per-guild prompts,
+            Redis context, and a hardened Go API into one deployable stack.
+            Built for fast, context-aware banter with a mischievous edge.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a
+              href="https://github.com/VVIP-Kitchen/boo"
+              target="_blank"
+              class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 px-6 py-3 text-base font-semibold text-black shadow-lg shadow-emerald-500/30 transition hover:translate-y-0.5"
+            >
+              <span>View on GitHub</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="h-5 w-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17.25 6.75L21 10.5m0 0l-3.75 3.75M21 10.5H3"
+                />
+              </svg>
+            </a>
+            <a
+              href="/docs"
+              class="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/40"
+            >
+              Explore the API
+            </a>
+          </div>
+          <div class="mt-10 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-sm text-gray-400">LLM + Vision</p>
+              <p class="text-2xl font-semibold text-white">OpenRouter</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-sm text-gray-400">Context</p>
+              <p class="text-2xl font-semibold text-white">Redis</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-sm text-gray-400">Storage</p>
+              <p class="text-2xl font-semibold text-white">Postgres + Go</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="rounded-[32px] border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-1 backdrop-blur"
+          >
+            <div class="rounded-[28px] border border-white/5 bg-void p-6">
+              <div class="flex items-center justify-between text-xs text-gray-400">
+                <span>Realtime Status</span>
+                <span class="inline-flex items-center gap-1 text-emerald-300"
+                  ><span class="h-2 w-2 rounded-full bg-emerald-400"></span>Live</span
+                >
+              </div>
+              <div class="mt-6 space-y-4 text-sm">
+                <div class="flex items-start justify-between rounded-2xl bg-white/5 p-4">
+                  <div>
+                    <p class="text-gray-400">Guilds Synced</p>
+                    <p class="text-2xl font-semibold text-white">42</p>
+                  </div>
+                  <p class="text-emerald-300">+3 today</p>
+                </div>
+                <div class="flex items-start justify-between rounded-2xl bg-white/5 p-4">
+                  <div>
+                    <p class="text-gray-400">Context Messages</p>
+                    <p class="text-2xl font-semibold text-white">18,204</p>
+                  </div>
+                  <p class="text-cyan-300">Rolling 15m</p>
+                </div>
+                <div class="flex items-start justify-between rounded-2xl bg-white/5 p-4">
+                  <div>
+                    <p class="text-gray-400">Token Usage</p>
+                    <p class="text-2xl font-semibold text-white">1.4M</p>
+                  </div>
+                  <p class="text-fuchsia-300">this week</p>
+                </div>
+              </div>
+              <div class="mt-6 rounded-2xl border border-white/10 p-4 text-xs text-gray-400">
+                <p class="font-semibold text-white">Ingress</p>
+                <p class="mt-2">
+                  Secure Go API protected via bearer auth. External callers use
+                  <code class="text-emerald-300">Authorization: Bearer &lt;MANAGER_API_TOKEN&gt;</code>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="features"
+        class="mx-auto max-w-6xl px-6 pb-16"
+      >
+        <div class="flex items-center justify-between gap-6">
+          <div>
+            <p class="text-sm uppercase tracking-[0.4em] text-gray-400">
+              Features
+            </p>
+            <h2 class="mt-3 text-3xl font-semibold text-white">
+              Built for server owners who want vibes <span class="text-emerald-300">&</span> velocity.
+            </h2>
+          </div>
+          <a
+            href="https://github.com/VVIP-Kitchen/boo#-features-at-a-glance"
+            target="_blank"
+            class="text-sm text-emerald-300 underline-offset-4 hover:underline"
+            >Full feature list</a
+          >
+        </div>
+        <div class="mt-10 grid gap-6 md:grid-cols-2">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center gap-3 text-sm text-gray-400">
+              <span class="text-lg">🕯️</span>
+              Conversational AI
+            </div>
+            <h3 class="mt-4 text-2xl font-semibold text-white">
+              Context-aware replies with per-guild prompts
+            </h3>
+            <p class="mt-3 text-gray-300">
+              Boo threads Redis short-term memory with long-term Postgres prompts so each
+              server keeps its voice. Slash commands, DMs, mentions, and prompt editing are all included.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Rolling 15-minute channel context
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Tailored system prompts per guild
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Guys-check tone nudges + admin controls
+              </li>
+            </ul>
+          </article>
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center gap-3 text-sm text-gray-400">
+              <span class="text-lg">🪄</span>
+              Visual prowess
+            </div>
+            <h3 class="mt-4 text-2xl font-semibold text-white">
+              Image captioning, analysis, and workflows
+            </h3>
+            <p class="mt-3 text-gray-300">
+              Automatic uploads to OpenRouter's multimodal models, Tenor-powered reactions,
+              and custom pipelines for image-to-image tasks.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Auto-caption multi-image drops
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> GIFs, weather, bonks, board utilities
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Task queue for heavier jobs
+              </li>
+            </ul>
+          </article>
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 md:col-span-2 lg:col-span-1">
+            <div class="flex items-center gap-3 text-sm text-gray-400">
+              <span class="text-lg">🛡️</span>
+              Hardened API
+            </div>
+            <h3 class="mt-4 text-2xl font-semibold text-white">
+              Go manager service with bearer auth + Meili search
+            </h3>
+            <p class="mt-3 text-gray-300">
+              Tokenized endpoints track message archives, usage metrics, and prompt editing while staying isolated inside Docker networks.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> /docs Swagger + Postman collection
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Redis + Meilisearch sidecars
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Caddy TLS front-door on Hetzner
+              </li>
+            </ul>
+          </article>
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 md:col-span-2 lg:col-span-1">
+            <div class="flex items-center gap-3 text-sm text-gray-400">
+              <span class="text-lg">⚙️</span>
+              Extensible toolbelt
+            </div>
+            <h3 class="mt-4 text-2xl font-semibold text-white">
+              Plug-in services and workflows
+            </h3>
+            <p class="mt-3 text-gray-300">
+              Async task queue, weather integrations, OpenRouter tool calling, and a Python service layer make Boo easy to extend.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-300">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> VoyageAI reranking + Tenor search
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Task Worker deployments
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-300">▸</span> Discord slash + prefixed commands
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="stack"
+        class="mx-auto max-w-6xl px-6 pb-20"
+      >
+        <div class="rounded-[32px] border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-10">
+          <div class="grid gap-8 md:grid-cols-2">
+            <div>
+              <p class="text-sm uppercase tracking-[0.4em] text-gray-400">
+                Stack
+              </p>
+              <h2 class="mt-3 text-3xl font-semibold text-white">
+                Opinionated architecture, zero mystery.
+              </h2>
+              <p class="mt-4 text-gray-300">
+                Docker Compose wires postgres, redis, meilisearch, the Go manager, the Discord bot, worker pools,
+                and a locked-down sandbox. Caddy handles TLS, and everything speaks through bearer-authenticated APIs.
+              </p>
+              <dl class="mt-6 space-y-4 text-sm text-gray-300">
+                <div class="flex justify-between border-b border-white/5 pb-3">
+                  <dt>Manager API</dt>
+                  <dd>Go + Gin + Postgres (8080)</dd>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-3">
+                  <dt>Bot runtime</dt>
+                  <dd>Python 3.12 + discord.py + uv</dd>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-3">
+                  <dt>State + search</dt>
+                  <dd>Redis, Meilisearch, Postgres</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt>Ingress</dt>
+                  <dd>Caddy on Hetzner w/ HTTPS</dd>
+                </div>
+              </dl>
+            </div>
+            <div class="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-gray-300">
+              <p class="text-base font-semibold text-white">
+                Deployment recipe
+              </p>
+              <ul class="space-y-4">
+                <li class="rounded-2xl border border-white/10 bg-void/70 p-4">
+                  <p class="font-semibold text-white">1. Configure secrets</p>
+                  <p class="mt-1 text-gray-400">
+                    Fill `.env` with Discord token, OpenRouter, Tenor, Meili, `MANAGER_API_TOKEN`, and DB credentials.
+                  </p>
+                </li>
+                <li class="rounded-2xl border border-white/10 bg-void/70 p-4">
+                  <p class="font-semibold text-white">2. `docker compose up -d`</p>
+                  <p class="mt-1 text-gray-400">
+                    Postgres migrates automatically, manager seeds schema, bot + workers connect to Discord.
+                  </p>
+                </li>
+                <li class="rounded-2xl border border-white/10 bg-void/70 p-4">
+                  <p class="font-semibold text-white">3. Point DNS ➜ boo.ifkash.dev</p>
+                  <p class="mt-1 text-gray-400">
+                    Caddy obtains certs, `/docs` exposes Swagger, `/admin` lets you edit prompts (requires token-fed client).
+                  </p>
+                </li>
+              </ul>
+              <p class="mt-2 text-xs text-gray-500">
+                Need to script against the manager? Import the bundled Postman collection or the OpenAPI spec from `/openapi.json`.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="cta"
+        class="mx-auto max-w-5xl px-6 pb-24 text-center"
+      >
+        <p class="text-sm uppercase tracking-[0.4em] text-gray-400">
+          Ready to haunt responsibly?
+        </p>
+        <h2 class="mt-4 text-4xl font-semibold text-white">
+          Deploy Boo, wire your secrets, and let the ghost loose.
+        </h2>
+        <p class="mx-auto mt-4 max-w-2xl text-gray-300">
+          Self-hosted, API-first, and built for Discord communities that crave fast replies with personality.
+          Keep the Go manager private or share it publicly with the bearer token—your call.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href="https://github.com/VVIP-Kitchen/boo#-quick-start-docker"
+            target="_blank"
+            class="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-base font-semibold text-black transition hover:bg-acid hover:text-black"
+          >
+            Quick Start Guide
+          </a>
+          <a
+            href="/docs"
+            class="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/40"
+          >
+            API Reference
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="relative z-10 border-t border-white/10 bg-obsidian/70">
+      <div class="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 text-sm text-gray-500 md:flex-row md:items-center md:justify-between">
+        <p>© <span id="year"></span> Boo — MIT Licensed</p>
+        <div class="flex flex-wrap gap-4 text-gray-400">
+          <a href="https://github.com/VVIP-Kitchen/boo/issues" target="_blank" class="hover:text-white">Issues</a>
+          <a href="/docs" class="hover:text-white">Swagger</a>
+          <a href="/admin" class="hover:text-white">Admin UI</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>
+

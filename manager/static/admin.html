@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boo Prompts</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      let authToken = localStorage.getItem("managerToken") || "";
+
+      function getHeaders(extra = {}) {
+        if (!authToken) return extra;
+        return {
+          ...extra,
+          Authorization: `Bearer ${authToken}`,
+        };
+      }
+
+      function requireToken() {
+        if (!authToken) {
+          alert("Set the MANAGER_API_TOKEN first.");
+          throw new Error("Missing token");
+        }
+      }
+
+      async function fetchPrompts() {
+        try {
+          requireToken();
+          const response = await fetch("/prompts", {
+            headers: getHeaders(),
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch prompts");
+          }
+          const prompts = await response.json();
+          const promptList = document.getElementById("prompt-list");
+          promptList.innerHTML = "";
+
+          prompts.forEach((prompt) => {
+            const truncatedPrompt =
+              prompt.system_prompt.length > 50
+                ? prompt.system_prompt.substring(0, 50) + "..."
+                : prompt.system_prompt;
+
+            const li = document.createElement("li");
+            li.classList.add(
+              "border",
+              "p-4",
+              "rounded-lg",
+              "mb-2",
+              "shadow",
+              "bg-stone-800",
+              "flex",
+              "justify-between",
+              "items-center"
+            );
+
+            // Encode the system prompt to escape problematic characters
+            const safeSystemPrompt = encodeURIComponent(prompt.system_prompt);
+
+            li.innerHTML = `
+            <div>
+                <p class="font-mono text-gray-300"><strong>Guild ID:</strong> ${prompt.guild_id}</p>
+                <p class="font-mono text-gray-300"><strong>System Prompt:</strong> ${truncatedPrompt}</p>
+            </div>
+            <button class="bg-sky-900 hover:bg-sky-800 text-white font-mono py-2 px-4 rounded edit-button" 
+                data-guild-id="${prompt.guild_id}"
+                data-system-prompt="${safeSystemPrompt}">Edit</button>`;
+
+            promptList.appendChild(li);
+          });
+
+          // Add event listeners to edit buttons
+          document.querySelectorAll(".edit-button").forEach((button) => {
+            button.addEventListener("click", function () {
+              const guildId = this.getAttribute("data-guild-id");
+              const systemPrompt = decodeURIComponent(
+                this.getAttribute("data-system-prompt")
+              );
+              editPrompt(guildId, systemPrompt);
+            });
+          });
+        } catch (error) {
+          console.error(error);
+          alert("Unable to load prompts. Ensure the token is valid.");
+        }
+      }
+
+      async function addPrompt() {
+        requireToken();
+        const guildID = document.getElementById("new-guild-id").value;
+        const systemPrompt = document.getElementById("new-system-prompt").value;
+
+        const response = await fetch("/prompt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...getHeaders(),
+          },
+          body: JSON.stringify({
+            guild_id: guildID,
+            system_prompt: systemPrompt,
+          }),
+        });
+
+        if (!response.ok) {
+          alert("Failed to add prompt");
+          return;
+        }
+        fetchPrompts();
+        document.getElementById("new-guild-id").value = "";
+        document.getElementById("new-system-prompt").value = "";
+      }
+
+      function editPrompt(guildID, systemPrompt) {
+        document.getElementById("edit-guild-id").value = guildID;
+        document.getElementById("edit-system-prompt").value = systemPrompt;
+      }
+
+      async function updatePrompt() {
+        requireToken();
+        const guildID = document.getElementById("edit-guild-id").value;
+        const systemPrompt =
+          document.getElementById("edit-system-prompt").value;
+
+        const response = await fetch(
+          `/prompt?guild_id=${encodeURIComponent(guildID)}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              ...getHeaders(),
+            },
+            body: JSON.stringify({ system_prompt: systemPrompt }),
+          }
+        );
+
+        if (!response.ok) {
+          alert("Failed to update prompt");
+          return;
+        }
+        fetchPrompts();
+        document.getElementById("edit-guild-id").value = "";
+        document.getElementById("edit-system-prompt").value = "";
+      }
+
+      function saveToken(event) {
+        event.preventDefault();
+        const input = document.getElementById("manager-token");
+        authToken = input.value.trim();
+        if (!authToken) {
+          localStorage.removeItem("managerToken");
+        } else {
+          localStorage.setItem("managerToken", authToken);
+        }
+        document.getElementById("token-status").textContent = authToken
+          ? "Token stored locally"
+          : "Token required";
+        if (authToken) {
+          fetchPrompts();
+        }
+      }
+
+      window.onload = () => {
+        const input = document.getElementById("manager-token");
+        input.value = authToken;
+        document.getElementById("token-status").textContent = authToken
+          ? "Token stored locally"
+          : "Token required";
+        if (authToken) {
+          fetchPrompts();
+        }
+      };
+    </script>
+  </head>
+  <body class="bg-stone-900">
+    <div class="container mx-auto p-6">
+      <h1 class="text-3xl font-bold font-mono mb-6 text-center text-gray-200">
+        Boo Prompts
+      </h1>
+
+      <div class="bg-stone-900 shadow-md rounded-lg p-6 mb-6 border border-stone-700">
+        <h2 class="text-2xl font-semibold font-mono mb-4 text-gray-200">
+          Authenticate
+        </h2>
+        <p class="mb-4 text-sm text-gray-400">
+          Enter the shared <code class="text-sky-300">MANAGER_API_TOKEN</code>. Stored only in your browser's local storage.
+        </p>
+        <form class="space-y-4" onsubmit="saveToken(event)">
+          <div>
+            <label for="manager-token" class="block text-gray-300 font-mono"
+              >Bearer token:</label
+            >
+            <input
+              type="password"
+              id="manager-token"
+              class="mt-1 p-2 w-full border-0 rounded-lg text-gray-300 bg-stone-800 font-mono"
+              placeholder="sk_live_ghost..."
+              required
+            />
+            <p id="token-status" class="mt-2 text-sm text-gray-500"></p>
+          </div>
+          <button
+            type="submit"
+            class="bg-sky-800 hover:bg-sky-700 text-white font-mono font-bold py-2 px-4 rounded"
+          >
+            Save token
+          </button>
+        </form>
+      </div>
+
+      <!-- List of Prompts -->
+      <div class="bg-stone-900 shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-2xl font-semibold font-mono mb-4 text-gray-200">List of Prompts</h2>
+        <ul id="prompt-list" class="space-y-2">
+          <!-- Prompts will be populated here -->
+        </ul>
+      </div>
+
+      <!-- Add New Prompt -->
+      <div class="bg-stone-900 shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-2xl font-semibold font-mono mb-4 text-gray-200">Add New Prompt</h2>
+        <form onsubmit="event.preventDefault(); addPrompt();" class="space-y-4">
+          <div>
+            <label for="new-guild-id" class="block text-gray-300 font-mono"
+              >Guild ID:</label
+            >
+            <input
+              type="text"
+              id="new-guild-id"
+              class="mt-1 p-2 w-full border-0 rounded-lg text-gray-300 bg-stone-800 font-mono"
+              required
+            />
+          </div>
+          <div>
+            <label for="new-system-prompt" class="block text-gray-300 font-mono"
+              >System Prompt:</label
+            >
+            <textarea
+              id="new-system-prompt"
+              rows="4"
+              class="mt-1 p-2 w-full border-0 rounded-lg text-gray-300 bg-stone-800 font-mono"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="bg-sky-800 hover:bg-sky-700 text-white font-mono font-bold py-2 px-4 rounded"
+          >
+            Add Prompt
+          </button>
+        </form>
+      </div>
+
+      <!-- Edit Existing Prompt -->
+      <div class="bg-stone-900 shadow-md rounded-lg p-6">
+        <h2 class="text-2xl font-mono font-semibold mb-4 text-gray-300">Edit Existing Prompt</h2>
+        <form
+          onsubmit="event.preventDefault(); updatePrompt();"
+          class="space-y-4"
+        >
+          <div>
+            <label for="edit-guild-id" class="block text-gray-300 font-mono"
+              >Guild ID (read-only):</label
+            >
+            <input
+              type="text"
+              id="edit-guild-id"
+              class="mt-1 p-2 w-full border-0 rounded-lg bg-stone-800 font-mono text-gray-300"
+              readonly
+            />
+          </div>
+          <div>
+            <label for="edit-system-prompt" class="block text-gray-300"
+              >System Prompt:</label
+            >
+            <textarea
+              id="edit-system-prompt"
+              rows="4"
+              class="mt-1 p-2 w-full border-0 rounded-lg bg-stone-800 font-mono text-gray-300"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="bg-sky-800 hover:bg-sky-700 text-white font-mono font-bold py-2 px-4 rounded"
+          >
+            Update Prompt
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
