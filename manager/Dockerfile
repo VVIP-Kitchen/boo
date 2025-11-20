@@ -13,6 +13,7 @@ FROM gcr.io/distroless/static-debian12
 
 WORKDIR /app
 COPY --from=builder /app/server .
+COPY --from=builder /app/static ./static
 
 EXPOSE 8080
 CMD ["./server"]
