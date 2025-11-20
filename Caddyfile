@@ -1,0 +1,3 @@
+boo.ifkash.dev {
+  reverse_proxy manager:8080
+}

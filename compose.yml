@@ -64,6 +64,21 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
+      - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
+  
+  caddy:
+    image: caddy:2.10-alpine
+    depends_on:
+      - manager
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - default
 
   discord-bot:
     depends_on:
@@ -90,6 +105,7 @@ services:
       - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
 
   boo-worker:
     depends_on:
@@ -115,6 +131,7 @@ services:
       - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
     deploy:
       replicas: 4
 

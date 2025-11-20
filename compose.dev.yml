@@ -64,6 +64,7 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
+      - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
 
 volumes:
   postgres_data_dev:

@@ -2,15 +2,22 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"server/internal/database"
 	"server/internal/handler"
+	"server/internal/middleware"
 	"server/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	authToken := os.Getenv("MANAGER_API_TOKEN")
+	if authToken == "" {
+		log.Fatal("MANAGER_API_TOKEN environment variable is required")
+	}
+
 	db, err := database.NewConnection()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
@@ -38,25 +45,27 @@ func main() {
 		c.File("./static/index.html")
 	})
 
+	protected := r.Group("/", middleware.NewAuthMiddleware(authToken))
+
 	// Prompt endpoints
-	r.GET("/prompts", promptHandler.ReadAllPrompts)
-	r.GET("/prompt", promptHandler.ReadPrompt)
-	r.POST("/prompt", promptHandler.AddPrompt)
-	r.PUT("/prompt", promptHandler.UpdatePrompt)
+	protected.GET("/prompts", promptHandler.ReadAllPrompts)
+	protected.GET("/prompt", promptHandler.ReadPrompt)
+	protected.POST("/prompt", promptHandler.AddPrompt)
+	protected.PUT("/prompt", promptHandler.UpdatePrompt)
 
 	// Message endpoints
-	r.POST("/message", messageHandler.AddMessage)
+	protected.POST("/message", messageHandler.AddMessage)
 
 	// Token endpoints
-	r.POST("/token", tokenHandler.AddTokenUsage)
-	r.GET("/token/stats", tokenHandler.GetTokenStats)
+	protected.POST("/token", tokenHandler.AddTokenUsage)
+	protected.GET("/token/stats", tokenHandler.GetTokenStats)
 
 	// Chat history endpoints
 	chatHistoryService := service.NewChatHistoryService(db)
 	chatHistoryHandler := handler.NewChatHistoryHandler(chatHistoryService)
-	r.GET("/chat-history", chatHistoryHandler.GetChatHistory)
-	r.PUT("/chat-history", chatHistoryHandler.UpdateChatHistory)
-	r.DELETE("/chat-history", chatHistoryHandler.DeleteChatHistory)
+	protected.GET("/chat-history", chatHistoryHandler.GetChatHistory)
+	protected.PUT("/chat-history", chatHistoryHandler.UpdateChatHistory)
+	protected.DELETE("/chat-history", chatHistoryHandler.DeleteChatHistory)
 
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))

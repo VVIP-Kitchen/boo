@@ -78,6 +78,7 @@ TOMORROW_IO_API_KEY=XXXXXXXXXXXX
 OPENROUTER_API_KEY=XXXXXXXXXXXX
 OPENROUTER_MODEL=meta-llama/llama-4-maverick
 TAVILY_API_KEY=XXXXXXXXXXXX
+MANAGER_API_TOKEN=super-secure-shared-secret
 
 # Database (compose wires these for containers)
 POSTGRES_USER=db-user
@@ -157,6 +158,8 @@ Endpoints (served on port 8080 inside the network; mapped to localhost:8080 via 
 - `GET /token/stats?guild_id=…&author_id=…&period=[daily|weekly|monthly|yearly]` — usage stats
 
 A minimal Tailwind UI is served as static files for prompt editing.
+
+> 🔐 **Authentication:** Every API call must include `Authorization: Bearer <MANAGER_API_TOKEN>`. The Python bot and worker load this token via `MANAGER_API_TOKEN` and automatically attach it to all requests. When exposing the manager service publicly, share the same token with any external client that needs access.
 
 ---
 

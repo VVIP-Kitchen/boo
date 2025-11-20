@@ -25,6 +25,7 @@ TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
 VOYAGEAI_API_KEY: str = os.getenv("VOYAGEAI_API_KEY", "")
 GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 DB_SERVICE_BASE_URL: str = os.getenv("DB_SERVICE_BASE_URL", "localhost:8080")
+MANAGER_API_TOKEN: str = os.getenv("MANAGER_API_TOKEN", "")
 
 
 def _parse_admin_list() -> List[int]:
@@ -67,6 +68,7 @@ def _validate_required_env_vars() -> None:
     "DISCORD_TOKEN": DISCORD_TOKEN,
     "TENOR_API_KEY": TENOR_API_KEY,
     "DB_SERVICE_BASE_URL": DB_SERVICE_BASE_URL,
+    "MANAGER_API_TOKEN": MANAGER_API_TOKEN,
     "OPENROUTER_API_KEY": OPENROUTER_API_KEY,
     "OPENROUTER_MODEL": OPENROUTER_MODEL,
     "TAVILY_API_KEY": TAVILY_API_KEY,
