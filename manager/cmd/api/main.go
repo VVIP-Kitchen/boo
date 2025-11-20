@@ -44,6 +44,12 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.File("./static/index.html")
 	})
+	r.GET("/docs", func(c *gin.Context) {
+		c.File("./static/swagger.html")
+	})
+	r.GET("/openapi.json", func(c *gin.Context) {
+		c.File("./static/openapi.json")
+	})
 
 	protected := r.Group("/", middleware.NewAuthMiddleware(authToken))
 

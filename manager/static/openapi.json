@@ -1,0 +1,456 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Boo Manager API",
+    "description": "API for managing prompts, chat history, messages, and token usage for the Boo Discord bot.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://boo.ifkash.dev",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ManagerBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "TOKEN"
+      }
+    },
+    "schemas": {
+      "GuildPrompt": {
+        "type": "object",
+        "properties": {
+          "guild_id": {
+            "type": "string",
+            "description": "Discord guild identifier."
+          },
+          "system_prompt": {
+            "type": "string",
+            "description": "System prompt text stored for the guild."
+          }
+        },
+        "required": [
+          "guild_id",
+          "system_prompt"
+        ]
+      },
+      "GuildPromptEdit": {
+        "type": "object",
+        "properties": {
+          "system_prompt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "system_prompt"
+        ]
+      },
+      "DiscordMessage": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "string"
+          },
+          "server_name": {
+            "type": "string"
+          },
+          "channel_name": {
+            "type": "string"
+          },
+          "channel_id": {
+            "type": "string"
+          },
+          "author_name": {
+            "type": "string"
+          },
+          "author_nickname": {
+            "type": "string",
+            "nullable": true
+          },
+          "author_id": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "message_id",
+          "server_name",
+          "channel_name",
+          "channel_id",
+          "author_name",
+          "author_id",
+          "message_content"
+        ]
+      },
+      "TokenUsage": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "string"
+          },
+          "guild_id": {
+            "type": "string"
+          },
+          "author_id": {
+            "type": "string"
+          },
+          "input_tokens": {
+            "type": "integer"
+          },
+          "output_tokens": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "message_id",
+          "guild_id",
+          "author_id"
+        ]
+      },
+      "ChatMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "Message role (e.g., system, user, assistant)."
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ManagerBearer": []
+    }
+  ],
+  "paths": {
+    "/prompts": {
+      "get": {
+        "summary": "List prompts",
+        "responses": {
+          "200": {
+            "description": "Array of per-guild prompts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GuildPrompt"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prompt": {
+      "get": {
+        "summary": "Get a prompt",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prompt for guild.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildPrompt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prompt not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create prompt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildPrompt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Prompt created."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update prompt",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildPromptEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prompt updated."
+          },
+          "404": {
+            "description": "Prompt not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message": {
+      "post": {
+        "summary": "Archive message",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscordMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Message stored."
+          }
+        }
+      }
+    },
+    "/token": {
+      "post": {
+        "summary": "Record token usage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenUsage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usage saved."
+          }
+        }
+      }
+    },
+    "/token/stats": {
+      "get": {
+        "summary": "Fetch token stats",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "author_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly"
+              ],
+              "default": "daily"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of token usage entries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TokenUsage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat-history": {
+      "get": {
+        "summary": "Get chat history",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of chat messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Replace chat history",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatMessage"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "History updated."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete chat history",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "History deleted."
+          }
+        }
+      }
+    }
+  ]
+}
+

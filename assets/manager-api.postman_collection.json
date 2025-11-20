@@ -1,0 +1,301 @@
+{
+  "info": {
+    "name": "Boo Manager API",
+    "_postman_id": "7c0f3d6e-0000-4000-8000-aaaaaaaaaaaa",
+    "description": "Postman collection for the Boo Manager service. All requests expect the Authorization header `Bearer {{managerApiToken}}`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://boo.ifkash.dev"
+    },
+    {
+      "key": "managerApiToken",
+      "value": "REPLACE_WITH_REAL_TOKEN"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{managerApiToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Prompts",
+      "item": [
+        {
+          "name": "List Prompts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/prompts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "prompts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Prompt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/prompt?guild_id={{guildId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "prompt"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Prompt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guild_id\": \"1234567890\",\n  \"system_prompt\": \"You are Boo, a helpful assistant.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/prompt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "prompt"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Prompt",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"system_prompt\": \"Updated system prompt\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/prompt?guild_id={{guildId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "prompt"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Store Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel_id\": \"999999999\",\n  \"guild_id\": \"1234567890\",\n  \"author_id\": \"555555555\",\n  \"content\": \"This is a test message\",\n  \"timestamp\": \"2024-01-01T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/message",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "message"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Token Usage",
+      "item": [
+        {
+          "name": "Record Token Usage",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guild_id\": \"1234567890\",\n  \"author_id\": \"555555555\",\n  \"model\": \"openrouter/gpt-4\",\n  \"prompt_tokens\": 123,\n  \"completion_tokens\": 456,\n  \"timestamp\": \"2024-01-01T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "token"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Token Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/token/stats?guild_id={{guildId}}&author_id={{authorId}}&period=daily",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "token",
+                "stats"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                },
+                {
+                  "key": "author_id",
+                  "value": "{{authorId}}"
+                },
+                {
+                  "key": "period",
+                  "value": "daily"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat History",
+      "item": [
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chat-history?guild_id={{guildId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat-history"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Chat History",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"channel_id\": \"999999999\",\n    \"guild_id\": \"1234567890\",\n    \"author_id\": \"555555555\",\n    \"content\": \"Message 1\",\n    \"timestamp\": \"2024-01-01T12:00:00Z\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat-history?guild_id={{guildId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat-history"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Chat History",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chat-history?guild_id={{guildId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat-history"
+              ],
+              "query": [
+                {
+                  "key": "guild_id",
+                  "value": "{{guildId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

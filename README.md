@@ -150,6 +150,7 @@ Notes:
 
 Endpoints (served on port 8080 inside the network; mapped to localhost:8080 via compose):
 
+- `GET /docs` — Swagger UI for the manager API (pulls `/openapi.json`)
 - `GET /prompt?guild_id=…` — fetch per-guild system prompt
 - `POST /prompt` — add prompt
 - `PUT /prompt?guild_id=…` — update prompt

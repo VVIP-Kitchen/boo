@@ -67,6 +67,7 @@ services:
       - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
   
   caddy:
+    container_name: caddy
     image: caddy:2.10-alpine
     depends_on:
       - manager
@@ -159,6 +160,8 @@ volumes:
   postgres_data:
   redis_data:
   meilisearch_data:
+  caddy_data:
+  caddy_config:
 
 networks:
   default: {}
