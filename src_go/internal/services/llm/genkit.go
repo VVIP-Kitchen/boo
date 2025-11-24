@@ -1,110 +1,91 @@
 package llm
 
 import (
-	"boo/internal/services/weather"
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/firebase/genkit/go/ai"
 	"github.com/firebase/genkit/go/genkit"
 	"github.com/firebase/genkit/go/plugins/compat_oai"
 )
 
-var LLM *GenKitService
-
-func Setup(ctx context.Context) {
-	APIKey, ok := os.LookupEnv("OPENROUTER_API_KEY")
-	if !ok {
-		panic("OPENROUTER_API_KEY not set in environment")
-	}
-	Model, ok := os.LookupEnv("OPENROUTER_MODEL")
-	if !ok {
-		panic("OPENROUTER_MODEL not set in environment")
-	}
-
+func setupGenkit(ctx context.Context, baseURL, apiKey, model string) *genkit.Genkit {
 	gk := genkit.Init(ctx, genkit.WithPlugins(&compat_oai.OpenAICompatible{
-		BaseURL:  "https://openrouter.ai/api/v1",
-		APIKey:   APIKey,
+		BaseURL:  baseURL,
+		APIKey:   apiKey,
 		Provider: "openrouter",
-	}), genkit.WithDefaultModel("openrouter/"+Model))
+	}), genkit.WithDefaultModel("openrouter/"+model))
 
-	LLM = &GenKitService{gk: gk, provider: "openrouter"}
-
-	// Initialing tool services
-	weather.Setup()
-
-	// Defining tools
-	LLM.defineTools()
+	return gk
 }
 
-func convertMessages(messages []map[string]string) []*ai.Message {
-	var result []*ai.Message
-	for _, m := range messages {
-		role := ai.Role(m["role"]) // e.g., "user", "system", "model"
-		text := m["content"]
-
-		part := &ai.Part{
-			Text: text,
-		}
-
-		msg := &ai.Message{
-			Role:    role,
-			Content: []*ai.Part{part},
-		}
-		result = append(result, msg)
-	}
-	return result
-}
-
-func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[string]string) (string, error) {
+func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[string]string) (ChatCompletionResponse, error) {
 
 	resp, err := genkit.Generate(ctx, g.gk,
 		ai.WithMessages(convertMessages(messages)...),
 		ai.WithTools(g.tools...),
+		ai.WithReturnToolRequests(true),
 	)
-
 	if err != nil {
-		return "", err
+		return ChatCompletionResponse{}, err
 	}
 
-	return resp.Message.Text(), nil
-}
+	parts := []*ai.Part{}
 
-func (g *GenKitService) CreateOrEditImage(ctx context.Context, prompt string, aspectRatio string) (string, error) {
+	for {
+		if len(resp.ToolRequests()) == 0 {
+			break
+		}
 
-	// checking if image_bytes is nil or not
-	messages := ai.WithMessages(
-		ai.NewUserMessage(
-			ai.NewTextPart(prompt),
-		),
-	)
-
-	modelName := g.provider + "/google/gemini-2.5-flash-image"
-
-	resp, err := genkit.Generate(ctx, g.gk,
-		messages,
-		ai.WithModelName(modelName),
-	)
-
-	if err != nil {
-		return "", err
-	}
-
-	mediaURL := resp.Media()
-	fmt.Println("Generated Media URL:", mediaURL)
-
-	// Getting the image from the response if any
-	for _, part := range resp.Message.Content {
-		if part.IsImage() {
-			if part.Text != "" {
-				return part.Text, nil
+		for _, req := range resp.ToolRequests() {
+			tool := genkit.LookupTool(g.gk, req.Name)
+			if tool == nil {
+				return ChatCompletionResponse{}, fmt.Errorf("tool %q not found", req.Name)
 			}
-			if part.Resource != nil {
-				return part.Resource.Uri, nil
+
+			output, err := tool.RunRaw(ctx, req.Input)
+			if err != nil {
+				return ChatCompletionResponse{}, fmt.Errorf("tool %q execution failed: %v", tool.Name(), err)
 			}
+
+			if tool.Name() == "generateImage" {
+				imageResult, ok := output.(map[string]interface{})
+				if !ok {
+					return ChatCompletionResponse{}, fmt.Errorf("unexpected image result type for tool %q", tool.Name())
+				}
+				// Directly return the image, no need to send back to LLM
+				return ChatCompletionResponse{
+					Type: "image",
+					Data: imageResult["data"].(string),
+				}, nil
+			}
+
+			parts = append(parts,
+				ai.NewToolResponsePart(&ai.ToolResponse{
+					Name:   req.Name,
+					Ref:    req.Ref,
+					Output: output,
+				}))
+		}
+
+		// Let the LLM continue processing now that we've provided tool responses.
+		resp, err = genkit.Generate(ctx, g.gk,
+			ai.WithMessages(convertMessages(messages)...),
+			ai.WithTools(g.tools...),
+			ai.WithReturnToolRequests(true),
+			ai.WithToolResponses(parts...),
+		)
+		if err != nil {
+			return ChatCompletionResponse{}, err
 		}
 	}
 
-	return "", nil
+	if err != nil {
+		return ChatCompletionResponse{}, err
+	}
+
+	return ChatCompletionResponse{
+		Type: "text",
+		Data: resp.Message.Text(),
+	}, nil
 }

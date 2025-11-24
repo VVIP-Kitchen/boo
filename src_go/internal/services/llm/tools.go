@@ -16,12 +16,12 @@ func (g *GenKitService) defineTools() {
 	})
 
 	// Defining the generateImage tool
-	generateImageTool := genkit.DefineTool(g.gk, "generateImage", "Generates an image based on a text prompt and aspect ratio.", func(ctx *ai.ToolContext, imageInput ImageGenInput) (string, error) {
-		_, err := g.CreateOrEditImage(ctx, imageInput.Prompt, imageInput.AspectRatio)
+	generateImageTool := genkit.DefineTool(g.gk, "generateImage", "Generates an image based on a text prompt and aspect ratio.", func(ctx *ai.ToolContext, imageInput ImageGenInput) (*ImageResult, error) {
+		result, err := g.GenerateImage(ctx, imageInput.Prompt, imageInput.AspectRatio)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		return "Image generated successfully.", nil
+		return result, nil
 	})
 
 	g.tools = []ai.ToolRef{weatherTool, generateImageTool}
