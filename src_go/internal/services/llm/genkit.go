@@ -3,6 +3,7 @@ package llm
 import (
 	"boo/internal/services/weather"
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/firebase/genkit/go/ai"
@@ -78,19 +79,30 @@ func (g *GenKitService) CreateOrEditImage(ctx context.Context, prompt string, as
 			ai.NewTextPart(prompt),
 		),
 	)
+
+	modelName := g.provider + "/google/gemini-2.5-flash-image"
+
 	resp, err := genkit.Generate(ctx, g.gk,
 		messages,
-		ai.WithModelName(g.provider+"/google/gemini-2.5-flash-image"),
+		ai.WithModelName(modelName),
 	)
 
 	if err != nil {
 		return "", err
 	}
 
+	mediaURL := resp.Media()
+	fmt.Println("Generated Media URL:", mediaURL)
+
 	// Getting the image from the response if any
 	for _, part := range resp.Message.Content {
 		if part.IsImage() {
-			// return part.
+			if part.Text != "" {
+				return part.Text, nil
+			}
+			if part.Resource != nil {
+				return part.Resource.Uri, nil
+			}
 		}
 	}
 
