@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -85,9 +87,42 @@ func handleMessages(discord *discordgo.Session, message *discordgo.MessageCreate
 		fmt.Println("Error getting chat completion:", err)
 		return
 	}
-	addAssistantContext(guildID, resp)
+
+	if resp.Type == "image" {
+
+		var rReader *bytes.Reader
+		// Try decoding base64, if that fails use the raw string as bytes
+		// First extracting the base64 data by removing the data URL prefix if present
+		data := resp.Data
+		if len(data) > 22 && data[:22] == "data:image/png;base64," {
+			data = data[22:]
+		}
+		if decoded, err := base64.StdEncoding.DecodeString(data); err == nil {
+			rReader = bytes.NewReader(decoded)
+		} else {
+			rReader = bytes.NewReader([]byte(resp.Data))
+		}
+
+		_, err := discord.ChannelMessageSendComplex(message.ChannelID, &discordgo.MessageSend{
+			Content: "Here is your generated image:",
+			Files: []*discordgo.File{
+				{
+					Name:        "generated_image.png",
+					ContentType: "image/png",
+					Reader:      rReader,
+				},
+			},
+		})
+		if err != nil {
+			fmt.Println("Error sending image:", err)
+		}
+
+		return
+	}
+
+	addAssistantContext(guildID, resp.Data)
 	trimContext(guildID)
-	discord.ChannelMessageSend(message.ChannelID, resp)
+	discord.ChannelMessageSend(message.ChannelID, resp.Data)
 }
 
 func loadServerLore(guildID string) error {
