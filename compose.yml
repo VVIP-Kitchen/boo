@@ -44,16 +44,18 @@ services:
     volumes:
       - meilisearch_data:/meili_data
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-        interval: 5s
-        timeout: 3s
-        retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   manager:
     depends_on:
       postgres:
         condition: service_healthy
-    image: ghcr.io/vvip-kitchen/boo-manager:latest
+    build:
+      context: ./manager
+      dockerfile: ./Dockerfile
     container_name: manager
     restart: always
     ports:
@@ -124,16 +126,16 @@ services:
     cpus: 1.0
     pids_limit: 64
     ulimits:
-      nproc: 64           # further enforce process cap
-      nofile: 128         # max open files
+      nproc: 64 # further enforce process cap
+      nofile: 128 # max open files
     restart: always
     networks:
       - internal_net
     security_opt:
-      - "no-new-privileges:true"    # prevents privilege escalation
-    cap_drop:             # drop ALL Linux capabilities
+      - "no-new-privileges:true" # prevents privilege escalation
+    cap_drop: # drop ALL Linux capabilities
       - ALL
-    tmpfs:                # only writable dir
+    tmpfs: # only writable dir
       - /tmp:rw,noexec,nosuid,size=64m
 
 volumes:
