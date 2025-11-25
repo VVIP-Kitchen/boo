@@ -33,7 +33,7 @@ func Setup() {
 	}
 }
 
-func (t *TenorService) Search(query string) (any, error) {
+func (t *TenorService) Search(query string) (string, error) {
 	// URL-encode the query
 	escapedQuery := url.QueryEscape(query)
 
@@ -41,34 +41,38 @@ func (t *TenorService) Search(query string) (any, error) {
 
 	req, err := http.NewRequest(http.MethodGet, queryString, nil)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("tenor API error: %s", string(responseBody))
+		return "", fmt.Errorf("tenor API error: %s", string(responseBody))
 	}
 
 	var result map[string]any
 	err = json.Unmarshal(responseBody, &result)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse JSON: %w; body: %s", err, string(responseBody))
+		return "", fmt.Errorf("failed to parse JSON: %w; body: %s", err, string(responseBody))
 	}
 
 	results, ok := result["results"]
 	if !ok {
-		return nil, fmt.Errorf("no 'results' field in response: %v", result)
+		return "", fmt.Errorf("no 'results' field in response: %v", result)
 	}
-	return results, nil
+	output, ok := results.([]interface{})[0].(map[string]interface{})["url"].(string)
+	if !ok {
+		return "", fmt.Errorf("unable to extract URL from results: %v", results)
+	}
+	return output, nil
 }
