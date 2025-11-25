@@ -26,10 +26,10 @@ func (g *GenKitService) defineTools() {
 	})
 
 	// Defining the tenor search tool
-	tenorTool := genkit.DefineTool(g.gk, "searchGif", "Searches for a GIF based on a query.", func(ctx *ai.ToolContext, queryInput tenor.TenorSearchInput) (any, error) {
+	tenorTool := genkit.DefineTool(g.gk, "searchGif", "Searches for a GIF based on a query.", func(ctx *ai.ToolContext, queryInput tenor.TenorSearchInput) (string, error) {
 		result, err := tenor.SVC.Search(queryInput.Query)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 		return result, nil
 	})
