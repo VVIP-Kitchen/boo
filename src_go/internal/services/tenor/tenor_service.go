@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 var SVC *TenorService
@@ -29,15 +31,20 @@ func Setup() {
 	SVC = &TenorService{
 		apiKey:      APIKey,
 		baseURL:     "https://tenor.googleapis.com/v2",
-		searchLimit: 10,
+		searchLimit: 30,
 	}
 }
 
 func (t *TenorService) Search(query string) (string, error) {
-	// URL-encode the query
-	escapedQuery := url.QueryEscape(query)
+	// Use a local random generator for concurrency safety and to avoid deprecated rand.Seed
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	queryString := fmt.Sprintf("%s/search?q=%s&key=%s&limit=%d", t.baseURL, escapedQuery, t.apiKey, t.searchLimit)
+	// Support random pagination (0-4 pages, 10 results per page)
+	page := rng.Intn(5)
+	offset := page * t.searchLimit
+
+	escapedQuery := url.QueryEscape(query)
+	queryString := fmt.Sprintf("%s/search?q=%s&key=%s&limit=%d&pos=%d", t.baseURL, escapedQuery, t.apiKey, t.searchLimit, offset)
 
 	req, err := http.NewRequest(http.MethodGet, queryString, nil)
 	if err != nil {
@@ -70,9 +77,19 @@ func (t *TenorService) Search(query string) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("no 'results' field in response: %v", result)
 	}
-	output, ok := results.([]interface{})[0].(map[string]interface{})["url"].(string)
+	resultsArr, ok := results.([]interface{})
+	if !ok || len(resultsArr) == 0 {
+		return "", fmt.Errorf("no results found: %v", results)
+	}
+	// Pick a random result from the page
+	randomIdx := rng.Intn(len(resultsArr))
+	item, ok := resultsArr[randomIdx].(map[string]interface{})
 	if !ok {
-		return "", fmt.Errorf("unable to extract URL from results: %v", results)
+		return "", fmt.Errorf("unexpected result format: %v", resultsArr[randomIdx])
+	}
+	output, ok := item["url"].(string)
+	if !ok {
+		return "", fmt.Errorf("unable to extract URL from result: %v", item)
 	}
 	return output, nil
 }
