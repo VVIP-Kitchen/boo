@@ -43,7 +43,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/genai v1.30.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
@@ -56,5 +56,6 @@ require (
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/openai/openai-go/v3 v3.8.1
 	golang.org/x/crypto v0.40.0 // indirect
+	golang.org/x/image v0.33.0
 	golang.org/x/sys v0.34.0 // indirect
 )
