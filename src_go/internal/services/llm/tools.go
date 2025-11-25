@@ -1,6 +1,7 @@
 package llm
 
 import (
+	"boo/internal/services/tenor"
 	"boo/internal/services/weather"
 
 	"github.com/firebase/genkit/go/ai"
@@ -24,5 +25,14 @@ func (g *GenKitService) defineTools() {
 		return result, nil
 	})
 
-	g.tools = []ai.ToolRef{weatherTool, generateImageTool}
+	// Defining the tenor search tool
+	tenorTool := genkit.DefineTool(g.gk, "searchGif", "Searches for a GIF based on a query.", func(ctx *ai.ToolContext, queryInput tenor.TenorSearchInput) (any, error) {
+		result, err := tenor.SVC.Search(queryInput.Query)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	})
+
+	g.tools = []ai.ToolRef{weatherTool, generateImageTool, tenorTool}
 }

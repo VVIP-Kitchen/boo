@@ -1,6 +1,7 @@
 package llm
 
 import (
+	"boo/internal/services/tenor"
 	"boo/internal/services/weather"
 	"context"
 	"os"
@@ -32,6 +33,7 @@ func Setup(ctx context.Context) {
 
 	// Initialing tool services
 	weather.Setup()
+	tenor.Setup()
 
 	// Defining tools
 	LLM.defineTools()
