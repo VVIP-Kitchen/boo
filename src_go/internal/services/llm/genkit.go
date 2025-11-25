@@ -69,11 +69,13 @@ func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[strin
 		}
 
 		// Let the LLM continue processing now that we've provided tool responses.
+		// Resume with updated message history including the tool response as a new message
 		resp, err = genkit.Generate(ctx, g.gk,
-			ai.WithMessages(convertMessages(messages)...),
+			ai.WithMessages(
+				append(resp.History(), ai.NewMessage(ai.RoleTool, nil, parts...))...,
+			),
 			ai.WithTools(g.tools...),
 			ai.WithReturnToolRequests(true),
-			ai.WithToolResponses(parts...),
 		)
 		if err != nil {
 			return ChatCompletionResponse{}, err
