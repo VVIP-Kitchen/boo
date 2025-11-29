@@ -5,7 +5,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"strings"
 
 	"boo/internal/services/db"
 	"boo/internal/services/llm"
@@ -15,6 +18,7 @@ import (
 )
 
 const CONTEXT_LIMIT = 15
+const CONTEXT_RESET_MESSAGE = "Context reset! Starting a new conversation. 👋"
 
 func Messages(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	if message.Author.ID == discord.State.User.ID {
@@ -51,40 +55,188 @@ func Messages(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 	fmt.Println("Received Message", message.Author.DisplayName())
 
-	// responding with dummy text with typing indicator
 	discord.ChannelTyping(message.ChannelID)
 	go handleMessages(discord, message)
 }
 
+// getServerID returns the appropriate server ID, handling DMs
+func getServerID(message *discordgo.MessageCreate) string {
+	if message.GuildID == "" {
+		return fmt.Sprintf("DM_%s", message.Author.ID)
+	}
+	return message.GuildID
+}
+
+// getReplyContext fetches the content of the message being replied to
+func getReplyContext(s *discordgo.Session, m *discordgo.MessageCreate) string {
+	if m.ReferencedMessage != nil {
+		return m.ReferencedMessage.Content
+	}
+	if m.MessageReference != nil {
+		ref, err := s.ChannelMessage(m.MessageReference.ChannelID, m.MessageReference.MessageID)
+		if err == nil {
+			return ref.Content
+		}
+	}
+	return ""
+}
+
+// downloadImage downloads an image from a URL and returns it as base64 data URI
+func downloadImage(url string, contentType string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if contentType == "" {
+		contentType = "image/png"
+	}
+
+	base64Data := base64.StdEncoding.EncodeToString(data)
+	return fmt.Sprintf("data:%s;base64,%s", contentType, base64Data), nil
+}
+
+// sendErrorMessage sends a generic error message to the channel
+func sendErrorMessage(s *discordgo.Session, channelID string) {
+	s.ChannelMessageSend(channelID, "❌ Sorry, something went wrong. Please try again later.")
+}
+
 func handleMessages(discord *discordgo.Session, message *discordgo.MessageCreate) {
+	serverID := getServerID(message)
+	messageContent := message.Content
+
+	// Handle reply context
+	replyContext := getReplyContext(discord, message)
+	if replyContext != "" {
+		messageContent = fmt.Sprintf("This is a reply to: %s\n\n%s", replyContext, messageContent)
+	}
+
+	// Check for chat reset
+	if strings.Contains(strings.ToLower(messageContent), "reset") {
+		if strings.Contains(strings.ToLower(messageContent), "reset chat") {
+			err := db.GetDBService().DeleteChatHistory(serverID)
+			if err != nil {
+				fmt.Println("Error resetting chat:", err)
+				sendErrorMessage(discord, message.ChannelID)
+				return
+			}
+			discord.ChannelMessageSend(message.ChannelID, CONTEXT_RESET_MESSAGE)
+			return
+		}
+		discord.ChannelMessageSend(message.ChannelID, `-# Say "reset chat"`)
+		return
+	}
+
+	// Handle image attachments
+	var imageAttachments []*discordgo.MessageAttachment
+	for _, att := range message.Attachments {
+		if strings.HasPrefix(att.ContentType, "image") {
+			imageAttachments = append(imageAttachments, att)
+		}
+	}
+
+	hasImages := len(imageAttachments) > 0
+	var imageDataURIs []string
+
+	if hasImages {
+		discord.ChannelMessageSend(message.ChannelID,
+			fmt.Sprintf("-# Analyzing %d image(s) ... 💭", len(imageAttachments)))
+
+		// Download and convert images to base64
+		for _, att := range imageAttachments {
+			dataURI, err := downloadImage(att.URL, att.ContentType)
+			if err != nil {
+				fmt.Println("Error downloading image:", err)
+				continue
+			}
+			imageDataURIs = append(imageDataURIs, dataURI)
+		}
+	}
+
 	// Fetching the prompt from DB
-	if _, exists := state.ServerLore[message.GuildID]; !exists {
-		err := loadServerLore(message.GuildID)
+	if _, exists := state.ServerLore[serverID]; !exists {
+		err := loadServerLore(serverID)
 		if err != nil {
 			fmt.Println("Error loading server lore:", err)
+			sendErrorMessage(discord, message.ChannelID)
 			return
 		}
 	}
 
 	ctx := context.Background()
-	guildID := message.GuildID
 
-	addUserContext(guildID, message)
+	// Add image note to the stored context
+	promptForContext := messageContent
+	if hasImages {
+		promptForContext = fmt.Sprintf("%s\n\n[Attached %d image(s)]", messageContent, len(imageAttachments))
+	}
 
-	history, err := db.GetDBService().GetChatHistory(message.GuildID)
+	err := addUserContext(serverID, message, promptForContext)
+	if err != nil {
+		fmt.Println("Error adding user context:", err)
+	}
+
+	history, err := db.GetDBService().GetChatHistory(serverID)
 	if err != nil {
 		fmt.Println("Error getting chat history:", err)
+		sendErrorMessage(discord, message.ChannelID)
 		return
 	}
-	messages := []map[string]string{
-		{"role": "system", "content": state.ServerLore[message.GuildID]},
-	}
-	messages = append(messages, history...)
-	messages = append(messages, map[string]string{"role": "user", "content": message.Content})
 
-	resp, err := llm.LLM.ChatCompletion(ctx, messages)
+	// Build messages for LLM using multimodal format
+	var chatMessages []llm.ChatMessage
+
+	// System message
+	chatMessages = append(chatMessages, llm.ChatMessage{
+		Role:    "system",
+		Content: state.ServerLore[serverID],
+	})
+
+	// Add history (text-only from DB)
+	for _, h := range history {
+		chatMessages = append(chatMessages, llm.ChatMessage{
+			Role:    h["role"],
+			Content: h["content"],
+		})
+	}
+
+	// Build user content with images if present
+	if hasImages && len(imageDataURIs) > 0 {
+		// Multimodal content: text + images
+		var contentItems []llm.ContentItem
+		contentItems = append(contentItems, llm.ContentItem{
+			Type: "text",
+			Text: messageContent,
+		})
+		for _, dataURI := range imageDataURIs {
+			contentItems = append(contentItems, llm.ContentItem{
+				Type:     "image_url",
+				ImageURL: &llm.ImageURL{URL: dataURI},
+			})
+		}
+		chatMessages = append(chatMessages, llm.ChatMessage{
+			Role:    "user",
+			Content: contentItems,
+		})
+	} else {
+		// Text-only content
+		chatMessages = append(chatMessages, llm.ChatMessage{
+			Role:    "user",
+			Content: messageContent,
+		})
+	}
+
+	// Use multimodal chat completion - tools disabled when images present
+	resp, err := llm.LLM.MultimodalChatCompletion(ctx, chatMessages, !hasImages)
 	if err != nil {
 		fmt.Println("Error getting chat completion:", err)
+		sendErrorMessage(discord, message.ChannelID)
 		return
 	}
 
@@ -120,8 +272,31 @@ func handleMessages(discord *discordgo.Session, message *discordgo.MessageCreate
 		return
 	}
 
-	addAssistantContext(guildID, resp.Data)
-	trimContext(guildID)
+	// Store token usage if available
+	if resp.Usage != nil {
+		tokenUsage := db.TokenUsage{
+			MessageID:    fmt.Sprintf("%d", message.ID),
+			GuildID:      serverID,
+			AuthorID:     message.Author.ID,
+			InputTokens:  resp.Usage.PromptTokens,
+			OutputTokens: resp.Usage.TotalTokens,
+		}
+		err = db.GetDBService().StoreTokenUsage(tokenUsage)
+		if err != nil {
+			fmt.Println("Error storing token usage:", err)
+		}
+	}
+
+	err = addAssistantContext(serverID, resp.Data)
+	if err != nil {
+		fmt.Println("Error adding assistant context:", err)
+	}
+
+	err = trimContext(serverID)
+	if err != nil {
+		fmt.Println("Error trimming context:", err)
+	}
+
 	discord.ChannelMessageSend(message.ChannelID, resp.Data)
 }
 
@@ -136,23 +311,23 @@ func loadServerLore(guildID string) error {
 	return nil
 }
 
-func addUserContext(guildID string, message *discordgo.MessageCreate) error {
-	serverContext, err := db.GetDBService().GetChatHistory(guildID)
+func addUserContext(serverID string, message *discordgo.MessageCreate, prompt string) error {
+	serverContext, err := db.GetDBService().GetChatHistory(serverID)
 	if err != nil {
 		return err
 	}
 
-	content := fmt.Sprintf("%s (aka %s) said: %s", message.Author.Username, message.Author.DisplayName(), message.Content)
+	content := fmt.Sprintf("%s (aka %s) said: %s", message.Author.Username, message.Author.DisplayName(), prompt)
 
 	serverContext = append(serverContext, map[string]string{
 		"role":    "user",
 		"content": content,
 	})
-	return db.GetDBService().UpdateChatHistory(guildID, serverContext)
+	return db.GetDBService().UpdateChatHistory(serverID, serverContext)
 }
 
-func addAssistantContext(guildID, content string) error {
-	serverContext, err := db.GetDBService().GetChatHistory(guildID)
+func addAssistantContext(serverID, content string) error {
+	serverContext, err := db.GetDBService().GetChatHistory(serverID)
 	if err != nil {
 		return err
 	}
@@ -161,11 +336,11 @@ func addAssistantContext(guildID, content string) error {
 		"role":    "assistant",
 		"content": content,
 	})
-	return db.GetDBService().UpdateChatHistory(guildID, serverContext)
+	return db.GetDBService().UpdateChatHistory(serverID, serverContext)
 }
 
-func trimContext(guildID string) error {
-	serverContext, err := db.GetDBService().GetChatHistory(guildID)
+func trimContext(serverID string) error {
+	serverContext, err := db.GetDBService().GetChatHistory(serverID)
 	if err != nil {
 		fmt.Println("Error trimming context:", err)
 		return err
@@ -174,15 +349,7 @@ func trimContext(guildID string) error {
 	if len(serverContext) > CONTEXT_LIMIT {
 		excess := len(serverContext) - CONTEXT_LIMIT
 		serverContext = serverContext[excess:]
-		return db.GetDBService().UpdateChatHistory(guildID, serverContext)
-	}
-	return nil
-}
-
-func resetContext(guildID string, message *discordgo.MessageCreate) error {
-	prompt := message.Content
-	if prompt == "reset context" {
-		return db.GetDBService().DeleteChatHistory(guildID)
+		return db.GetDBService().UpdateChatHistory(serverID, serverContext)
 	}
 	return nil
 }
