@@ -89,5 +89,93 @@ func (g *GenKitService) ChatCompletion(ctx context.Context, messages []map[strin
 	return ChatCompletionResponse{
 		Type: "text",
 		Data: resp.Message.Text(),
+		Usage: &Usage{
+			PromptTokens:     int(resp.Usage.InputTokens),
+			CompletionTokens: int(resp.Usage.OutputTokens),
+			TotalTokens:      int(resp.Usage.TotalTokens),
+		},
+	}, nil
+}
+
+// MultimodalChatCompletion handles chat completion with image support
+// When images are present, tools are disabled (like in Python version)
+func (g *GenKitService) MultimodalChatCompletion(ctx context.Context, messages []ChatMessage, enableTools bool) (ChatCompletionResponse, error) {
+	// Check if we have vision content - disable tools if so
+	hasImages := hasVisionContent(messages)
+	useTools := enableTools && !hasImages
+
+	var opts []ai.GenerateOption
+	opts = append(opts, ai.WithMessages(convertMultimodalMessages(messages)...))
+
+	if useTools {
+		opts = append(opts, ai.WithTools(g.tools...))
+		opts = append(opts, ai.WithReturnToolRequests(true))
+	}
+
+	resp, err := genkit.Generate(ctx, g.gk, opts...)
+	if err != nil {
+		return ChatCompletionResponse{}, err
+	}
+
+	// If tools are enabled and we have tool requests, handle them
+	if useTools {
+		parts := []*ai.Part{}
+
+		for {
+			if len(resp.ToolRequests()) == 0 {
+				break
+			}
+
+			for _, req := range resp.ToolRequests() {
+				tool := genkit.LookupTool(g.gk, req.Name)
+				if tool == nil {
+					return ChatCompletionResponse{}, fmt.Errorf("tool %q not found", req.Name)
+				}
+
+				output, err := tool.RunRaw(ctx, req.Input)
+				if err != nil {
+					return ChatCompletionResponse{}, fmt.Errorf("tool %q execution failed: %v", tool.Name(), err)
+				}
+
+				if tool.Name() == "generateImage" {
+					imageResult, ok := output.(map[string]interface{})
+					if !ok {
+						return ChatCompletionResponse{}, fmt.Errorf("unexpected image result type for tool %q", tool.Name())
+					}
+					return ChatCompletionResponse{
+						Type: "image",
+						Data: imageResult["data"].(string),
+					}, nil
+				}
+
+				parts = append(parts,
+					ai.NewToolResponsePart(&ai.ToolResponse{
+						Name:   req.Name,
+						Ref:    req.Ref,
+						Output: output,
+					}))
+			}
+
+			resp, err = genkit.Generate(ctx, g.gk,
+				ai.WithMessages(
+					append(resp.History(), ai.NewMessage(ai.RoleTool, nil, parts...))...,
+				),
+				ai.WithTools(g.tools...),
+				ai.WithReturnToolRequests(true),
+			)
+			if err != nil {
+				return ChatCompletionResponse{}, err
+			}
+		}
+	}
+
+	return ChatCompletionResponse{
+		Type: "text",
+		Data: resp.Message.Text(),
+		Usage: &Usage{
+			PromptTokens:     int(resp.Usage.InputTokens),
+			CompletionTokens: int(resp.Usage.OutputTokens),
+			TotalTokens:      int(resp.Usage.TotalTokens),
+		},
 	}, nil
 }
