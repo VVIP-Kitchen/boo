@@ -252,3 +252,41 @@ func (d *dbService) DeleteChatHistory(guildID string) error {
 
 	return nil
 }
+
+type TokenUsage struct {
+	MessageID    string `json:"message_id"`
+	GuildID      string `json:"guild_id"`
+	AuthorID     string `json:"author_id"`
+	InputTokens  int    `json:"input_tokens"`
+	OutputTokens int    `json:"output_tokens"`
+}
+
+func (d *dbService) StoreTokenUsage(usage TokenUsage) error {
+	entrypoint := d.BaseURL + "/token-usage"
+
+	jsonBody, err := json.Marshal(usage)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, entrypoint, strings.NewReader(string(jsonBody)))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		responseBody, _ := io.ReadAll(resp.Body)
+		log.Printf("Error storing token usage: %s", string(responseBody))
+		return fmt.Errorf("failed to store token usage, status code: %d", resp.StatusCode)
+	}
+
+	return nil
+}
