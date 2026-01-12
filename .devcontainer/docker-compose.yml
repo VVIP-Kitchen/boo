@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+      - ADMIN_LIST=${ADMIN_LIST}
+      - CONTEXT_LIMIT=${CONTEXT_LIMIT}
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - TENOR_API_KEY=${TENOR_API_KEY}
+      - DB_SERVICE_BASE_URL=manager:8080
+      - TOMORROW_IO_API_KEY=${TOMORROW_IO_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - VOYAGEAI_API_KEY=${VOYAGEAI_API_KEY}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - devcontainer-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17.6-alpine3.21
+    container_name: postgres_devcontainer
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data_devcontainer:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devcontainer-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_devcontainer
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_devcontainer:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - devcontainer-network
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.16
+    container_name: meilisearch_devcontainer
+    ports:
+      - "7700:7700"
+    restart: unless-stopped
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_ENV=production
+    volumes:
+      - meilisearch_data_devcontainer:/meili_data
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+        interval: 5s
+        timeout: 3s
+        retries: 5
+    networks:
+      - devcontainer-network
+
+volumes:
+  postgres_data_devcontainer:
+  redis_data_devcontainer:
+  meilisearch_data_devcontainer:
+
+networks:
+  devcontainer-network:
+    driver: bridge

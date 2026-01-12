@@ -16,8 +16,8 @@ WORKDIR /app
 # Copy dependency files
 COPY pyproject.toml ./
 
-# Install dependencies using uv
-RUN uv sync --frozen --no-install-project --no-dev
+# Install dependencies using uv (without lockfile)
+RUN uv sync --no-install-project --no-dev
 
 # Remove build deps to reduce image size
 RUN apk del gcc g++
