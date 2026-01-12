@@ -137,6 +137,7 @@ class MessageHandlerCog(commands.Cog):
     Get server lore (system prompt) with caching.
 
     Checks cache first, falls back to database if not found.
+    Includes list of all non-bot members with their IDs for pinging.
     """
     # Try cache first
     cached_lore = server_cache.get_lore(server_id)
@@ -145,15 +146,50 @@ class MessageHandlerCog(commands.Cog):
 
     # Cache miss - fetch from database
     prompt = await to_thread(self.db_service.fetch_prompt, server_id)
-    lore = (
+    base_lore = (
       prompt.get("system_prompt", "You are a helpful assistant")
       if prompt
       else "You are a helpful assistant"
     )
 
+    # Add member list if in a guild (not DM)
+    if guild is not None:
+      members_list = await self._get_members_list(guild)
+      lore = f"{base_lore}\n\n{members_list}"
+    else:
+      lore = base_lore
+
     # Update cache
     server_cache.set_lore(server_id, lore)
     return lore
+
+  async def _get_members_list(self, guild: discord.Guild) -> str:
+    """
+    Get formatted list of all non-bot members in the guild.
+    
+    Returns a formatted string with member names and IDs for pinging.
+    Format: @username (Display Name) - ID: user_id
+    """
+    try:
+      # Fetch all members (required for large servers)
+      await guild.chunk()
+      
+      # Filter out bots and format member list
+      members = [
+        f"- {member.name} (Display: {member.display_name}) - ID: {member.id}"
+        for member in guild.members
+        if not member.bot
+      ]
+      
+      if not members:
+        return "## Server Members\nNo members found."
+      
+      members_text = "\n".join(members)
+      return f"## Server Members\nTo ping a member, use <@user_id> format. Available members:\n{members_text}"
+    
+    except Exception as e:
+      logger.error(f"Error fetching members list: {e}", exc_info=True)
+      return "## Server Members\nUnable to fetch member list."
 
   async def _reset_chat(self, message: discord.Message, server_id: str) -> None:
     prompt = message.content.strip()
