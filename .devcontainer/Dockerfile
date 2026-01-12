@@ -44,14 +44,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv (Astral's package manager) to /usr/local/bin
-RUN curl -LsSf https://astral.sh/uv/install.sh | env INSTALLER_NO_MODIFY_PATH=1 sh && \
-    mv /root/.cargo/bin/uv /usr/local/bin/uv && \
-    mv /root/.cargo/bin/uvx /usr/local/bin/uvx
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv && \
+    mv /root/.local/bin/uvx /usr/local/bin/uvx
 
 # Install Go 1.22.3
-RUN wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz \
-    && rm go1.22.3.linux-amd64.tar.gz
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then GOARCH="amd64"; else GOARCH="arm64"; fi && \
+    wget https://go.dev/dl/go1.22.3.linux-${GOARCH}.tar.gz && \
+    tar -C /usr/local -xzf go1.22.3.linux-${GOARCH}.tar.gz && \
+    rm go1.22.3.linux-${GOARCH}.tar.gz
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
@@ -65,15 +67,24 @@ RUN curl https://mise.run | sh && \
 RUN go install golang.org/x/tools/gopls@latest && \
     go install github.com/go-delve/delve/cmd/dlv@latest
 
-# Create a non-root user
+# Create a non-root user (vscode) or use existing ubuntu user
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/bash \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+# Get the existing user with UID 1000 if it exists
+RUN EXISTING_USER=$(getent passwd $USER_UID | cut -d: -f1) && \
+    if [ -n "$EXISTING_USER" ] && [ "$EXISTING_USER" != "$USERNAME" ]; then \
+        # Rename existing user to vscode
+        usermod -l $USERNAME -d /home/$USERNAME -m $EXISTING_USER && \
+        groupmod -n $USERNAME $(getent group $USER_GID | cut -d: -f1); \
+    elif [ -z "$EXISTING_USER" ]; then \
+        # No user with UID 1000, create vscode
+        groupadd --gid $USER_GID $USERNAME && \
+        useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/bash; \
+    fi && \
+    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
