@@ -153,8 +153,9 @@ services:
       - "no-new-privileges:true"    # prevents privilege escalation
     cap_drop:             # drop ALL Linux capabilities
       - ALL
-    tmpfs:                # only writable dir
+    tmpfs:                # only writable dirs
       - /tmp:rw,noexec,nosuid,size=64m
+      - /home/sandboxuser/.cache:rw,noexec,nosuid,size=32m
 
 volumes:
   postgres_data:
