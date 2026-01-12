@@ -70,7 +70,7 @@ class MessageHandlerCog(commands.Cog):
         await self.image_handler._queue_images_for_processing(
           message=message,
           image_attachments=image_attachments,
-          user_caption=prompt if prompt else None,
+          user_caption=prompt,
         )
 
       if has_imgs:
@@ -171,7 +171,7 @@ class MessageHandlerCog(commands.Cog):
   ) -> None:
     server_context = await to_thread(self.db_service.get_chat_history, server_id)
     content = (
-      f"{message.author.name} (aka {message.author.display_name}) said: {prompt}"
+      f"{message.author.name} (aka {message.author.display_name}, ID: {message.author.id}) said: {prompt}"
     )
     server_context.append({"role": "user", "content": content})
     await to_thread(self.db_service.update_chat_history, server_id, server_context)
