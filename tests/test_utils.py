@@ -110,8 +110,7 @@ class TestToolExecutor(unittest.TestCase):
 
 class TestServerCache(unittest.TestCase):
   def setUp(self):
-    ServerCache._instance = None
-    self.cache = ServerCache(ttl_minutes=1)
+    self.cache = ServerCache()
     self.cache.clear_all()
 
   def test_set_get_and_invalidate(self):
