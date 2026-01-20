@@ -22,8 +22,10 @@ RUN uv sync --no-install-project --no-dev
 # Remove build deps to reduce image size
 RUN apk del gcc g++
 
-# Create non-root user
-RUN adduser -D sandboxuser
+# Create non-root user and .cache directory with proper ownership
+RUN adduser -D sandboxuser && \
+    mkdir -p /home/sandboxuser/.cache && \
+    chown -R sandboxuser:sandboxuser /home/sandboxuser/.cache
 USER sandboxuser
 
 # Copy application code
