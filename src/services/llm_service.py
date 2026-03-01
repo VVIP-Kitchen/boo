@@ -72,7 +72,7 @@ class LLMService(metaclass=Singleton):
     Generate or edit an image.
     Returns raw image bytes (base64 string) on success or error message.
     """
-    image_model = "google/gemini-2.5-flash-image"
+    image_model = "google/gemini-3.1-flash-image-preview"
     logger.info(f"Image task with model: {image_model}")
 
     try:
