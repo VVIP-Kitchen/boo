@@ -244,6 +244,7 @@ dependencies = [
     { name = "discord-ext-voice-recv" },
     { name = "discord-py", extra = ["voice"] },
     { name = "distro" },
+    { name = "exa-py" },
     { name = "frozenlist" },
     { name = "h11" },
     { name = "hiredis" },
@@ -271,7 +272,6 @@ dependencies = [
     { name = "rq" },
     { name = "six" },
     { name = "sniffio" },
-    { name = "tavily-python" },
     { name = "tiktoken" },
     { name = "tqdm" },
     { name = "typing-extensions" },
@@ -295,6 +295,7 @@ requires-dist = [
     { name = "discord-ext-voice-recv", specifier = ">=0.5.2a179" },
     { name = "discord-py", extras = ["voice"], specifier = "==2.5.2" },
     { name = "distro", specifier = "==1.9.0" },
+    { name = "exa-py", specifier = ">=2.7.0" },
     { name = "frozenlist", specifier = "==1.7.0" },
     { name = "h11", specifier = "==0.16.0" },
     { name = "hiredis", specifier = "==3.2.1" },
@@ -322,7 +323,6 @@ requires-dist = [
     { name = "rq", specifier = ">=2.6.0" },
     { name = "six", specifier = "==1.17.0" },
     { name = "sniffio", specifier = "==1.3.1" },
-    { name = "tavily-python", specifier = "==0.7.10" },
     { name = "tiktoken", specifier = "==0.10.0" },
     { name = "tqdm", specifier = "==4.67.1" },
     { name = "typing-extensions", specifier = "==4.14.1" },
@@ -632,6 +632,24 @@ requires-dist = [
     { name = "sentence-transformers", specifier = ">=5.1.0" },
     { name = "torch", specifier = ">=2.8.0" },
     { name = "torchvision", specifier = ">=0.23.0" },
+]
+
+[[package]]
+name = "exa-py"
+version = "2.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpcore" },
+    { name = "httpx" },
+    { name = "openai" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d4/0c/3ffaf0379867c9812c44646fc2d3410fce3692ceab9d70730c24c8116b5c/exa_py-2.7.0.tar.gz", hash = "sha256:d2df74c83d9ee45eaa3677a53aace7335df9f0778720c571033a7edcfcb016d5", size = 49580, upload-time = "2026-03-04T01:01:42.062Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/e2/663215c8b39df8b867b3a063fe333289873b4946c2136d6a1679a438aa51/exa_py-2.7.0-py3-none-any.whl", hash = "sha256:5780a34b4bcf8738ddc3226c0427f02e2f68753c95d932f0d5f5f5604447e92a", size = 64486, upload-time = "2026-03-04T01:01:40.911Z" },
 ]
 
 [[package]]
@@ -2488,20 +2506,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/77/b6/e977f03915cc02406bb52ac15398ea44dbde47805e5955b6bac9268acc12/synchronicity-0.10.2.tar.gz", hash = "sha256:e0dfd8a2ba4fb89c60ee53365c5fa2d2d69aabce60709055d38f736f6a592c86", size = 53891, upload-time = "2025-07-30T20:23:19.122Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f8/f9/ce041b9531022a0b5999a47e6da14485239f7bce9c595d1bfb387fe60e89/synchronicity-0.10.2-py3-none-any.whl", hash = "sha256:4ba1f8c02ca582ef068033300201e3c403e08d81e42553554f4e67b27f0d9bb1", size = 38766, upload-time = "2025-07-30T20:23:18.04Z" },
-]
-
-[[package]]
-name = "tavily-python"
-version = "0.7.10"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx" },
-    { name = "requests" },
-    { name = "tiktoken" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/04/0e/d4aa0f4dec298298b510ee5209f5ff29352bbbba106fd7ea0221ba8840dc/tavily_python-0.7.10.tar.gz", hash = "sha256:c87b4c0549ab2e416cf4ac3da8fe3ce5db106288408b06e197d4b5ba8ec7ead9", size = 19275, upload-time = "2025-07-17T23:57:01.239Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/60/4c4678a28b3b5061aa2ab45b215290d3a71810e7996bafdf6b7313e75fb3/tavily_python-0.7.10-py3-none-any.whl", hash = "sha256:a99958e14dd091271611be7fb1e1a8a86f5bff3a9022b9626f4c4f1513338088", size = 15786, upload-time = "2025-07-17T23:56:58.404Z" },
 ]
 
 [[package]]

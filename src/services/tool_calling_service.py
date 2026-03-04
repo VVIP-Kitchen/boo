@@ -3,9 +3,9 @@ import base64
 import requests
 import pandas as pd
 from PyPDF2 import PdfReader
-from tavily import TavilyClient
+from exa_py import Exa
 from datetime import datetime, timedelta
-from utils.config import TAVILY_API_KEY, GITHUB_TOKEN
+from utils.config import EXA_API_KEY, GITHUB_TOKEN
 
 ### Hackernews
 hackernews_tool = {
@@ -76,10 +76,10 @@ def get_top_hn_stories(limit=20):
   return stories[:limit]
 
 
-### Tavily
-tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+### Exa
+exa_client = Exa(api_key=EXA_API_KEY) if EXA_API_KEY else None
 
-tavily_search_tool = {
+exa_search_tool = {
   "type": "function",
   "function": {
     "name": "search_web",
@@ -166,22 +166,26 @@ def read_csv(url: str):
 
 
 def search_web(query, max_results=5):
-  if not tavily_client:
+  if not exa_client:
     return {
-      "error": "Tavily API key not configured. Please set TAVILY_API_KEY environment variable."
+      "error": "Exa API key not configured. Please set EXA_API_KEY environment variable."
     }
 
   try:
     max_results = min(max(1, max_results), 10)
-    response = tavily_client.search(query, max_results=max_results)
+    response = exa_client.search_and_contents(
+      query,
+      num_results=max_results,
+      use_autoprompt=True
+    )
     formatted_results = []
-    for result in response.get("results", []):
+    for result in response.results:
       formatted_results.append(
         {
-          "title": result.get("title", ""),
-          "url": result.get("url", ""),
-          "content": result.get("content", ""),
-          "score": result.get("score", 0),
+          "title": getattr(result, "title", ""),
+          "url": getattr(result, "url", ""),
+          "content": getattr(result, "text", ""),
+          "score": getattr(result, "score", 0),
         }
       )
     return {
@@ -191,13 +195,6 @@ def search_web(query, max_results=5):
     }
   except Exception as e:
     return {"error": f"Failed to search web: {str(e)}"}
-
-
-def get_tavily_usage():
-  url = "https://api.tavily.com/usage"
-  headers = {"Authorization": f"Bearer {TAVILY_API_KEY}"}
-  response = requests.get(url, headers=headers)
-  return response.json()
 
 
 ### Code running sandbox

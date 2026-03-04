@@ -9,7 +9,7 @@ from utils.config import OPENROUTER_API_KEY, OPENROUTER_MODEL
 from services.tool_calling_service import (
   hackernews_tool,
   get_top_hn_stories,
-  tavily_search_tool,
+  exa_search_tool,
   search_web,
   sandbox_tool,
   run_code,
@@ -52,7 +52,7 @@ class LLMService(metaclass=Singleton):
     # Tool definitions for OpenAI API
     self.tool_definitions = [
       hackernews_tool,
-      tavily_search_tool,
+      exa_search_tool,
       sandbox_tool,
       generate_image_tool,
       read_pdf_tool,

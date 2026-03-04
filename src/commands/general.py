@@ -17,7 +17,7 @@ from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
 from services.voyageai_service import VoyageAiService
 from services.openrouter_service import OpenRouterService
-from services.tool_calling_service import get_tavily_usage
+
 from services.meilisearch_service import MeilisearchService
 
 
@@ -213,47 +213,7 @@ class GeneralCommands(commands.Cog):
     result = self.openrouter_service.get_status()
     await ctx.send(result)
 
-  @commands.hybrid_command(name="tavily", description="Tavily stats")
-  async def get_tavily_status(self, ctx: commands.Context) -> None:
-    if ctx.interaction:
-      await ctx.defer()
-    else:
-      await ctx.typing()
 
-    try:
-      result = get_tavily_usage()
-
-      # Create simple embed
-      embed = discord.Embed(
-        title="Tavily API Usage", color=0x2B2D31, timestamp=discord.utils.utcnow()
-      )
-
-      # Key usage
-      key_data = result.get("key", {})
-      key_usage = key_data.get("usage", 0)
-      embed.add_field(name="Search queries", value=f"{key_usage} searches", inline=True)
-
-      # Account info
-      account = result.get("account", {})
-      plan = account.get("current_plan", "Unknown")
-      embed.add_field(name="Plan", value=f"{plan}", inline=True)
-
-      plan_usage = account.get("plan_usage", 0)
-      plan_limit = account.get("plan_limit", "N/A")
-      embed.add_field(
-        name="Total usage", value=f"{plan_usage} / {plan_limit}", inline=True
-      )
-
-      # Send response
-      await ctx.send(embed=embed)
-
-    except Exception as e:
-      error_embed = discord.Embed(
-        title="Error",
-        description=f"Failed to get Tavily stats: {str(e)}",
-        color=0xFF0000,
-      )
-      await ctx.send(embed=error_embed)
 
   @commands.hybrid_command(
     name="token_stats",
