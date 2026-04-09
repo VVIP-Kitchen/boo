@@ -125,11 +125,11 @@ services:
     image: ghcr.io/vvip-kitchen/boo-sandbox:latest
     container_name: sandbox
     read_only: true
-    mem_limit: 512m
+    mem_limit: 1g
     cpus: 1.0
-    pids_limit: 64
+    pids_limit: 128
     ulimits:
-      nofile: 1024
+      nofile: 2048
     restart: always
     networks:
       - internal_net
@@ -138,8 +138,8 @@ services:
     cap_drop:
       - ALL
     tmpfs:
-      - /tmp:rw,nosuid,size=64m
-      - /home/sandboxuser/.cache:rw,nosuid,size=32m
+      - /tmp:rw,nosuid,size=128m
+      - /home/sandboxuser/.cache:rw,nosuid,size=64m
 
 volumes:
   postgres_data:
