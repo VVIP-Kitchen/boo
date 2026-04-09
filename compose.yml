@@ -129,18 +129,17 @@ services:
     cpus: 1.0
     pids_limit: 64
     ulimits:
-      nproc: 64           # further enforce process cap
-      nofile: 128         # max open files
+      nofile: 1024
     restart: always
     networks:
       - internal_net
     security_opt:
-      - "no-new-privileges:true"    # prevents privilege escalation
-    cap_drop:             # drop ALL Linux capabilities
+      - "no-new-privileges:true"
+    cap_drop:
       - ALL
-    tmpfs:                # only writable dirs
-      - /tmp:rw,noexec,nosuid,size=64m
-      - /home/sandboxuser/.cache:rw,noexec,nosuid,size=32m
+    tmpfs:
+      - /tmp:rw,nosuid,size=64m
+      - /home/sandboxuser/.cache:rw,nosuid,size=32m
 
 volumes:
   postgres_data:

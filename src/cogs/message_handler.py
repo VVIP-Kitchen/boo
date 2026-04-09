@@ -143,8 +143,9 @@ class MessageHandlerCog(commands.Cog):
       await self._add_assistant_context(bot_response, server_id)
       await self._trim_context(server_id)
 
+      llm_failed = bot_response.startswith(("⏳", "😵", "⚠️"))
       await self._safe_remove_react(message, "\U0001f440")
-      await self._safe_react(message, "\u2705")
+      await self._safe_react(message, "\u274c" if llm_failed else "\u2705")
 
     except Exception as e:
       logger.error(f"Error in on_message: {e}", exc_info=True)
