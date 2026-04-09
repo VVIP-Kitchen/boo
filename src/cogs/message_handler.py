@@ -36,11 +36,25 @@ class MessageHandlerCog(commands.Cog):
 
     self.bot.loop.create_task(self.handle_message(message))
 
+  async def _safe_react(self, message: discord.Message, emoji: str) -> None:
+    try:
+      await message.add_reaction(emoji)
+    except discord.errors.HTTPException:
+      pass
+
+  async def _safe_remove_react(self, message: discord.Message, emoji: str) -> None:
+    try:
+      await message.remove_reaction(emoji, self.bot.user)
+    except discord.errors.HTTPException:
+      pass
+
   async def handle_message(self, message: discord.Message) -> None:
     log_message(message)
     reason = should_ignore(message, self.bot)
     if reason is True:
       return
+
+    await self._safe_react(message, "\U0001f440")
 
     try:
       if reason in ["reply", "mentioned_reply_other"]:
@@ -55,6 +69,7 @@ class MessageHandlerCog(commands.Cog):
       prompt = prepare_prompt(message)
 
       if "reset" in prompt.lower():
+        await self._safe_remove_react(message, "\U0001f440")
         await self._reset_chat(message, server_id)
         return
 
@@ -101,7 +116,7 @@ class MessageHandlerCog(commands.Cog):
         result = await to_thread(
           self.llm_service.chat_completions,
           messages=messages,
-          enable_tools=not has_imgs,
+          enable_tools=True,
         )
         if len(result) == 3:
           bot_response, usage, generated_images = result
@@ -128,8 +143,13 @@ class MessageHandlerCog(commands.Cog):
       await self._add_assistant_context(bot_response, server_id)
       await self._trim_context(server_id)
 
+      await self._safe_remove_react(message, "\U0001f440")
+      await self._safe_react(message, "\u2705")
+
     except Exception as e:
       logger.error(f"Error in on_message: {e}", exc_info=True)
+      await self._safe_remove_react(message, "\U0001f440")
+      await self._safe_react(message, "\u274c")
       await send_error_message(message)
 
   async def _get_server_lore(self, server_id: str, guild: discord.Guild) -> str:

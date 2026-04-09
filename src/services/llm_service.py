@@ -25,8 +25,10 @@ from services.tool_calling_service import (
   github_trending_tool,
   get_trending_repos,
 )
-from utils.llm_utils import has_vision_content, to_base64_data_uri
+from utils.llm_utils import to_base64_data_uri
 from utils.singleton import Singleton
+
+MAX_TOOL_ROUNDS = 5
 
 
 class LLMService(metaclass=Singleton):
@@ -36,7 +38,6 @@ class LLMService(metaclass=Singleton):
     )
     self.model = OPENROUTER_MODEL
 
-    # Map of tool names to their functions
     self.tool_functions = {
       "get_hackernews_stories": get_top_hn_stories,
       "search_web": search_web,
@@ -49,7 +50,6 @@ class LLMService(metaclass=Singleton):
       "get_trending_repos": get_trending_repos,
     }
 
-    # Tool definitions for OpenAI API
     self.tool_definitions = [
       hackernews_tool,
       exa_search_tool,
@@ -76,7 +76,6 @@ class LLMService(metaclass=Singleton):
     logger.info(f"Image task with model: {image_model}")
 
     try:
-      # Prepare messages
       if input_image:
         logger.info("Mode: Image Editing")
         base64_image_data = to_base64_data_uri(input_image)
@@ -89,7 +88,6 @@ class LLMService(metaclass=Singleton):
         logger.info("Mode: Text-to-Image Generation")
         chat_messages = [{"role": "user", "content": prompt}]
 
-      # API call
       response = self.client.chat.completions.create(
         model=image_model,
         messages=chat_messages,
@@ -102,14 +100,12 @@ class LLMService(metaclass=Singleton):
 
       message = response.choices[0].message
 
-      # Extract image from response
       if hasattr(message, "model_extra") and message.model_extra:
         images = message.model_extra.get("images", [])
         if images and len(images) > 0:
           image_url = images[0].get("image_url", {}).get("url", "")
           if image_url:
             logger.info("Successfully received image data")
-            # Extract base64 data
             if "base64," in image_url:
               _, base64_data = image_url.split(",", 1)
             else:
@@ -127,14 +123,12 @@ class LLMService(metaclass=Singleton):
     logger.info(f"Tool call: generate_image with prompt: '{prompt}'")
     result = self.create_or_edit_image(prompt=prompt, aspect_ratio=aspect_ratio)
 
-    # Handle result
     if isinstance(result, str):
       if (
         result.startswith("ERROR") or result.startswith("⏳") or result.startswith("😵")
       ):
         return {"status": "error", "message": result}
 
-      # It's base64 data
       b64 = result
       if b64.startswith("data:") and "," in b64:
         _, b64 = b64.split(",", 1)
@@ -155,17 +149,16 @@ class LLMService(metaclass=Singleton):
     messages: Optional[Union[str, List[Dict[str, str]]]] = None,
     temperature: float = 0.6,
     max_tokens: int = 4096,
-    enable_tools: bool = False,  # Changed to False by default
-    tools: Optional[List[str]] = None,
+    enable_tools: bool = False,
   ) -> tuple:
     """
-    Main chat completion with tool calling.
+    Main chat completion with multi-round tool calling.
+    The model can chain multiple tool calls across up to MAX_TOOL_ROUNDS rounds.
     Returns: (response_text, usage, generated_images)
     """
     mock_usage = type("Usage", (), {"prompt_tokens": 0, "total_tokens": 0})()
 
     try:
-      # Prepare messages
       if image:
         image_url = image if isinstance(image, str) else to_base64_data_uri(image)
         content = [
@@ -184,10 +177,6 @@ class LLMService(metaclass=Singleton):
       else:
         return "⚠️ No input provided.", mock_usage, []
 
-      # Check if vision mode (disable tools for vision)
-      vision_mode = has_vision_content(chat_messages)
-
-      # Prepare API parameters
       api_params = {
         "model": self.model,
         "messages": chat_messages,
@@ -195,24 +184,59 @@ class LLMService(metaclass=Singleton):
         "temperature": temperature,
       }
 
-      # Add tools if enabled and not vision mode
-      if enable_tools and not vision_mode:
+      if enable_tools:
         api_params["tools"] = self.tool_definitions
-        # Only use tools when explicitly requested
         api_params["tool_choice"] = "auto"
 
-      # Initial API call
-      response = self.client.chat.completions.create(**api_params)
-      message = response.choices[0].message
+      all_generated_images = []
+      latest_usage = mock_usage
 
-      # Check for tool calls
-      if hasattr(message, "tool_calls") and message.tool_calls:
-        return self._handle_tool_calls(
-          message, chat_messages, max_tokens, temperature, response.usage
+      for _round in range(MAX_TOOL_ROUNDS):
+        response = self.client.chat.completions.create(**api_params)
+        message = response.choices[0].message
+        latest_usage = response.usage
+
+        if not (hasattr(message, "tool_calls") and message.tool_calls):
+          text = (message.content or "").strip()
+          return text, latest_usage, all_generated_images
+
+        tool_results, generated_images = self._execute_tool_calls(message)
+        all_generated_images.extend(generated_images)
+
+        if generated_images:
+          return "Here's your generated image! 🎨", latest_usage, all_generated_images
+
+        chat_messages.append(
+          {
+            "role": "assistant",
+            "content": message.content or "",
+            "tool_calls": [
+              {
+                "id": tr["call"].id,
+                "type": "function",
+                "function": {
+                  "name": tr["call"].function.name,
+                  "arguments": tr["call"].function.arguments,
+                },
+              }
+              for tr in tool_results
+            ],
+          }
         )
 
-      # No tool calls - return response directly
-      return message.content.strip(), response.usage, []
+        for tr in tool_results:
+          chat_messages.append(
+            {"role": "tool", "tool_call_id": tr["call"].id, "content": tr["result"]}
+          )
+
+        api_params["messages"] = chat_messages
+
+      # Max rounds exhausted -- get a final text response without tools
+      api_params.pop("tools", None)
+      api_params.pop("tool_choice", None)
+      final_response = self.client.chat.completions.create(**api_params)
+      text = (final_response.choices[0].message.content or "").strip()
+      return text, final_response.usage, all_generated_images
 
     except Exception as e:
       logger.error(f"Error in chat_completions: {e}")
@@ -247,37 +271,33 @@ class LLMService(metaclass=Singleton):
       image=image,
       temperature=temperature,
       max_tokens=max_tokens,
-      enable_tools=False,  # Disable tools for image description
+      enable_tools=False,
     )
 
     return caption.strip()
 
-  def _handle_tool_calls(
-    self, message, chat_messages: List[Dict], max_tokens: int, temperature: float, usage
-  ) -> tuple:
-    """Handle tool calls in standard OpenAI format."""
+  def _execute_tool_calls(self, message) -> tuple:
+    """
+    Execute all tool calls from the model's response.
+    Returns: (tool_results, generated_images)
+    """
     generated_images = []
     tool_results = []
 
-    # Execute each tool call
     for tool_call in message.tool_calls:
       function_name = tool_call.function.name
       logger.info(f"Executing tool: {function_name}")
 
       try:
-        # Parse arguments
         arguments = json.loads(tool_call.function.arguments)
 
-        # Execute function
         if function_name in self.tool_functions:
           result = self.tool_functions[function_name](**arguments)
         else:
           result = {"error": f"Unknown function: {function_name}"}
 
-        # Convert result to JSON string
         result_str = json.dumps(result)
 
-        # Check for image generation
         if (
           function_name == "generate_image"
           and result.get("status") == "success"
@@ -297,44 +317,7 @@ class LLMService(metaclass=Singleton):
         error_result = json.dumps({"error": str(e)})
         tool_results.append({"call": tool_call, "result": error_result})
 
-    # If image was generated, return immediately
-    if generated_images:
-      return "Here's your generated image! 🎨", usage, generated_images
-
-    # Add assistant message with tool calls
-    chat_messages.append(
-      {
-        "role": "assistant",
-        "content": message.content or "",
-        "tool_calls": [
-          {
-            "id": tr["call"].id,
-            "type": "function",
-            "function": {
-              "name": tr["call"].function.name,
-              "arguments": tr["call"].function.arguments,
-            },
-          }
-          for tr in tool_results
-        ],
-      }
-    )
-
-    # Add tool results
-    for tr in tool_results:
-      chat_messages.append(
-        {"role": "tool", "tool_call_id": tr["call"].id, "content": tr["result"]}
-      )
-
-    # Get final response
-    final_response = self.client.chat.completions.create(
-      model=self.model,
-      messages=chat_messages,
-      max_tokens=max_tokens,
-      temperature=temperature,
-    )
-
-    return final_response.choices[0].message.content.strip(), final_response.usage, []
+    return tool_results, generated_images
 
   def _handle_api_error(self, error: Exception) -> str:
     """Handle API errors with user-friendly messages."""

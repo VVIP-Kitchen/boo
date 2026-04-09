@@ -35,4 +35,4 @@ COPY app.py /app
 # so Python writes code to an isolated in-memory /tmp
 VOLUME [ "/tmp" ]
 
-CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8081"]
+CMD ["/app/.venv/bin/python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8081"]

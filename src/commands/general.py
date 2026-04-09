@@ -1,63 +1,20 @@
 import io
 import random
-import asyncio
 import discord
 
 from datetime import datetime
 from utils.logger import logger
 from discord.ext import commands
-from discord.ext import voice_recv
 from utils.config import OPENROUTER_MODEL
 from services.db_service import DBService
 from services.llm_service import LLMService
-from discord.ext.voice_recv import AudioSink
 from services.tenor_service import TenorService
 from services.async_caller_service import to_thread
 from services.weather_service import WeatherService
 from utils.message_utils import get_channel_messages
 from services.voyageai_service import VoyageAiService
 from services.openrouter_service import OpenRouterService
-
 from services.meilisearch_service import MeilisearchService
-
-
-class PcmFanoutSink(voice_recv.AudioSink):
-  def __init__(self, loop: asyncio.AbstractEventLoop, queue: asyncio.Queue):
-    super().__init__()
-    self.loop = loop
-    self.queue = queue
-    self._frame_counter = 0
-
-  def wants_opus(self) -> bool:
-    return False  # we want decoded PCM
-
-  def write(
-    self, user: discord.abc.User | discord.Member | None, data: voice_recv.VoiceData
-  ):
-    # user can be None until SSRC is mapped; that's fine
-    if not data.pcm:
-      return
-
-    self._frame_counter += 1
-    if self._frame_counter % 50 == 0:  # ~1s of audio (20ms/frame => 50 frames)
-      print(f"[voice] ~{self._frame_counter / 50:.1f}s captured")
-
-    pkt = getattr(data, "packet", None)  # raw RTP packet
-    ts = getattr(pkt, "timestamp", None)
-    seq = getattr(pkt, "sequence", None)
-    # hand off safely to the asyncio loop
-    self.loop.call_soon_threadsafe(self.queue.put_nowait, (user, data.pcm, ts, seq))
-
-  @AudioSink.listener()
-  def on_voice_member_speaking_state(
-    self, member: discord.Member, ssrc: int, state: int
-  ):
-    print(
-      f"[voice] speaking_state: {member} ({ssrc}) -> {state}"
-    )  # state '1' is speaking
-
-  def cleanup(self):
-    pass
 
 
 class GeneralCommands(commands.Cog):
@@ -66,13 +23,6 @@ class GeneralCommands(commands.Cog):
   """
 
   def __init__(self, bot: commands.Bot) -> None:
-    """
-    Initialize the GeneralCommands cog.
-
-    Args:
-      bot (commands.Bot): The Discord bot instance.
-    """
-
     self.bot = bot
     self.db_service = DBService()
     self.llm_service = LLMService()
@@ -81,82 +31,6 @@ class GeneralCommands(commands.Cog):
     self.voyage_service = VoyageAiService()
     self.meili_service = MeilisearchService()
     self.openrouter_service = OpenRouterService()
-
-    # a simple queue you can consume elsewhere (e.g., a task that streams to your voice LLM)
-    self.voice_queue: asyncio.Queue[
-      tuple[discord.Member | None, bytes, int | None, int | None]
-    ] = asyncio.Queue()
-    self._listening_guild_ids: set[int] = set()
-
-  def _on_pcm(self, user, pcm_bytes: bytes, ts: float):
-    try:
-      self.voice_queue.put_nowait((user, pcm_bytes, ts))
-    except asyncio.QueueFull:
-      pass
-
-  @commands.hybrid_command(
-    name="boo-join",
-    description="Join the voice channel named 'boo' and start capturing.",
-  )
-  async def boo_join(self, ctx: commands.Context):
-    await ctx.defer(ephemeral=True)
-
-    if not ctx.guild:
-      return await ctx.reply("Use this in a server.")
-
-    # find a voice or stage channel named 'boo'
-    def _is_boo(c: discord.abc.GuildChannel):
-      return (
-        isinstance(c, (discord.VoiceChannel, discord.StageChannel))
-        and c.name.lower() == "boo"
-      )
-
-    channel = discord.utils.find(_is_boo, ctx.guild.channels)
-    if channel is None:
-      return await ctx.reply(
-        "Couldn't find a voice/stage channel named **boo** in this server."
-      )
-
-    # already connected?
-    if ctx.guild.voice_client and ctx.guild.voice_client.is_connected():
-      if ctx.guild.voice_client.channel.id == channel.id:
-        return await ctx.reply("I'm already in **boo** and listening.")
-      # move if in another VC
-      await ctx.guild.voice_client.move_to(channel)
-    else:
-      # IMPORTANT: use the receive-capable client
-      vc = await channel.connect(cls=voice_recv.VoiceRecvClient)  # <- key line
-      # start listening with our sink
-      sink = PcmFanoutSink(self.bot.loop, self.voice_queue)
-      vc.listen(sink)  # start receiving into sink
-
-    self._listening_guild_ids.add(ctx.guild.id)
-    await ctx.reply("Joined **boo** and started capturing.")
-
-  # ---- leave and stop capture ----
-  @commands.hybrid_command(
-    name="boo-leave", description="Leave 'boo' and stop capturing."
-  )
-  async def boo_leave(self, ctx: commands.Context):
-    if ctx.guild and ctx.guild.voice_client:
-      await ctx.guild.voice_client.disconnect(force=True)
-      self._listening_guild_ids.discard(ctx.guild.id)
-      await ctx.reply("Left **boo**. Capture stopped.")
-    else:
-      await ctx.reply("I'm not in a voice channel.")
-
-  # optional: lightweight consumer demonstrating how you'd read frames
-  @commands.command(name="boo-debug-drain")
-  async def boo_debug_drain(self, ctx: commands.Context, frames: int = 50):
-    """Pull some frames from the queue just to prove it’s flowing."""
-    grabbed = 0
-    while grabbed < frames:
-      try:
-        user, pcm, ts = await asyncio.wait_for(self.voice_queue.get(), timeout=5)
-        grabbed += 1
-      except asyncio.TimeoutError:
-        break
-    await ctx.reply(f"Drained {grabbed} frames from the capture queue.")
 
   @commands.hybrid_command(name="bonk", description="Bonks a user")
   async def bonk(self, ctx: commands.Context, member: discord.Member) -> None:
@@ -169,12 +43,6 @@ class GeneralCommands(commands.Cog):
   @commands.cooldown(10, 60)
   @commands.hybrid_command(name="skibidi", description="You are my skibidi")
   async def skibidi(self, ctx: commands.Context) -> None:
-    """
-    Post O Skibidi RE
-
-    Args:
-      ctx (commands.Context): The invocation context.
-    """
     await ctx.send("SKIBIDI 😍\nhttps://youtu.be/smQ57m7mjSU")
 
   @commands.hybrid_command(
@@ -187,13 +55,6 @@ class GeneralCommands(commands.Cog):
 
   @commands.hybrid_command(name="weather", description="Get the weather")
   async def weather(self, ctx: commands.Context, location: str) -> None:
-    """
-    Get the weather for a location.
-
-    Args:
-      ctx (commands.Context): The invocation context.
-      location (str): The location for which to get the weather.
-    """
     location = location.strip()
     if ctx.interaction:
       await ctx.defer()
@@ -212,8 +73,6 @@ class GeneralCommands(commands.Cog):
 
     result = self.openrouter_service.get_status()
     await ctx.send(result)
-
-
 
   @commands.hybrid_command(
     name="token_stats",
@@ -315,7 +174,6 @@ class GeneralCommands(commands.Cog):
       if stats:
         most_recent = max(stats, key=lambda x: x.get("timestamp", ""))
         if most_recent.get("timestamp"):
-          # Parse timestamp and format it nicely
           try:
             from dateutil import parser
 
@@ -350,10 +208,9 @@ class GeneralCommands(commands.Cog):
     Generate a summary of recent messages from Redis for the current channel
     """
 
-    await ctx.defer()  # Defer to avoid timeout
+    await ctx.defer()
 
     try:
-      # Get channel messages from Redis
       channel_messages = get_channel_messages(ctx.channel.id)
 
       if not channel_messages:
@@ -365,25 +222,21 @@ class GeneralCommands(commands.Cog):
         await ctx.send(embed=embed)
         return
 
-      # Format messages for AI summary
       formatted_messages = []
       for msg in channel_messages:
         formatted_messages.append(f"**{msg['author_name']}:** {msg['content']}")
 
       messages_text = "\n".join(formatted_messages)
 
-      # Create prompt for summary
       summary_prompt = f"Generate a snarky summary for the following Discord channel conversation: {messages_text}"
 
-      # Generate summary using the AI function
-      summary, _usage = await to_thread(
+      summary, _usage, _ = await to_thread(
         self.llm_service.chat_completions,
         prompt=summary_prompt,
         temperature=0.35,
         max_tokens=512,
       )
 
-      # Create embed with summary
       embed = discord.Embed(
         title=f"📝 Channel Summary - #{ctx.channel.name}",
         description=summary,
@@ -421,7 +274,7 @@ class GeneralCommands(commands.Cog):
   )
   async def get_system_prompt(self, ctx):
     """Fetch the current system prompt for this server"""
-    await ctx.defer()  # Defer the response to prevent timeout
+    await ctx.defer()
 
     guild = ctx.guild
     if not guild:
@@ -456,9 +309,7 @@ class GeneralCommands(commands.Cog):
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
 
-    # --- permission gate: manage_guild OR role "boo manager"
     def has_boo_manager_role(member: discord.Member) -> bool:
-      # case-insensitive match on role name; consider using role ID for robustness
       return any(r.name.lower() == "boo manager" for r in member.roles)
 
     is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
@@ -468,7 +319,6 @@ class GeneralCommands(commands.Cog):
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to update the system prompt."
       )
-    # --- end gate
 
     try:
       if not file.filename.endswith((".txt", ".md")):
@@ -514,9 +364,7 @@ class GeneralCommands(commands.Cog):
     if not guild:
       return await ctx.send("❌ This command can only be used in a server, no DMs")
 
-    # --- permission gate: manage_guild OR role "boo manager"
     def has_boo_manager_role(member: discord.Member) -> bool:
-      # case-insensitive name match; replace with role ID check for more robustness
       return any(r.name.lower() == "boo manager" for r in member.roles)
 
     is_manager = ctx.author.guild_permissions.manage_guild or has_boo_manager_role(
@@ -526,13 +374,12 @@ class GeneralCommands(commands.Cog):
       return await ctx.send(
         "❌ You need **Manage Server** or the **boo manager** role to add a system prompt."
       )
-    # --- end gate
 
     try:
       if not file.filename.endswith((".txt", ".md")):
         return await ctx.send("❌ Please upload a text file (.txt or .md)")
 
-      if file.size > 1024 * 1024:  # 1MB limit
+      if file.size > 1024 * 1024:
         return await ctx.send("❌ File size must be less than 1MB")
 
       file_content = await file.read()
@@ -577,22 +424,19 @@ class GeneralCommands(commands.Cog):
       return await ctx.send("❌ This command can only be used in a server")
 
     try:
-      # Validate limit
       limit = max(1, min(limit, 10))
 
-      # Generate embedding for the query
       query_embedding = await to_thread(
         self.voyage_service.generate_text_embeddings, query
       )
 
-      # Search in Meilisearch
       results = await to_thread(
         self.meili_service.search_by_text,
         query=query,
         query_embedding=query_embedding,
         server_id=str(ctx.guild.id),
         limit=limit,
-        semantic_ratio=0.55,  # Balance between semantic and keyword search
+        semantic_ratio=0.55,
       )
 
       hits = results.get("hits", [])
@@ -605,7 +449,6 @@ class GeneralCommands(commands.Cog):
         )
         return await ctx.send(embed=embed)
 
-      # Create embed with results
       embed = discord.Embed(
         title=f"🔍 Image Search Results for: `{query}`",
         description=f"Found {len(hits)} result(s) in this server",
@@ -620,7 +463,6 @@ class GeneralCommands(commands.Cog):
         author_name = hit.get("author_name", "Unknown")
         message_url = hit.get("message_url", "")
 
-        # Truncate captions if too long
         vlm_caption_short = (
           (vlm_caption[:50] + "...") if len(vlm_caption) > 50 else vlm_caption
         )
@@ -663,7 +505,6 @@ class GeneralCommands(commands.Cog):
     if not ctx.guild:
       return await ctx.send("❌ This command can only be used in a server")
 
-    # Check for image attachment
     if ctx.message.attachments:
       attachments = ctx.message.attachments
     elif ctx.interaction and ctx.interaction.message.attachments:
@@ -676,7 +517,6 @@ class GeneralCommands(commands.Cog):
       )
       return await ctx.send(embed=embed)
 
-    # Get the first image attachment
     image_attachments = [
       att
       for att in attachments
@@ -692,25 +532,21 @@ class GeneralCommands(commands.Cog):
       return await ctx.send(embed=embed)
 
     try:
-      # Read image bytes
       image_attachment = image_attachments[0]
       image_bytes = await image_attachment.read()
 
-      # Validate limit
       limit = max(1, min(limit, 10))
 
-      # Generate embedding for the image
       image_embedding = await to_thread(
         self.voyage_service.generate_image_embeddings, image_bytes
       )
 
-      # Search in Meilisearch
       results = await to_thread(
         self.meili_service.search_by_image,
         image_embedding=image_embedding,
         server_id=str(ctx.guild.id),
         limit=limit,
-        semantic_ratio=0.95,  # High semantic ratio for visual similarity
+        semantic_ratio=0.95,
       )
 
       hits = results.get("hits", [])
@@ -723,7 +559,6 @@ class GeneralCommands(commands.Cog):
         )
         return await ctx.send(embed=embed)
 
-      # Create embed with results
       embed = discord.Embed(
         title="🖼️ Visually Similar Images",
         description=f"Found {len(hits)} similar image(s) in this server",
@@ -738,7 +573,6 @@ class GeneralCommands(commands.Cog):
         message_url = hit.get("message_url", "")
         attachment_url = hit.get("attachment_url", "")
 
-        # Truncate caption
         vlm_caption_short = (
           (vlm_caption[:100] + "...") if len(vlm_caption) > 100 else vlm_caption
         )
@@ -751,7 +585,6 @@ class GeneralCommands(commands.Cog):
 
         embed.add_field(name=f"#{idx}", value=field_value, inline=False)
 
-      # Set thumbnail to first result if available
       if hits and hits[0].get("attachment_url"):
         embed.set_thumbnail(url=hits[0]["attachment_url"])
 
@@ -785,7 +618,6 @@ class GeneralCommands(commands.Cog):
         timestamp=datetime.now(),
       )
 
-      # Check if there's an error
       if "error" in stats:
         embed.add_field(name="⚠️ Error", value=f"``````", inline=False)
 
@@ -801,7 +633,6 @@ class GeneralCommands(commands.Cog):
         inline=True,
       )
 
-      # Show method used if available
       if "method" in stats:
         embed.add_field(name="📋 Method", value=stats["method"], inline=True)
 
@@ -824,7 +655,6 @@ class GeneralCommands(commands.Cog):
   async def queue_status(self, ctx: commands.Context):
     """Show status of the background task queue."""
     try:
-      # Initialize task queue service
       from services.task_queue_service import TaskQueueService
 
       task_queue = TaskQueueService()
@@ -863,7 +693,6 @@ class GeneralCommands(commands.Cog):
     """
     await ctx.send(f"🔬 Researching: {query}...")
     try:
-      # Check for attachments
       if ctx.message.attachments:
         attachment_url = ctx.message.attachments[0].url
         query += f"\n\nFile: {attachment_url}"
@@ -878,11 +707,4 @@ class GeneralCommands(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-  """
-  Setup function to add the GeneralCommands cog to the bot.
-
-  Args:
-    bot (commands.Bot): The Discord bot instance.
-  """
-
   await bot.add_cog(GeneralCommands(bot))
