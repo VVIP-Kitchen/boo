@@ -145,7 +145,6 @@ class MessageHandlerCog(commands.Cog):
 
       llm_failed = bot_response.startswith(("⏳", "😵", "⚠️"))
       await self._safe_remove_react(message, "\U0001f440")
-      await self._safe_react(message, "\u274c" if llm_failed else "\u2705")
 
     except Exception as e:
       logger.error(f"Error in on_message: {e}", exc_info=True)
