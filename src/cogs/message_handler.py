@@ -74,11 +74,14 @@ class MessageHandlerCog(commands.Cog):
         return
 
       user_content = [{"type": "text", "text": prompt}]
-      image_attachments = [
-        att
-        for att in message.attachments
-        if att.content_type and att.content_type.startswith("image")
-      ]
+      def is_image_attachment(att) -> bool:
+        if att.content_type and att.content_type.startswith("image"):
+          return True
+        if att.filename.lower().endswith((".gif", ".png", ".jpg", ".jpeg", ".webp")):
+          return True
+        return False
+
+      image_attachments = [att for att in message.attachments if is_image_attachment(att)]
       has_imgs = bool(image_attachments)
 
       if has_imgs and not message.author.bot:
@@ -88,6 +91,11 @@ class MessageHandlerCog(commands.Cog):
           user_caption=prompt,
         )
 
+      # Extract sticker URLs from prompt (after prepare_prompt appended them) and add as images for LLM
+      prompt, sticker_urls = await self.image_handler._extract_sticker_urls(prompt)
+      for sticker_url in sticker_urls:
+        user_content.append({"type": "image_url", "image_url": {"url": sticker_url}})
+
       if has_imgs:
         await send_message(
           message, f"-# Analyzing {len(image_attachments)} images ... 💭"
@@ -96,6 +104,20 @@ class MessageHandlerCog(commands.Cog):
           img_bytes = await att.read()
           data_uri = to_base64_data_uri(img_bytes)
           user_content.append({"type": "image_url", "image_url": {"url": data_uri}})
+
+      # Extract custom emoji URLs and add as images for LLM
+      emoji_urls = await self.image_handler._resolve_custom_emoji_urls(message)
+      for emoji_url in emoji_urls:
+        user_content.append({"type": "image_url", "image_url": {"url": emoji_url}})
+
+      # Update user_content text to cleaned prompt
+      user_content[0] = {"type": "text", "text": prompt}
+
+      # Handle empty prompt case - use fallback if no content at all
+      has_media = has_imgs or emoji_urls or sticker_urls
+      if not prompt.strip() and not has_media:
+        prompt = "Please respond to this message."
+        user_content[0] = {"type": "text", "text": prompt}
 
       img_note = f"\n\n[Attached {len(image_attachments)} image(s)]" if has_imgs else ""
       await self._add_user_context(message, prompt + img_note, server_id)

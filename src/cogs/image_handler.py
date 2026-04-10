@@ -6,7 +6,7 @@ from services.async_caller_service import to_thread
 from services.voyageai_service import VoyageAiService
 from services.task_queue_service import TaskQueueService
 from services.meilisearch_service import MeilisearchService
-from utils.emoji_utils import replace_emojis, replace_stickers
+from utils.emoji_utils import replace_emojis, replace_stickers, extract_custom_emojis, get_emoji_cdn_url
 from services.image_processing_service import ImageProcessingService
 
 
@@ -105,6 +105,47 @@ class ImageHandlerCog(commands.Cog):
       except:
         logger.info(f"Sticker not found: {sid}")
     return stickers
+
+  async def _extract_sticker_urls(self, prompt: str) -> tuple[str, list]:
+    """Extract sticker URLs from prompt placeholders and return cleaned prompt + URLs"""
+    sticker_pattern = r"&([a-zA-Z0-9_]+);([0-9]+);([^&]+)&"
+    urls = []
+
+    def replace_match(match):
+      urls.append(match.group(3))
+      return ""
+
+    cleaned_prompt = re.sub(sticker_pattern, replace_match, prompt)
+    return cleaned_prompt, urls
+
+  async def _resolve_custom_emoji_urls(self, message: discord.Message) -> list:
+    """Extract custom emoji IDs from message and return CDN URLs for LLM processing"""
+    emoji_ids = extract_custom_emojis(message.content)
+    if not emoji_ids:
+      return []
+
+    urls = []
+    # Build emoji cache from all guilds
+    emoji_cache = {emoji.id: emoji for guild in self.bot.guilds for emoji in guild.emojis}
+
+    for emoji_id_str in emoji_ids:
+      try:
+        emoji_id = int(emoji_id_str)
+        if emoji_id in emoji_cache:
+          emoji = emoji_cache[emoji_id]
+          # Use the emoji's URL directly
+          urls.append(emoji.url)
+        else:
+          # Try to fetch from API
+          try:
+            resolved_emoji = await self.bot.fetch_emoji(emoji_id)
+            urls.append(resolved_emoji.url)
+          except Exception as e:
+            logger.warning(f"Could not resolve emoji {emoji_id}: {e}")
+      except ValueError:
+        pass
+
+    return urls
 
 
 async def setup(bot: commands.Bot) -> None:

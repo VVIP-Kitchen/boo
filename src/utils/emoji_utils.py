@@ -1,9 +1,20 @@
 import re
-from discord import Emoji
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 
-def replace_emojis(text: str, custom_emojis: Dict[str, Emoji]) -> str:
+def extract_custom_emojis(text: str) -> List[str]:
+    """Extract custom emoji IDs from text like '<:emoji_name:123456789>'"""
+    pattern = r"<:[a-zA-Z0-9_]+:([0-9]+)>"
+    return re.findall(pattern, text)
+
+
+def get_emoji_cdn_url(emoji_id: str, animated: bool = False) -> str:
+    """Get CDN URL for a Discord emoji"""
+    ext = "gif" if animated else "png"
+    return f"https://cdn.discordapp.com/emojis/{emoji_id}.{ext}"
+
+
+def replace_emojis(text: str, custom_emojis) -> str:
   """
   Replace emoji placeholders in text with custom Discord emojis.
 
