@@ -19,7 +19,7 @@ if "discord" not in sys.modules:
   sys.modules["discord"] = discord_stub
 
 from utils.cache import ServerCache
-from utils.emoji_utils import replace_emojis, replace_stickers
+from utils.emoji_utils import replace_emojis, replace_stickers, extract_custom_emojis, get_emoji_cdn_url
 from utils.llm_utils import has_vision_content, to_base64_data_uri
 from utils.message_handler import prepare_chat_messages
 from utils.singleton import Singleton
@@ -176,6 +176,22 @@ class TestEmojiUtils(unittest.TestCase):
     text, stickers = replace_stickers("Hi &sparkles;123& there &wow;456&")
     self.assertEqual(text, "Hi  there ")
     self.assertEqual(stickers, ["123", "456"])
+
+  def test_extract_custom_emojis(self):
+    result = extract_custom_emojis("Hello <:wave:123456789> and <:party:987654321>!")
+    self.assertEqual(result, ["123456789", "987654321"])
+
+  def test_extract_custom_emojis_no_emojis(self):
+    result = extract_custom_emojis("Hello world! No emojis here.")
+    self.assertEqual(result, [])
+
+  def test_get_emoji_cdn_url(self):
+    url = get_emoji_cdn_url("123456789", animated=False)
+    self.assertEqual(url, "https://cdn.discordapp.com/emojis/123456789.png")
+
+  def test_get_emoji_cdn_url_animated(self):
+    url = get_emoji_cdn_url("123456789", animated=True)
+    self.assertEqual(url, "https://cdn.discordapp.com/emojis/123456789.gif")
 
 
 if __name__ == "__main__":
