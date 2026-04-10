@@ -30,6 +30,7 @@ class DiscordBot(commands.Bot):
     await self.load_extension("cogs.message_handler")
     await self.load_extension("cogs.image_handler")
     await self.load_extension("cogs.error_handler")
+    await self.load_extension("cogs.memory_management")
     await self.load_extension("commands.general")
     await self.load_extension("commands.admin")
     await self.load_extension("commands.metrics")

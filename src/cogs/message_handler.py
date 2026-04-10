@@ -123,11 +123,21 @@ class MessageHandlerCog(commands.Cog):
       await self._add_user_context(message, prompt + img_note, server_id)
 
       server_context = await to_thread(self.db_service.get_chat_history, server_id)
+
+      # Fetch user's existing memories to inject into context
+      author_memories = await to_thread(
+          self.db_service.get_memories, server_id, str(message.author.id)
+      )
+      memory_context = ""
+      if author_memories:
+          facts = [m.get("fact", "") for m in author_memories]
+          memory_context = f"\n\n-# Things you know about {message.author.name}: {', '.join(facts)}"
+
       messages = (
         [
           {
             "role": "system",
-            "content": server_lore,
+            "content": server_lore + memory_context,
           }
         ]
         + server_context

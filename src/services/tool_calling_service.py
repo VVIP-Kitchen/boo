@@ -555,7 +555,7 @@ store_memory_tool = {
   "type": "function",
   "function": {
     "name": "store_memory",
-    "description": "Store a fact about a user for future reference. Use this when the user shares personal information about themselves, their preferences, hobbies, or anything notable. This helps remember important details about them across conversations.",
+    "description": "Store a notable fact about a user. Call this PROACTIVELY when you learn something interesting or important about a user (preferences, hobbies, skills, personal details, opinions, goals). Keep facts short and factual. Only store genuinely useful information that would help you give better responses in future conversations.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -602,7 +602,7 @@ recall_memory_tool = {
   "type": "function",
   "function": {
     "name": "recall_memories",
-    "description": "Recall all stored facts about a specific user. Use this when you want to remember details about a user or when referring to their past preferences or personal information.",
+    "description": "Recall all stored facts about a user. Call this proactively when you want to remember details about a user before responding, or when you learn new information worth storing about them. Returns a list of known facts.",
     "parameters": {
       "type": "object",
       "properties": {

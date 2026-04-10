@@ -306,3 +306,45 @@ class DBService(metaclass=Singleton):
     except requests.RequestException as e:
       logger.error(f"Error deleting memory: {e}")
       return False
+
+  def update_memory(self, memory_id: int, fact: str) -> bool:
+    endpoint = f"http://{self.base_url}/memory"
+    params = {"id": memory_id}
+    payload = {"fact": fact}
+    try:
+      response = requests.put(
+        endpoint, params=params, json=payload, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return True
+    except requests.RequestException as e:
+      logger.error(f"Error updating memory: {e}")
+      return False
+
+  def search_memories(self, guild_id: str, query: str, author_id: Optional[str] = None) -> Optional[list]:
+    endpoint = f"http://{self.base_url}/memory/search"
+    params = {"guild_id": guild_id, "q": query}
+    if author_id:
+      params["author_id"] = author_id
+    try:
+      response = requests.get(
+        endpoint, params=params, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error searching memories: {e}")
+      return []
+
+  def get_memory_by_id(self, memory_id: int) -> Optional[dict]:
+    endpoint = f"http://{self.base_url}/memory/id"
+    params = {"id": memory_id}
+    try:
+      response = requests.get(
+        endpoint, params=params, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error fetching memory by id: {e}")
+      return None

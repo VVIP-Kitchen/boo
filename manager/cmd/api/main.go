@@ -84,6 +84,9 @@ func main() {
 	protected.GET("/memory", memoryHandler.GetMemories)
 	protected.GET("/memory/recent", memoryHandler.GetRecentMemories)
 	protected.DELETE("/memory", memoryHandler.DeleteMemory)
+	protected.PUT("/memory", memoryHandler.UpdateMemory)
+	protected.GET("/memory/search", memoryHandler.SearchMemories)
+	protected.GET("/memory/id", memoryHandler.GetMemoryByID)
 
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))

@@ -73,3 +73,54 @@ func (s *MemoryService) DeleteMemory(id int64) (int64, error) {
 	}
 	return result.RowsAffected()
 }
+
+func (s *MemoryService) UpdateMemory(id int64, fact string) (int64, error) {
+	result, err := s.db.Exec("UPDATE user_memories SET fact = $1 WHERE id = $2", fact, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+func (s *MemoryService) SearchMemories(guildID, authorID, query string) ([]model.UserMemoryResponse, error) {
+	var rows *sql.Rows
+	var err error
+	if authorID != "" {
+		rows, err = s.db.Query(
+			"SELECT id, guild_id, author_id, author_name, fact, created_at FROM user_memories WHERE guild_id = $1 AND author_id = $2 AND fact ILIKE $3 ORDER BY created_at DESC LIMIT 50",
+			guildID, authorID, "%"+query+"%",
+		)
+	} else {
+		rows, err = s.db.Query(
+			"SELECT id, guild_id, author_id, author_name, fact, created_at FROM user_memories WHERE guild_id = $1 AND fact ILIKE $2 ORDER BY created_at DESC LIMIT 50",
+			guildID, "%"+query+"%",
+		)
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var memories []model.UserMemoryResponse
+	for rows.Next() {
+		var m model.UserMemoryResponse
+		err := rows.Scan(&m.ID, &m.GuildID, &m.AuthorID, &m.AuthorName, &m.Fact, &m.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		memories = append(memories, m)
+	}
+	return memories, nil
+}
+
+func (s *MemoryService) GetMemoryByID(id int64) (*model.UserMemoryResponse, error) {
+	var m model.UserMemoryResponse
+	err := s.db.QueryRow(
+		"SELECT id, guild_id, author_id, author_name, fact, created_at FROM user_memories WHERE id = $1",
+		id,
+	).Scan(&m.ID, &m.GuildID, &m.AuthorID, &m.AuthorName, &m.Fact, &m.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
+}
