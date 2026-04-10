@@ -38,6 +38,9 @@ func main() {
 	tokenService := service.NewTokenService(db)
 	tokenHandler := handler.NewTokenHandler(tokenService)
 
+	memoryService := service.NewMemoryService(db)
+	memoryHandler := handler.NewMemoryHandler(memoryService)
+
 	r := gin.Default()
 
 	r.Static("/static", "./static")
@@ -75,6 +78,12 @@ func main() {
 	protected.GET("/chat-history", chatHistoryHandler.GetChatHistory)
 	protected.PUT("/chat-history", chatHistoryHandler.UpdateChatHistory)
 	protected.DELETE("/chat-history", chatHistoryHandler.DeleteChatHistory)
+
+	// Memory endpoints
+	protected.POST("/memory", memoryHandler.AddMemory)
+	protected.GET("/memory", memoryHandler.GetMemories)
+	protected.GET("/memory/recent", memoryHandler.GetRecentMemories)
+	protected.DELETE("/memory", memoryHandler.DeleteMemory)
 
 	log.Println("Server listening on port 8080")
 	log.Fatal(r.Run(":8080"))

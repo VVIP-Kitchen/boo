@@ -117,6 +117,7 @@ class MessageHandlerCog(commands.Cog):
           self.llm_service.chat_completions,
           messages=messages,
           enable_tools=True,
+          guild_id=server_id,
         )
         if len(result) == 3:
           bot_response, usage, generated_images = result

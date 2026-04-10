@@ -70,6 +70,17 @@ func InitializeSchema(db *sql.DB) error {
 		guild_id TEXT PRIMARY KEY,
 		messages JSONB NOT NULL
 	);
+
+	CREATE TABLE IF NOT EXISTS user_memories (
+		id SERIAL PRIMARY KEY,
+		guild_id TEXT NOT NULL,
+		author_id TEXT NOT NULL,
+		author_name TEXT NOT NULL,
+		fact TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE INDEX IF NOT EXISTS idx_user_memories_guild_author ON user_memories(guild_id, author_id);
 	`
 
 	_, err := db.Exec(query)

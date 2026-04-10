@@ -544,3 +544,93 @@ def get_trending_repos(language: str = "", since: str = "weekly", max_results: i
       return {"error": f"GitHub API error: {e.response.status_code}"}
   except Exception as e:
     return {"error": f"Failed to fetch trending repos: {str(e)}"}
+
+
+### User Memory Tools
+from services.db_service import DBService
+
+db_service = DBService()
+
+store_memory_tool = {
+  "type": "function",
+  "function": {
+    "name": "store_memory",
+    "description": "Store a fact about a user for future reference. Use this when the user shares personal information about themselves, their preferences, hobbies, or anything notable. This helps remember important details about them across conversations.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "guild_id": {
+          "type": "string",
+          "description": "The Discord guild/server ID.",
+        },
+        "user_id": {
+          "type": "string",
+          "description": "The Discord user ID of the person this fact is about (e.g., '123456789012345678').",
+        },
+        "username": {
+          "type": "string",
+          "description": "The Discord username of the person this fact is about.",
+        },
+        "fact": {
+          "type": "string",
+          "description": "A short, factual statement about the user (e.g., 'likes coffee', 'is a developer', 'prefers dark mode').",
+        },
+      },
+      "required": ["guild_id", "user_id", "username", "fact"],
+    },
+  },
+}
+
+
+def store_memory(guild_id: str, user_id: str, username: str, fact: str):
+  try:
+    payload = {
+      "guild_id": guild_id,
+      "author_id": user_id,
+      "author_name": username,
+      "fact": fact,
+    }
+    result = db_service.add_memory(payload)
+    if result:
+      return {"status": "success", "message": f"Stored memory about {username}: {fact}"}
+    return {"status": "error", "message": "Failed to store memory"}
+  except Exception as e:
+    return {"status": "error", "message": str(e)}
+
+
+recall_memory_tool = {
+  "type": "function",
+  "function": {
+    "name": "recall_memories",
+    "description": "Recall all stored facts about a specific user. Use this when you want to remember details about a user or when referring to their past preferences or personal information.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "guild_id": {
+          "type": "string",
+          "description": "The Discord guild/server ID.",
+        },
+        "user_id": {
+          "type": "string",
+          "description": "The Discord user ID to recall memories for (e.g., '123456789012345678').",
+        },
+      },
+      "required": ["guild_id", "user_id"],
+    },
+  },
+}
+
+
+def recall_memories(guild_id: str, user_id: str):
+  try:
+    memories = db_service.get_memories(guild_id, user_id)
+    if memories is None:
+      return {"status": "error", "message": "Failed to retrieve memories"}
+
+    if not memories:
+      return {"status": "success", "facts": [], "message": "No memories stored for this user yet"}
+
+    facts = [m.get("fact", "") for m in memories]
+    return {"status": "success", "facts": facts}
+  except Exception as e:
+    return {"status": "error", "message": str(e)}

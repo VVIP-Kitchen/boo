@@ -24,6 +24,10 @@ from services.tool_calling_service import (
   search_github,
   github_trending_tool,
   get_trending_repos,
+  store_memory_tool,
+  store_memory,
+  recall_memory_tool,
+  recall_memories,
 )
 from utils.llm_utils import to_base64_data_uri
 from utils.singleton import Singleton
@@ -50,6 +54,8 @@ class LLMService(metaclass=Singleton):
       "get_github_repo_info": get_github_repo_info,
       "search_github": search_github,
       "get_trending_repos": get_trending_repos,
+      "store_memory": store_memory,
+      "recall_memories": recall_memories,
     }
 
     self.tool_definitions = [
@@ -62,6 +68,8 @@ class LLMService(metaclass=Singleton):
       github_repo_info_tool,
       github_search_tool,
       github_trending_tool,
+      store_memory_tool,
+      recall_memory_tool,
     ]
 
   def _call_with_retry(self, **api_params):
@@ -167,6 +175,7 @@ class LLMService(metaclass=Singleton):
     temperature: float = 0.6,
     max_tokens: int = 4096,
     enable_tools: bool = False,
+    guild_id: Optional[str] = None,
   ) -> tuple:
     """
     Main chat completion with multi-round tool calling.
@@ -207,6 +216,7 @@ class LLMService(metaclass=Singleton):
 
       all_generated_images = []
       latest_usage = mock_usage
+      memory_stored = False
 
       for _round in range(MAX_TOOL_ROUNDS):
         response = self._call_with_retry(**api_params)
@@ -215,13 +225,19 @@ class LLMService(metaclass=Singleton):
 
         if not (hasattr(message, "tool_calls") and message.tool_calls):
           text = (message.content or "").strip()
+          if memory_stored:
+            text = f"{text}\n\n-# memory saved"
           return text, latest_usage, all_generated_images
 
-        tool_results, generated_images = self._execute_tool_calls(message)
+        tool_results, generated_images, memory_stored_call = self._execute_tool_calls(message, guild_id)
         all_generated_images.extend(generated_images)
+        memory_stored = memory_stored or memory_stored_call
 
         if generated_images:
-          return "Here's your generated image! 🎨", latest_usage, all_generated_images
+          text = "Here's your generated image! 🎨"
+          if memory_stored:
+            text = f"{text}\n\n-# memory saved"
+          return text, latest_usage, all_generated_images
 
         chat_messages.append(
           {
@@ -253,6 +269,8 @@ class LLMService(metaclass=Singleton):
       api_params.pop("tool_choice", None)
       final_response = self._call_with_retry(**api_params)
       text = (final_response.choices[0].message.content or "").strip()
+      if memory_stored:
+        text = f"{text}\n\n-# memory saved"
       return text, final_response.usage, all_generated_images
 
     except Exception as e:
@@ -293,13 +311,14 @@ class LLMService(metaclass=Singleton):
 
     return caption.strip()
 
-  def _execute_tool_calls(self, message) -> tuple:
+  def _execute_tool_calls(self, message, guild_id: Optional[str] = None) -> tuple:
     """
     Execute all tool calls from the model's response.
-    Returns: (tool_results, generated_images)
+    Returns: (tool_results, generated_images, memory_stored)
     """
     generated_images = []
     tool_results = []
+    memory_stored = False
 
     for tool_call in message.tool_calls:
       function_name = tool_call.function.name
@@ -308,10 +327,18 @@ class LLMService(metaclass=Singleton):
       try:
         arguments = json.loads(tool_call.function.arguments)
 
+        if guild_id and function_name in ("store_memory", "recall_memories"):
+          arguments["guild_id"] = guild_id
+
         if function_name in self.tool_functions:
           result = self.tool_functions[function_name](**arguments)
         else:
           result = {"error": f"Unknown function: {function_name}"}
+
+        if function_name == "store_memory" and result.get("status") == "success":
+          memory_stored = True
+          username = arguments.get("username", "user")
+          result["message"] = f"Stored memory about {username}"
 
         result_str = json.dumps(result)
 
@@ -334,7 +361,7 @@ class LLMService(metaclass=Singleton):
         error_result = json.dumps({"error": str(e)})
         tool_results.append({"call": tool_call, "result": error_result})
 
-    return tool_results, generated_images
+    return tool_results, generated_images, memory_stored
 
   def _handle_api_error(self, error: Exception) -> str:
     """Handle API errors with user-friendly messages."""

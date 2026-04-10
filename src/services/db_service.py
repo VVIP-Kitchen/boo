@@ -255,3 +255,54 @@ class DBService(metaclass=Singleton):
     except requests.RequestException as e:
       logger.error(f"Error deleting chat history for guild {guild_id}: {e}")
       return False
+
+  def add_memory(self, memory_payload: dict) -> Optional[Dict[str, int]]:
+    endpoint = f"http://{self.base_url}/memory"
+    try:
+      response = requests.post(
+        endpoint, json=memory_payload, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error adding memory: {e}")
+      return None
+
+  def get_memories(self, guild_id: str, author_id: str) -> Optional[list]:
+    endpoint = f"http://{self.base_url}/memory"
+    params = {"guild_id": guild_id, "author_id": author_id}
+    try:
+      response = requests.get(
+        endpoint, params=params, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error fetching memories: {e}")
+      return []
+
+  def get_recent_memories(self, guild_id: str, limit: int = 50) -> Optional[list]:
+    endpoint = f"http://{self.base_url}/memory/recent"
+    params = {"guild_id": guild_id, "limit": limit}
+    try:
+      response = requests.get(
+        endpoint, params=params, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return response.json()
+    except requests.RequestException as e:
+      logger.error(f"Error fetching recent memories: {e}")
+      return []
+
+  def delete_memory(self, memory_id: int) -> bool:
+    endpoint = f"http://{self.base_url}/memory"
+    params = {"id": memory_id}
+    try:
+      response = requests.delete(
+        endpoint, params=params, timeout=self.timeout, headers=self.headers
+      )
+      response.raise_for_status()
+      return True
+    except requests.RequestException as e:
+      logger.error(f"Error deleting memory: {e}")
+      return False
