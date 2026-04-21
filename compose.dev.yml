@@ -17,21 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis_dev
-    ports:
-      - "127.0.0.1:6379:6379"
-    restart: always
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data_dev:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   meilisearch:
     image: getmeili/meilisearch:v1.16
     container_name: meilisearch_dev
@@ -44,18 +29,52 @@ services:
     volumes:
       - meilisearch_data_dev:/meili_data
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-        interval: 5s
-        timeout: 3s
-        retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  manager:
+  temporal:
+    image: temporalio/auto-setup:1.29.6
+    container_name: temporal_dev
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PWD=${POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=postgres
+    ports:
+      - "127.0.0.1:7233:7233"
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "temporal:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  temporal-ui:
+    image: temporalio/ui:2.48.1
+    container_name: temporal_ui_dev
+    restart: always
+    depends_on:
+      - temporal
+    ports:
+      - "127.0.0.1:8233:8080"
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:8233
+
+  manager:
     image: ghcr.io/vvip-kitchen/boo-manager:latest
     container_name: manager_dev
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"
     environment:
@@ -68,5 +87,4 @@ services:
 
 volumes:
   postgres_data_dev:
-  redis_data_dev:
   meilisearch_data_dev:

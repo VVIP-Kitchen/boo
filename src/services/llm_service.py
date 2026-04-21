@@ -33,8 +33,6 @@ from utils.llm_utils import to_base64_data_uri
 from utils.singleton import Singleton
 
 MAX_TOOL_ROUNDS = 5
-MAX_API_RETRIES = 3
-RETRY_BACKOFF_SECS = (1, 3, 6)
 
 
 class LLMService(metaclass=Singleton):
@@ -71,21 +69,6 @@ class LLMService(metaclass=Singleton):
       store_memory_tool,
       recall_memory_tool,
     ]
-
-  def _call_with_retry(self, **api_params):
-    """Call the chat completions API with retry on transient 5xx errors."""
-    for attempt in range(MAX_API_RETRIES):
-      try:
-        return self.client.chat.completions.create(**api_params)
-      except Exception as e:
-        status = getattr(getattr(e, "response", None), "status_code", None)
-        is_transient = status in (502, 503, 504, 529)
-        if is_transient and attempt < MAX_API_RETRIES - 1:
-          wait = RETRY_BACKOFF_SECS[attempt]
-          logger.warning(f"Transient {status} error, retrying in {wait}s (attempt {attempt + 1}/{MAX_API_RETRIES})")
-          time.sleep(wait)
-          continue
-        raise
 
   def create_or_edit_image(
     self,
@@ -219,7 +202,7 @@ class LLMService(metaclass=Singleton):
       memory_stored = False
 
       for _round in range(MAX_TOOL_ROUNDS):
-        response = self._call_with_retry(**api_params)
+        response = self.client.chat.completions.create(**api_params)
         message = response.choices[0].message
         latest_usage = response.usage
 
@@ -267,7 +250,7 @@ class LLMService(metaclass=Singleton):
       # Max rounds exhausted -- get a final text response without tools
       api_params.pop("tools", None)
       api_params.pop("tool_choice", None)
-      final_response = self._call_with_retry(**api_params)
+      final_response = self.client.chat.completions.create(**api_params)
       text = (final_response.choices[0].message.content or "").strip()
       if memory_stored:
         text = f"{text}\n\n-# memory saved"

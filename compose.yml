@@ -17,21 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    ports:
-      - "127.0.0.1:6379:6379"
-    restart: always
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   meilisearch:
     image: getmeili/meilisearch:v1.16
     container_name: meilisearch
@@ -44,18 +29,53 @@ services:
     volumes:
       - meilisearch_data:/meili_data
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-        interval: 5s
-        timeout: 3s
-        retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  manager:
+  temporal:
+    image: temporalio/auto-setup:1.29.6
+    container_name: temporal
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PWD=${POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=postgres
+    ports:
+      - "127.0.0.1:7233:7233"
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "temporal:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  temporal-ui:
+    image: temporalio/ui:2.48.1
+    container_name: temporal-ui
+    restart: always
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=https://temporal.ifkash.dev
+    networks:
+      - default
+      - web_network
+
+  manager:
     image: ghcr.io/vvip-kitchen/boo-manager:latest
     container_name: manager
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"
     environment:
@@ -65,15 +85,20 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
       - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
+    networks:
+      - default
+      - web_network
 
   discord-bot:
-    depends_on:
-      - manager
-      - redis
     image: ghcr.io/vvip-kitchen/boo:latest
     container_name: boo
     command: uv run src/main.py
     restart: always
+    depends_on:
+      manager:
+        condition: service_started
+      temporal:
+        condition: service_healthy
     networks:
       - default
       - internal_net
@@ -92,14 +117,21 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_TASK_QUEUE=boo-tasks
+      - TEMPORAL_NAMESPACE=default
 
   boo-worker:
-    depends_on:
-      - redis
-      - meilisearch
     image: ghcr.io/vvip-kitchen/boo:latest
-    command: uv run src/worker.py
+    command: uv run src/temporal_worker.py
     restart: always
+    depends_on:
+      meilisearch:
+        condition: service_healthy
+      manager:
+        condition: service_started
+      temporal:
+        condition: service_healthy
     networks:
       - default
       - internal_net
@@ -118,6 +150,9 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - MANAGER_API_TOKEN=${MANAGER_API_TOKEN}
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_TASK_QUEUE=boo-tasks
+      - TEMPORAL_NAMESPACE=default
     deploy:
       replicas: 4
 
@@ -143,10 +178,11 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
   meilisearch_data:
 
 networks:
   default: {}
   internal_net:
     internal: true
+  web_network:
+    external: true

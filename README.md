@@ -2,10 +2,10 @@
 
 Boo is a snark-powered Discord bot that blends LLM chat, image understanding, and handy utilities into a single docker-compose stack. It’s built for discord servers that want a fast, context-aware assistant with guardrails, a tiny admin API, and a smooth UX.
 
-- Conversational AI with per-guild system prompts
-- Automatic image captioning/analysis, with generation workflows
-- Short-term context in Redis for channel summaries
+- Conversational AI with per-guild system prompts, retried + observable via Temporal
+- Automatic image captioning/analysis, with generation workflows running in the background
 - Long-term storage and editable prompts in Postgres (via a lightweight Go API + web UI)
+- Channel summaries pulled live from Discord history (no in-memory cache to babysit)
 - GIFs, weather, pings, bonks, and more ...
 
 ---
@@ -14,11 +14,11 @@ Boo is a snark-powered Discord bot that blends LLM chat, image understanding, an
 
 | Category  | What Boo does                                                                                                                                                      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| AI chat   | Conversational replies via OpenRouter, per-server editable system prompt, mentions/replies/DM support, rolling context from Redis |
-| Vision    | Auto image caption/analysis on upload                                                                       |
+| AI chat   | Conversational replies via OpenRouter, per-server editable system prompt, mentions/replies/DM support, full agentic tool loop runs as a Temporal workflow |
+| Vision    | Auto image caption/analysis + Voyage embeddings on upload, processed in a Temporal background workflow                                                              |
 | Utilities | `/weather`, `/bonk @user`, `/ping`, `/skibidi`, `/get_prompt`, `/summary`                                                                                |
 | UX & Mod  | ["Guys-check" for inclusive language nudges](https://github.com/VVIP-Kitchen/boo/issues/31), oversized replies sent as text attachments, supports stickers and custom emojis                                        |
-| Admin     | `!@sync` to refresh slash commands, prompt editor served by the Go manager on http://localhost:8080                                                         |
+| Admin     | `!@sync` to refresh slash commands, prompt editor served by the Go manager on http://localhost:8080, workflow + activity inspection via the Temporal UI                                                         |
 
 ---
 
@@ -26,9 +26,9 @@ Boo is a snark-powered Discord bot that blends LLM chat, image understanding, an
 
 ```
 .
-├─ compose.yml           # 4 services: postgres, redis, manager, discord-bot
-├─ Dockerfile            # Python 3.12 (uv) base for the bot
-├─ src/                  # Discord bot (Python / discord.py 2.5)
+├─ compose.yml           # postgres, meilisearch, temporal, temporal-ui, manager, discord-bot, boo-worker, sandbox
+├─ Dockerfile            # Python 3.12 (uv) base for the bot + worker
+├─ src/                  # Discord bot + Temporal workflows/activities (Python / discord.py 2.5)
 ├─ manager/              # Go API + static Tailwind UI for prompts and token stats
 └─ assets/               # diagrams and images
 ```
@@ -37,11 +37,13 @@ Boo is a snark-powered Discord bot that blends LLM chat, image understanding, an
 
 ## ⚙️ Architecture
 
-![](./assets/architecture.png)
-- **`bot`**: Python 3.12 container with cogs, tools, and all commands
-- **`manager`**: Go (Gin) API for prompts/messages/tokens + static prompt editor
-- **`redis`**: 15-minute rolling message buffer per channel for AI summaries
-- **`postgres`**: persistent storage (prompts, messages, token usage)
+- **`discord-bot`**: thin Discord gateway listener. Builds a `ChatRequest` per message and starts a Temporal workflow. Never blocks on LLM/network.
+- **`boo-worker`** (×4): runs every workflow + every activity (LLM, tool calls, embeddings, Meilisearch writes, Discord REST writes). Crash-safe — Temporal retries activities and resumes workflows.
+- **`temporal`** + **`temporal-ui`**: durable workflow engine with state in Postgres. UI exposed behind Caddy basic_auth at `temporal.ifkash.dev`.
+- **`manager`**: Go (Gin) API for prompts/messages/tokens/memories + static prompt editor.
+- **`meilisearch`**: hybrid search index for image embeddings + captions.
+- **`postgres`**: persistent storage for `boo` data and Temporal's `temporal` + `temporal_visibility` databases.
+- **`sandbox`**: locked-down Python execution service for the `run_code` tool.
 
 ---
 
@@ -84,12 +86,17 @@ MANAGER_API_TOKEN=super-secure-shared-secret
 POSTGRES_USER=db-user
 POSTGRES_PASSWORD=db-password
 POSTGRES_DB=db-name
+
+# Temporal
+TEMPORAL_ADDRESS=temporal:7233
+TEMPORAL_NAMESPACE=default
+TEMPORAL_TASK_QUEUE=boo-tasks
 ```
 
 The compose file wires these services for the bot:
 
 ```
-postgres:5432, redis:6379, manager:8080
+postgres:5432, manager:8080, meilisearch:7700, temporal:7233, temporal-ui:8080
 ```
 
 ---
@@ -97,16 +104,22 @@ postgres:5432, redis:6379, manager:8080
 ## 🛠 Running locally (without Docker)
 
 ```
-# Python venv
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+# Sync deps
+uv sync
 
-# Start Redis and Postgres locally (or disable features that need them)
+# Start the dev stack (postgres + meilisearch + temporal + temporal-ui + manager)
+docker compose -f compose.dev.yml up -d
+
 export $(cat .env | xargs)
-python src/main.py
+
+# Run the bot (Discord gateway)
+uv run src/main.py
+
+# In another shell, run the worker (workflows + activities)
+uv run src/temporal_worker.py
 ```
 
-Run the Go manager separately:
+The Temporal UI is at <http://localhost:8233> in dev. Run the Go manager separately if you need its admin UI:
 
 ```
 cd manager
@@ -190,9 +203,10 @@ MIT. Summon responsibly.
 
 - Python 3.12, discord.py 2.5
 - OpenRouter (LLM chat + vision)
-- Redis, Postgres
+- Temporal (workflows + activities for the agentic loop and image indexing)
+- Postgres (manager data + Temporal persistence), Meilisearch (image search)
 - Go (Gin) manager with Tailwind UI
-- Docker Compose
+- Docker Compose, fronted by Caddy
 
 ---
 

@@ -1,63 +1,45 @@
 import discord
-from utils.logger import logger
 from discord.ext import commands
-from utils.cache import server_cache
-from utils.config import CONTEXT_LIMIT
-from services.db_service import DBService
-from services.llm_service import LLMService
-from utils.llm_utils import to_base64_data_uri
-from services.async_caller_service import to_thread
+
+from utils.logger import logger
 from utils.message_utils import (
   CHANNEL_NAME,
+  log_message,
   should_ignore,
   prepare_prompt,
-  log_message,
   get_reply_context,
   send_error_message,
-  send_message,
-  send_response,
 )
+from services.temporal_client import get_client
+from utils.config import TEMPORAL_TASK_QUEUE
+from activities.models import ChatRequest, ImageIndexInput
+from workflows.chat_workflow import BooChatWorkflow
+from workflows.image_workflows import ImageIndexWorkflow
 from .image_handler import ImageHandlerCog
 
 
 class MessageHandlerCog(commands.Cog):
+  """Discord gateway listener. Builds a ChatRequest and starts a Temporal workflow."""
+
   def __init__(self, bot: commands.Bot) -> None:
     self.bot = bot
     self.channel_name = CHANNEL_NAME
-    self.db_service = DBService()
-    self.llm_service = LLMService()
     self.image_handler = ImageHandlerCog(bot)
-    self.context_reset_message = "Context reset! Starting a new conversation. 👋"
 
   @commands.Cog.listener()
   async def on_message(self, message: discord.Message) -> None:
-    if message.author.bot:
+    if message.author.bot and message.author.id != 1413943952524054550:
       return
+    self.bot.loop.create_task(self.dispatch(message))
 
-    self.bot.loop.create_task(self.handle_message(message))
-
-  async def _safe_react(self, message: discord.Message, emoji: str) -> None:
-    try:
-      await message.add_reaction(emoji)
-    except discord.errors.HTTPException:
-      pass
-
-  async def _safe_remove_react(self, message: discord.Message, emoji: str) -> None:
-    try:
-      await message.remove_reaction(emoji, self.bot.user)
-    except discord.errors.HTTPException:
-      pass
-
-  async def handle_message(self, message: discord.Message) -> None:
+  async def dispatch(self, message: discord.Message) -> None:
     log_message(message)
     reason = should_ignore(message, self.bot)
     if reason is True:
       return
 
-    await self._safe_react(message, "\U0001f440")
-
     try:
-      if reason in ["reply", "mentioned_reply_other"]:
+      if reason in ("reply", "mentioned_reply_other"):
         reply_context = get_reply_context(message)
         if reply_context:
           message.content = f"This is a reply to: {reply_context}\n\n{message.content}"
@@ -65,216 +47,103 @@ class MessageHandlerCog(commands.Cog):
       server_id = (
         f"DM_{message.author.id}" if message.guild is None else str(message.guild.id)
       )
-      server_lore = await self._get_server_lore(server_id, message.guild)
-      prompt = prepare_prompt(message)
 
-      if "reset" in prompt.lower():
-        await self._safe_remove_react(message, "\U0001f440")
-        await self._reset_chat(message, server_id)
-        return
-
-      user_content = [{"type": "text", "text": prompt}]
-      def is_image_attachment(att) -> bool:
-        if att.content_type and att.content_type.startswith("image"):
-          return True
-        if att.filename.lower().endswith((".gif", ".png", ".jpg", ".jpeg", ".webp")):
-          return True
-        return False
-
-      image_attachments = [att for att in message.attachments if is_image_attachment(att)]
-      has_imgs = bool(image_attachments)
-
-      if has_imgs and not message.author.bot:
-        await self.image_handler._queue_images_for_processing(
-          message=message,
-          image_attachments=image_attachments,
-          user_caption=prompt,
-        )
-
-      # Extract sticker URLs from prompt (after prepare_prompt appended them) and add as images for LLM
-      prompt, sticker_urls = await self.image_handler._extract_sticker_urls(prompt)
-      for sticker_url in sticker_urls:
-        user_content.append({"type": "image_url", "image_url": {"url": sticker_url}})
-
-      if has_imgs:
-        await send_message(
-          message, f"-# Analyzing {len(image_attachments)} images ... 💭"
-        )
-        for att in image_attachments:
-          img_bytes = await att.read()
-          data_uri = to_base64_data_uri(img_bytes)
-          user_content.append({"type": "image_url", "image_url": {"url": data_uri}})
-
-      # Extract custom emoji URLs and add as images for LLM
+      prompt_with_stickers = prepare_prompt(message)
+      cleaned_prompt, sticker_urls = await self.image_handler._extract_sticker_urls(
+        prompt_with_stickers
+      )
       emoji_urls = await self.image_handler._resolve_custom_emoji_urls(message)
-      for emoji_url in emoji_urls:
-        user_content.append({"type": "image_url", "image_url": {"url": emoji_url}})
 
-      # Update user_content text to cleaned prompt
-      user_content[0] = {"type": "text", "text": prompt}
+      image_attachments = [
+        att
+        for att in message.attachments
+        if (att.content_type and att.content_type.startswith("image"))
+        or att.filename.lower().endswith((".gif", ".png", ".jpg", ".jpeg", ".webp"))
+      ]
 
-      # Handle empty prompt case - use fallback if no content at all
-      has_media = has_imgs or emoji_urls or sticker_urls
-      if not prompt.strip() and not has_media:
-        prompt = "Please respond to this message."
-        user_content[0] = {"type": "text", "text": prompt}
+      lower = cleaned_prompt.lower()
+      is_reset = "reset" in lower and "reset chat" in lower
 
-      img_note = f"\n\n[Attached {len(image_attachments)} image(s)]" if has_imgs else ""
-      await self._add_user_context(message, prompt + img_note, server_id)
+      members_list = ""
+      if message.guild is not None:
+        members_list = await self._format_members_list(message.guild)
 
-      server_context = await to_thread(self.db_service.get_chat_history, server_id)
-
-      # Fetch user's existing memories to inject into context
-      author_memories = await to_thread(
-          self.db_service.get_memories, server_id, str(message.author.id)
-      )
-      memory_context = ""
-      if author_memories:
-          facts = [m.get("fact", "") for m in author_memories]
-          memory_context = f"\n\n-# Things you know about {message.author.name}: {', '.join(facts)}"
-
-      messages = (
-        [
-          {
-            "role": "system",
-            "content": server_lore + memory_context,
-          }
-        ]
-        + server_context
-        + [{"role": "user", "content": user_content}]
+      req = ChatRequest(
+        channel_id=str(message.channel.id),
+        message_id=str(message.id),
+        guild_id=str(message.guild.id) if message.guild else None,
+        server_id=server_id,
+        server_name=message.guild.name if message.guild else "Direct Message",
+        channel_name=getattr(message.channel, "name", "DM"),
+        author_id=str(message.author.id),
+        author_name=message.author.name,
+        author_display_name=message.author.display_name,
+        prompt=cleaned_prompt,
+        image_urls=[att.url for att in image_attachments],
+        sticker_urls=sticker_urls,
+        emoji_urls=emoji_urls,
+        members_list=members_list,
+        is_reset=is_reset,
       )
 
-      async with message.channel.typing():
-        result = await to_thread(
-          self.llm_service.chat_completions,
-          messages=messages,
-          enable_tools=True,
-          guild_id=server_id,
+      client = await get_client()
+      await client.start_workflow(
+        BooChatWorkflow.run,
+        req,
+        id=f"chat-{message.id}",
+        task_queue=TEMPORAL_TASK_QUEUE,
+      )
+
+      message_url = (
+        f"https://discord.com/channels/"
+        f"{message.guild.id if message.guild else '@me'}/"
+        f"{message.channel.id}/{message.id}"
+      )
+      for att in image_attachments:
+        index_input = ImageIndexInput(
+          image_url=att.url,
+          user_caption=cleaned_prompt or None,
+          image_id=f"{message.id}_{att.id}",
+          message_url=message_url,
+          message_id=str(message.id),
+          server_id=server_id,
+          server_name=req.server_name,
+          channel_id=str(message.channel.id),
+          channel_name=req.channel_name,
+          author_id=str(message.author.id),
+          author_name=f"{message.author.name} ({message.author.display_name})",
+          attachment_filename=att.filename,
+          attachment_size=att.size,
         )
-        if len(result) == 3:
-          bot_response, usage, generated_images = result
-        else:
-          bot_response, usage = result
-          generated_images = []
-
-      bot_response, sticker_ids = await self.image_handler._replace_stickers(
-        bot_response
-      )
-      stickers = await self.image_handler._fetch_stickers(sticker_ids)
-      self.db_service.store_token_usage(
-        {
-          "message_id": str(message.id),
-          "guild_id": str(message.guild.id)
-          if message.guild
-          else f"DM_{message.author.id}",
-          "author_id": str(message.author.id),
-          "input_tokens": usage.prompt_tokens,
-          "output_tokens": usage.total_tokens,
-        }
-      )
-      await send_response(message, bot_response, stickers, usage, generated_images)
-      await self._add_assistant_context(bot_response, server_id)
-      await self._trim_context(server_id)
-
-      llm_failed = bot_response.startswith(("⏳", "😵", "⚠️"))
-      await self._safe_remove_react(message, "\U0001f440")
+        await client.start_workflow(
+          ImageIndexWorkflow.run,
+          index_input,
+          id=f"image-index-{message.id}-{att.id}",
+          task_queue=TEMPORAL_TASK_QUEUE,
+        )
 
     except Exception as e:
-      logger.error(f"Error in on_message: {e}", exc_info=True)
-      await self._safe_remove_react(message, "\U0001f440")
-      await self._safe_react(message, "\u274c")
+      logger.error(f"Failed to dispatch message {message.id}: {e}", exc_info=True)
       await send_error_message(message)
 
-  async def _get_server_lore(self, server_id: str, guild: discord.Guild) -> str:
-    """
-    Get server lore (system prompt) with caching.
-
-    Checks cache first, falls back to database if not found.
-    Includes list of all non-bot members with their IDs for pinging.
-    """
-    # Try cache first
-    cached_lore = server_cache.get_lore(server_id)
-    if cached_lore is not None:
-      return cached_lore
-
-    # Cache miss - fetch from database
-    prompt = await to_thread(self.db_service.fetch_prompt, server_id)
-    base_lore = (
-      prompt.get("system_prompt", "You are a helpful assistant")
-      if prompt
-      else "You are a helpful assistant"
-    )
-
-    # Add member list if in a guild (not DM)
-    if guild is not None:
-      members_list = await self._get_members_list(guild)
-      lore = f"{base_lore}\n\n{members_list}"
-    else:
-      lore = base_lore
-
-    # Update cache
-    server_cache.set_lore(server_id, lore)
-    return lore
-
-  async def _get_members_list(self, guild: discord.Guild) -> str:
-    """
-    Get formatted list of all non-bot members in the guild.
-    
-    Returns a formatted string with member names and IDs for pinging.
-    Format: @username (Display Name) - ID: user_id
-    """
+  async def _format_members_list(self, guild: discord.Guild) -> str:
     try:
-      # Fetch all members (required for large servers)
       await guild.chunk()
-      
-      # Filter out bots and format member list
       members = [
-        f"- {member.name} (Display: {member.display_name}) - ID: {member.id}"
-        for member in guild.members
-        if not member.bot
+        f"- {m.name} (Display: {m.display_name}) - ID: {m.id}"
+        for m in guild.members
+        if not m.bot
       ]
-      
       if not members:
         return "## Server Members\nNo members found."
-      
-      members_text = "\n".join(members)
-      return f"## Server Members\nTo ping a member, use <@user_id> format. Available members:\n{members_text}"
-    
+      return (
+        "## Server Members\n"
+        "To ping a member, use <@user_id> format. Available members:\n"
+        + "\n".join(members)
+      )
     except Exception as e:
-      logger.error(f"Error fetching members list: {e}", exc_info=True)
-      return "## Server Members\nUnable to fetch member list."
-
-  async def _reset_chat(self, message: discord.Message, server_id: str) -> None:
-    prompt = message.content.strip()
-    if "reset" in prompt and "reset chat" not in prompt:
-      await message.channel.send('-# Say "reset chat"')
-      return
-
-    await to_thread(self.db_service.delete_chat_history, server_id)
-    # Optionally invalidate cache if the system prompt might change
-    # server_cache.invalidate_lore(server_id)
-    await message.channel.send(self.context_reset_message)
-
-  async def _add_user_context(
-    self, message: discord.Message, prompt: str, server_id: str
-  ) -> None:
-    server_context = await to_thread(self.db_service.get_chat_history, server_id)
-    content = (
-      f"{message.author.name} (aka {message.author.display_name}, ID: {message.author.id}) said: {prompt}"
-    )
-    server_context.append({"role": "user", "content": content})
-    await to_thread(self.db_service.update_chat_history, server_id, server_context)
-
-  async def _add_assistant_context(self, response: str, server_id: str) -> None:
-    server_context = await to_thread(self.db_service.get_chat_history, server_id)
-    server_context.append({"role": "assistant", "content": response})
-    await to_thread(self.db_service.update_chat_history, server_id, server_context)
-
-  async def _trim_context(self, server_id: str) -> None:
-    server_context = await to_thread(self.db_service.get_chat_history, server_id)
-    if len(server_context) > CONTEXT_LIMIT:
-      server_context = server_context[-CONTEXT_LIMIT:]
-      await to_thread(self.db_service.update_chat_history, server_id, server_context)
+      logger.error(f"Failed to chunk guild members: {e}")
+      return ""
 
 
 async def setup(bot: commands.Bot) -> None:

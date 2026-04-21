@@ -26,6 +26,9 @@ VOYAGEAI_API_KEY: str = os.getenv("VOYAGEAI_API_KEY", "")
 GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 DB_SERVICE_BASE_URL: str = os.getenv("DB_SERVICE_BASE_URL", "localhost:8080")
 MANAGER_API_TOKEN: str = os.getenv("MANAGER_API_TOKEN", "")
+TEMPORAL_ADDRESS: str = os.getenv("TEMPORAL_ADDRESS", "temporal:7233")
+TEMPORAL_TASK_QUEUE: str = os.getenv("TEMPORAL_TASK_QUEUE", "boo-tasks")
+TEMPORAL_NAMESPACE: str = os.getenv("TEMPORAL_NAMESPACE", "default")
 
 
 def _parse_admin_list() -> List[int]:
